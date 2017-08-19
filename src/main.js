@@ -13,8 +13,8 @@ key.init(canvas);
 var entities = [];
 
 const player = {
-  x: canvas.width / 2,
-  y: 0,
+  x: 700,
+  y: -50,
   h: 32,
   w: 16,
   dx: 60,
@@ -22,21 +22,36 @@ const player = {
   onGround: false
 };
 
+entities.push(player);
+
 const camera = {
   x: 20,
   y: 20
 }
 
+var voronoi = new Voronoi();
+var bbox = {xl: -300, xr: 1450, yt: 0, yb: 1550}; // xl is x-left, xr is x-right, yt is y-top, and yb is y-bottom
+var sites = [];
+for (var i = 0; i < 350; i++){
+  sites.push({
+    x: rand.range(bbox.xl, bbox.xr),
+    y: rand.range(bbox.yt, bbox.yb)
+  })
+}
+var diagram = voronoi.compute(sites, bbox);
+
 const stones = [];
-stones.push(
-  {vs: [[20, 230], [300, 240], [280, 220]]}
-);
-stones.push(
-  {vs: [[280, 220], [320, 40], [320, 220], [300,240]]}
-);
+diagram.cells.forEach(function(cell){
+  if (rand.bool())
+    return;
+  let vs = [];
+  cell.halfedges.forEach(function (halfedge){
+    vs.push([halfedge.getStartpoint().x, halfedge.getStartpoint().y]);
+  });
+  stones.push({vs: vs});
+});
 
 
-entities.push(player);
 
 function update(elapsed){
   entities.forEach(function(e){
@@ -104,19 +119,20 @@ function update(elapsed){
 
 function draw(){
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.font = "10px Arial";
-  ctx.fillStyle = "red";
-  ctx.fillText("Player",10,10);
-  ctx.fillText("x: "+player.x,10,20);
-  ctx.fillText("y: "+player.y,10,30);
-  ctx.fillText("dx: "+player.dx,10,40);
-  ctx.fillText("dy: "+player.dy,10,50);
+  // Background
+  ctx.fillStyle="#654321";
+  ctx.fillRect(0, 0, 400, 300);
+  ctx.fillStyle="#87CEEB";
+  ctx.fillRect(0, -500-camera.y, 400, 500);
+
+
+
   entities.forEach(function(e){
     ctx.fillStyle="#FF0000";
     ctx.fillRect(e.x-camera.x, e.y-camera.y, e.w, e.h);
   });
   stones.forEach(function(s){
-    ctx.fillStyle = '#00f';
+    ctx.fillStyle = '#8B4513';
     ctx.beginPath();
     ctx.moveTo(s.vs[0][0]-camera.x, s.vs[0][1]-camera.y);
     for (let i = 1; i < s.vs.length; i++){
@@ -125,6 +141,13 @@ function draw(){
     ctx.closePath();
     ctx.fill();
   });
+  ctx.font = "10px Arial";
+  ctx.fillStyle = "red";
+  ctx.fillText("Player",10,10);
+  ctx.fillText("x: "+player.x,10,20);
+  ctx.fillText("y: "+player.y,10,30);
+  ctx.fillText("dx: "+player.dx,10,40);
+  ctx.fillText("dy: "+player.dy,10,50);
 }
 
 function keyboard(){

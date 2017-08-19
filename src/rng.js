@@ -1,7 +1,10 @@
 module.exports = function(seed) {
-  function random() {
+  /*function random() {
     var x = Math.sin(.8765111159592828 + seed++) * 1e4
     return x - Math.floor(x)
+  }*/
+  function random(){
+    return Math.random();
   }
   
   var rng = {
