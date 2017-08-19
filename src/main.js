@@ -50,6 +50,32 @@ diagram.cells.forEach(function(cell){
   stones.push({vs: vs});
 });
 
+const COLORS = [
+  "#F4A460", "#DAA520", "#CD853F", "#D2691E", "#8B4513", 
+  "#A0522D", "#A52A2A", "#800000"
+];
+voronoi = new Voronoi();
+bbox = {xl: -300, xr: 1450, yt: 0, yb: 3550};
+var sites = [];
+for (var i = 0; i < 1450; i++){
+  sites.push({
+    x: rand.range(bbox.xl, bbox.xr),
+    y: rand.range(bbox.yt, bbox.yb)
+  })
+}
+diagram = voronoi.compute(sites, bbox);
+const bgStones = [];
+diagram.cells.forEach(function(cell){
+  var vs = [];
+  cell.halfedges.forEach(function (halfedge){
+    vs.push([halfedge.getStartpoint().x, halfedge.getStartpoint().y]);
+  });
+  bgStones.push({
+    vs: vs,
+    color: rand.pick(COLORS)
+  });
+});
+
 
 
 function update(elapsed){
@@ -119,19 +145,27 @@ function update(elapsed){
 function draw(){
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   // Background
-  ctx.fillStyle="#8B4513";
+  ctx.fillStyle="#000";
   ctx.fillRect(0, 0, 400, 300);
   ctx.fillStyle="#87CEEB";
   ctx.fillRect(0, -500-camera.y, 400, 500);
 
-
-
+  bgStones.forEach(function(s){
+    ctx.fillStyle = s.color;
+    ctx.beginPath();
+    ctx.moveTo(s.vs[0][0]-camera.x, s.vs[0][1]-camera.y);
+    for (var i = 1; i < s.vs.length; i++){
+      ctx.lineTo(s.vs[i][0]-camera.x, s.vs[i][1]-camera.y);
+    }
+    ctx.closePath();
+    ctx.fill();
+  });
   entities.forEach(function(e){
     ctx.fillStyle="#FF0000";
     ctx.fillRect(e.x-camera.x, e.y-camera.y, e.w, e.h);
   });
   stones.forEach(function(s){
-    ctx.fillStyle = '#654321';
+    ctx.fillStyle = '#000';
     ctx.beginPath();
     ctx.moveTo(s.vs[0][0]-camera.x, s.vs[0][1]-camera.y);
     for (var i = 1; i < s.vs.length; i++){
