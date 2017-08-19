@@ -14,7 +14,7 @@ var entities = [];
 
 const player = {
   x: 700,
-  y: -50,
+  y: -350,
   h: 32,
   w: 16,
   dx: 60,
@@ -30,21 +30,20 @@ const camera = {
 }
 
 var voronoi = new Voronoi();
-var bbox = {xl: -300, xr: 1450, yt: 0, yb: 1550}; // xl is x-left, xr is x-right, yt is y-top, and yb is y-bottom
+var bbox = {xl: -300, xr: 1450, yt: 0, yb: 3550};
 var sites = [];
-for (var i = 0; i < 350; i++){
+for (var i = 0; i < 450; i++){
   sites.push({
     x: rand.range(bbox.xl, bbox.xr),
     y: rand.range(bbox.yt, bbox.yb)
   })
 }
 var diagram = voronoi.compute(sites, bbox);
-
 const stones = [];
 diagram.cells.forEach(function(cell){
   if (rand.bool())
     return;
-  let vs = [];
+  var vs = [];
   cell.halfedges.forEach(function (halfedge){
     vs.push([halfedge.getStartpoint().x, halfedge.getStartpoint().y]);
   });
@@ -59,9 +58,9 @@ function update(elapsed){
     // Gravity
     e.dy += elapsed * 1500;
     const tx = e.x + e.dx * elapsed;
-    let ty = e.y + e.dy * elapsed;
-    let vCollision = false;
-    let hCollision = false;
+    var ty = e.y + e.dy * elapsed;
+    var vCollision = false;
+    var hCollision = false;
     stones.forEach(function(s){
       //TODO: Optimize to not use forEach, split checks for vCollision and hCollision in order to break
       //TODO: Optimize, sort stones by distance to entity
@@ -120,7 +119,7 @@ function update(elapsed){
 function draw(){
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   // Background
-  ctx.fillStyle="#654321";
+  ctx.fillStyle="#8B4513";
   ctx.fillRect(0, 0, 400, 300);
   ctx.fillStyle="#87CEEB";
   ctx.fillRect(0, -500-camera.y, 400, 500);
@@ -132,15 +131,21 @@ function draw(){
     ctx.fillRect(e.x-camera.x, e.y-camera.y, e.w, e.h);
   });
   stones.forEach(function(s){
-    ctx.fillStyle = '#8B4513';
+    ctx.fillStyle = '#654321';
     ctx.beginPath();
     ctx.moveTo(s.vs[0][0]-camera.x, s.vs[0][1]-camera.y);
-    for (let i = 1; i < s.vs.length; i++){
+    for (var i = 1; i < s.vs.length; i++){
       ctx.lineTo(s.vs[i][0]-camera.x, s.vs[i][1]-camera.y);
     }
     ctx.closePath();
     ctx.fill();
   });
+  if (player.y > 0){
+    ctx.font = "16px sans-serif";
+    ctx.fillStyle = "white";
+    ctx.fillText(Math.floor(player.y/20)+"mt", 300,20);
+  }
+
   ctx.font = "10px Arial";
   ctx.fillStyle = "red";
   ctx.fillText("Player",10,10);
