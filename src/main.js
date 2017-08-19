@@ -106,6 +106,7 @@ function draw(){
 
   bgStones.forEach(function(s){
     ctx.fillStyle = s.color;
+    ctx.strokeStyle = s.color;
     ctx.beginPath();
     ctx.moveTo(s.vs[0][0]-camera.x, s.vs[0][1]-camera.y);
     for (var i = 1; i < s.vs.length; i++){
@@ -113,6 +114,7 @@ function draw(){
     }
     ctx.closePath();
     ctx.fill();
+    ctx.stroke();
   });
   entities.forEach(function(e){
     ctx.fillStyle="#FF0000";
@@ -120,6 +122,7 @@ function draw(){
   });
   stones.forEach(function(s){
     ctx.fillStyle = '#000';
+    ctx.strokeStyle = '#000';
     ctx.beginPath();
     ctx.moveTo(s.vs[0][0]-camera.x, s.vs[0][1]-camera.y);
     for (var i = 1; i < s.vs.length; i++){
@@ -127,6 +130,7 @@ function draw(){
     }
     ctx.closePath();
     ctx.fill();
+    ctx.stroke();
   });
   if (player.y > 0){
     ctx.font = "16px sans-serif";
