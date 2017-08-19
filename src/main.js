@@ -1,8 +1,7 @@
-// 48922
-
 var raf = require('./raf');
 var rng = require('./rng');
 var key = require('./key');
+var gen = require('./gen');
 
 var canvas = document.querySelector('#game');
 var ctx = canvas.getContext('2d');
@@ -29,54 +28,9 @@ const camera = {
   y: 20
 }
 
-var voronoi = new Voronoi();
-var bbox = {xl: -300, xr: 1450, yt: 0, yb: 3550};
-var sites = [];
-for (var i = 0; i < 450; i++){
-  sites.push({
-    x: rand.range(bbox.xl, bbox.xr),
-    y: rand.range(bbox.yt, bbox.yb)
-  })
-}
-var diagram = voronoi.compute(sites, bbox);
-const stones = [];
-diagram.cells.forEach(function(cell){
-  if (rand.bool())
-    return;
-  var vs = [];
-  cell.halfedges.forEach(function (halfedge){
-    vs.push([halfedge.getStartpoint().x, halfedge.getStartpoint().y]);
-  });
-  stones.push({vs: vs});
-});
-
-const COLORS = [
-  "#F4A460", "#DAA520", "#CD853F", "#D2691E", "#8B4513", 
-  "#A0522D", "#A52A2A", "#800000"
-];
-voronoi = new Voronoi();
-bbox = {xl: -300, xr: 1450, yt: 0, yb: 3550};
-var sites = [];
-for (var i = 0; i < 1450; i++){
-  sites.push({
-    x: rand.range(bbox.xl, bbox.xr),
-    y: rand.range(bbox.yt, bbox.yb)
-  })
-}
-diagram = voronoi.compute(sites, bbox);
-const bgStones = [];
-diagram.cells.forEach(function(cell){
-  var vs = [];
-  cell.halfedges.forEach(function (halfedge){
-    vs.push([halfedge.getStartpoint().x, halfedge.getStartpoint().y]);
-  });
-  bgStones.push({
-    vs: vs,
-    color: rand.pick(COLORS)
-  });
-});
-
-
+var firstMap = gen.generateSegment(-1500, 0, 3000, 3000);
+const stones = firstMap.stones;
+const bgStones = firstMap.bgStones;
 
 function update(elapsed){
   entities.forEach(function(e){
