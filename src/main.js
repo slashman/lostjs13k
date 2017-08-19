@@ -22,6 +22,11 @@ const player = {
   onGround: false
 };
 
+const camera = {
+  x: 20,
+  y: 20
+}
+
 const stones = [];
 stones.push(
   {vs: [[20, 230], [300, 240], [280, 220]]}
@@ -84,7 +89,7 @@ function update(elapsed){
     if (!hCollision){
       e.x = tx;
       if (e.onGround && e.dx != 0)
-        e.dy = -70; // Chibi jump, for slopes!
+        e.dy = -50; // Chibi jump, for slopes!
     } else if (e.dy < -50 || e.dy > 30){ // Hard collision
       if (e.dx < 0){
         e.dx = 120;
@@ -93,6 +98,8 @@ function update(elapsed){
       }
     }
   });
+  camera.x = player.x - canvas.width / 2;
+  camera.y = player.y - canvas.height / 2;
 }
 
 function draw(){
@@ -106,14 +113,14 @@ function draw(){
   ctx.fillText("dy: "+player.dy,10,50);
   entities.forEach(function(e){
     ctx.fillStyle="#FF0000";
-    ctx.fillRect(e.x, e.y, e.w, e.h);
+    ctx.fillRect(e.x-camera.x, e.y-camera.y, e.w, e.h);
   });
   stones.forEach(function(s){
     ctx.fillStyle = '#00f';
     ctx.beginPath();
-    ctx.moveTo(s.vs[0][0], s.vs[0][1]);
+    ctx.moveTo(s.vs[0][0]-camera.x, s.vs[0][1]-camera.y);
     for (let i = 1; i < s.vs.length; i++){
-      ctx.lineTo(s.vs[i][0], s.vs[i][1]);
+      ctx.lineTo(s.vs[i][0]-camera.x, s.vs[i][1]-camera.y);
     }
     ctx.closePath();
     ctx.fill();
