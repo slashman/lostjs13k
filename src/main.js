@@ -11,14 +11,18 @@ key.init(canvas);
 
 var entities = [];
 
+const SECTOR_SIZE = 300;
+
 const player = {
-  x: 700,
+  x: 20,
   y: -350,
   h: 32,
   w: 16,
   dx: 60,
   dy: 0,
-  onGround: false
+  onGround: false,
+  mx: 0,
+  my: 0
 };
 
 entities.push(player);
@@ -28,9 +32,9 @@ const camera = {
   y: 20
 }
 
-var firstMap = gen.generateSegment(-1500, 0, 3000, 3000);
-const stones = firstMap.stones;
-const bgStones = firstMap.bgStones;
+const sectors = {};
+sectors["0:0"] = gen.generateSegment(0, 0, SECTOR_SIZE, SECTOR_SIZE);
+sectors["-1:0"] = gen.generateSegment(-SECTOR_SIZE, 0, SECTOR_SIZE, SECTOR_SIZE);
 
 function update(elapsed){
   entities.forEach(function(e){
@@ -41,34 +45,37 @@ function update(elapsed){
     var ty = e.y + e.dy * elapsed;
     var vCollision = false;
     var hCollision = false;
-    stones.forEach(function(s){
-      //TODO: Optimize to not use forEach, split checks for vCollision and hCollision in order to break
-      //TODO: Optimize, sort stones by distance to entity
-      if (e.dx != 0){ 
-        if (e.dx > 0){
-          if (inside([tx+e.w,ty+e.h/2], s.vs)){
-            hCollision = true;
-          }
-        } else if (e.dx < 0){
-          if (inside([tx,ty+e.h/2], s.vs)){
-            hCollision = true;
+    for (sector in sectors){
+      sector = sectors[sector];
+      sector.stones.forEach(function(s){
+        //TODO: Optimize to not use forEach, split checks for vCollision and hCollision in order to break
+        //TODO: Optimize, sort stones by distance to entity
+        if (e.dx != 0){ 
+          if (e.dx > 0){
+            if (inside([tx+e.w,ty+e.h/2], s.vs)){
+              hCollision = true;
+            }
+          } else if (e.dx < 0){
+            if (inside([tx,ty+e.h/2], s.vs)){
+              hCollision = true;
+            }
           }
         }
-      }
-      if (inside([tx+e.w/2,ty+e.h], s.vs)){
-        vCollision = true;
-      }
-      if (e.dy > 100){
-        //Prevent falling through thin borders at high acc
-        if (polygonIntersects({
-          a: {x: e.x+e.w/2, y: e.y+e.h},
-          b: {x: tx+e.w/2, y: ty+e.h}},
-          s.vs
-        )){
-         vCollision = true; 
+        if (inside([tx+e.w/2,ty+e.h], s.vs)){
+          vCollision = true;
         }
-      }
-    });
+        if (e.dy > 100){
+          //Prevent falling through thin borders at high acc
+          if (polygonIntersects({
+            a: {x: e.x+e.w/2, y: e.y+e.h},
+            b: {x: tx+e.w/2, y: ty+e.h}},
+            s.vs
+          )){
+           vCollision = true; 
+          }
+        }
+      });
+    };
     if (vCollision){
       e.dy = 0;
       // Friction
@@ -92,46 +99,107 @@ function update(elapsed){
       }
     }
   });
+  // Should we load another fragment?
+  checkLoadFragment();
+  player.mx = Math.floor(player.x / SECTOR_SIZE);
+  player.my = Math.floor(player.y / SECTOR_SIZE);
   camera.x = player.x - canvas.width / 2;
   camera.y = player.y - canvas.height / 2;
+}
+
+function createAndDeleteSectorAt(cx, cy, dx, dy) {
+  if (sectors[(player.mx+cx)+":"+(player.my+cy)]){
+    
+  } else {
+    generateSector(cx, cy);
+  }
+  if (sectors[(player.mx+dx)+":"+(player.my+dy)]){
+    delete sectors[(player.mx+dx)+":"+(player.my+dy)];
+    console.log("delete "+(player.mx+dx)+":"+(player.my+dy));
+  }
+}
+
+function checkLoadFragment(dx, dy){
+  if (sectors[(player.mx+dx)+":"+(player.my+dy)]){
+    return;
+  }
+  const leftZone = player.x < player.mx * SECTOR_SIZE + SECTOR_SIZE / 2;
+  const rightZone = player.x > player.mx * SECTOR_SIZE + SECTOR_SIZE / 2;
+  const downZone = player.y > player.my * SECTOR_SIZE + SECTOR_SIZE / 2;
+  const upZone = player.y < player.my * SECTOR_SIZE + SECTOR_SIZE / 2;
+  if (rightZone){
+    createAndDeleteSectorAt(1, 0, -1, 0);
+    if (upZone){
+      createAndDeleteSectorAt(1, -1, -1, -1);
+    }
+    if (downZone){
+      createAndDeleteSectorAt(1, 1, -1, 1);
+    } 
+  } else if (leftZone){
+    createAndDeleteSectorAt(-1, 0, 1, 0);
+    if (upZone){
+      createAndDeleteSectorAt(-1, -1, 1, -1);
+    }
+    if (downZone){
+      createAndDeleteSectorAt(-1, 1, 1, 1);
+    } 
+  } 
+  if (upZone){
+    createAndDeleteSectorAt(0, -1, 0, 1);
+  } else if (downZone){
+    createAndDeleteSectorAt(0, 1, 0, -1);
+  }
+}
+
+function generateSector(dx, dy){
+  if (player.my+dy < 0)
+    return;
+  sectors[(player.mx+dx)+":"+(player.my+dy)] = gen.generateSegment((player.mx+dx)*SECTOR_SIZE, (player.my+dy)*SECTOR_SIZE, SECTOR_SIZE, SECTOR_SIZE);
+  // TODO: Also generate adjacent sectors, if non-existant
 }
 
 function draw(){
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   // Background
-  ctx.fillStyle="#000";
+  ctx.fillStyle="#F00";
   ctx.fillRect(0, 0, 400, 300);
   ctx.fillStyle="#87CEEB";
   ctx.fillRect(0, -500-camera.y, 400, 500);
-
-  bgStones.forEach(function(s){
-    ctx.fillStyle = s.color;
-    ctx.strokeStyle = s.color;
-    ctx.beginPath();
-    ctx.moveTo(s.vs[0][0]-camera.x, s.vs[0][1]-camera.y);
-    for (var i = 1; i < s.vs.length; i++){
-      ctx.lineTo(s.vs[i][0]-camera.x, s.vs[i][1]-camera.y);
-    }
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-  });
+  for (sector in sectors){
+    sector = sectors[sector];
+    sector.bgStones.forEach(function(s){
+      ctx.fillStyle = s.color;
+      ctx.strokeStyle = s.color;
+      ctx.beginPath();
+      ctx.moveTo(s.vs[0][0]-camera.x, s.vs[0][1]-camera.y);
+      for (var i = 1; i < s.vs.length; i++){
+        ctx.lineTo(s.vs[i][0]-camera.x, s.vs[i][1]-camera.y);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    });
+  }
+  
   entities.forEach(function(e){
     ctx.fillStyle="#FF0000";
     ctx.fillRect(e.x-camera.x, e.y-camera.y, e.w, e.h);
   });
-  stones.forEach(function(s){
-    ctx.fillStyle = '#000';
-    ctx.strokeStyle = '#000';
-    ctx.beginPath();
-    ctx.moveTo(s.vs[0][0]-camera.x, s.vs[0][1]-camera.y);
-    for (var i = 1; i < s.vs.length; i++){
-      ctx.lineTo(s.vs[i][0]-camera.x, s.vs[i][1]-camera.y);
-    }
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-  });
+  for (sector in sectors){
+    sector = sectors[sector];
+    sector.stones.forEach(function(s){
+      ctx.fillStyle = '#000';
+      ctx.strokeStyle = '#000';
+      ctx.beginPath();
+      ctx.moveTo(s.vs[0][0]-camera.x, s.vs[0][1]-camera.y);
+      for (var i = 1; i < s.vs.length; i++){
+        ctx.lineTo(s.vs[i][0]-camera.x, s.vs[i][1]-camera.y);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    });
+  }
   if (player.y > 0){
     ctx.font = "16px sans-serif";
     ctx.fillStyle = "white";
@@ -139,12 +207,16 @@ function draw(){
   }
 
   ctx.font = "10px Arial";
-  ctx.fillStyle = "red";
+  ctx.fillStyle = "white";
   ctx.fillText("Player",10,10);
   ctx.fillText("x: "+player.x,10,20);
   ctx.fillText("y: "+player.y,10,30);
   ctx.fillText("dx: "+player.dx,10,40);
   ctx.fillText("dy: "+player.dy,10,50);
+  ctx.fillText("mx: "+player.mx,10,60);
+  ctx.fillText("my: "+player.my,10,70);
+  ctx.fillText("sectors: "+Object.keys(sectors).length,10,80);
+  
 }
 
 function keyboard(){
