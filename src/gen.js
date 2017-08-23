@@ -48,7 +48,7 @@ module.exports = {
 			}
 		}
 		var sites = topSeed.concat(bottomSeed).concat(leftSeed).concat(rightSeed);
-		for (var i = 0; i < 45; i++){
+		for (var i = 0; i < 450; i++){
 		  sites.push({
 		    x: rand.range(bbox.xl+50, bbox.xr-50),
 		    y: rand.range(bbox.yt+50, bbox.yb-50)
@@ -66,7 +66,7 @@ module.exports = {
 		  stones.push({vs: vs});
 		});
 		sites = [];
-		for (var i = 0; i < 145; i++){
+		for (var i = 0; i < 1450; i++){
 		  sites.push({
 		    x: rand.range(bbox.xl, bbox.xr),
 		    y: rand.range(bbox.yt, bbox.yb)

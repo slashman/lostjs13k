@@ -11,7 +11,7 @@ key.init(canvas);
 
 var entities = [];
 
-const SECTOR_SIZE = 200;
+const SECTOR_SIZE = 3000;
 
 const player = {
   x: 20,
@@ -118,7 +118,6 @@ function createAndDeleteSectorAt(cx, cy, dx, dy) {
   }
   if (sectors[(player.mx+dx)+":"+(player.my+dy)]){
     delete sectors[(player.mx+dx)+":"+(player.my+dy)];
-    console.log("delete "+(player.mx+dx)+":"+(player.my+dy));
   }
 }
 
