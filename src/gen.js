@@ -57,7 +57,7 @@ module.exports = {
 		var diagram = voronoi.compute(sites, bbox);
 		const stones = [];
 		diagram.cells.forEach(function(cell){
-		  if (rand.range(0,100) < 90)
+		  if (rand.range(0,100) < 50)
 		    return;
 		  var vs = [];
 		  cell.halfedges.forEach(function (halfedge){

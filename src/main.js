@@ -11,7 +11,7 @@ key.init(canvas);
 
 var entities = [];
 
-const SECTOR_SIZE = 300;
+const SECTOR_SIZE = 200;
 
 const player = {
   x: 20,
@@ -31,6 +31,8 @@ const camera = {
   x: 20,
   y: 20
 }
+
+const debug = true;
 
 const sectors = {};
 sectors["0:0"] = gen.generateSegment(0, 0, SECTOR_SIZE, SECTOR_SIZE);
@@ -87,6 +89,7 @@ function update(elapsed){
       e.y = ty 
       e.onGround = false;
     }
+    // TODO: Remove hard collision, fix slopes
     if (!hCollision){
       e.x = tx;
       if (e.onGround && e.dx != 0)
@@ -119,35 +122,41 @@ function createAndDeleteSectorAt(cx, cy, dx, dy) {
   }
 }
 
-function checkLoadFragment(dx, dy){
-  if (sectors[(player.mx+dx)+":"+(player.my+dy)]){
-    return;
-  }
+function checkLoadFragment(){
   const leftZone = player.x < player.mx * SECTOR_SIZE + SECTOR_SIZE / 2;
   const rightZone = player.x > player.mx * SECTOR_SIZE + SECTOR_SIZE / 2;
   const downZone = player.y > player.my * SECTOR_SIZE + SECTOR_SIZE / 2;
   const upZone = player.y < player.my * SECTOR_SIZE + SECTOR_SIZE / 2;
   if (rightZone){
     createAndDeleteSectorAt(1, 0, -1, 0);
+    createAndDeleteSectorAt(0, 0, -1, 1);
+    createAndDeleteSectorAt(0, 0, -1, -1);
     if (upZone){
       createAndDeleteSectorAt(1, -1, -1, -1);
     }
     if (downZone){
       createAndDeleteSectorAt(1, 1, -1, 1);
-    } 
+      
+    }
   } else if (leftZone){
     createAndDeleteSectorAt(-1, 0, 1, 0);
+    createAndDeleteSectorAt(0, 0,  1, -1);
+    createAndDeleteSectorAt(0, 0,  1, 1);
     if (upZone){
       createAndDeleteSectorAt(-1, -1, 1, -1);
     }
     if (downZone){
       createAndDeleteSectorAt(-1, 1, 1, 1);
-    } 
+    }
   } 
   if (upZone){
     createAndDeleteSectorAt(0, -1, 0, 1);
+    createAndDeleteSectorAt(0, 0,  1, 1);
+    createAndDeleteSectorAt(0, 0, -1, 1);
   } else if (downZone){
     createAndDeleteSectorAt(0, 1, 0, -1);
+    createAndDeleteSectorAt(0, 0, 1, -1);
+    createAndDeleteSectorAt(0, 0, -1, -1);
   }
 }
 
@@ -155,14 +164,13 @@ function generateSector(dx, dy){
   if (player.my+dy < 0)
     return;
   sectors[(player.mx+dx)+":"+(player.my+dy)] = gen.generateSegment((player.mx+dx)*SECTOR_SIZE, (player.my+dy)*SECTOR_SIZE, SECTOR_SIZE, SECTOR_SIZE);
-  // TODO: Also generate adjacent sectors, if non-existant
 }
 
 function draw(){
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   // Background
-  ctx.fillStyle="#F00";
-  ctx.fillRect(0, 0, 400, 300);
+  ctx.fillStyle="#000";
+  ctx.fillRect(0, 0, 400, 400);
   ctx.fillStyle="#87CEEB";
   ctx.fillRect(0, -500-camera.y, 400, 500);
   for (sector in sectors){
@@ -205,18 +213,27 @@ function draw(){
     ctx.fillStyle = "white";
     ctx.fillText(Math.floor(player.y/20)+"mt", 300,20);
   }
-
-  ctx.font = "10px Arial";
-  ctx.fillStyle = "white";
-  ctx.fillText("Player",10,10);
-  ctx.fillText("x: "+player.x,10,20);
-  ctx.fillText("y: "+player.y,10,30);
-  ctx.fillText("dx: "+player.dx,10,40);
-  ctx.fillText("dy: "+player.dy,10,50);
-  ctx.fillText("mx: "+player.mx,10,60);
-  ctx.fillText("my: "+player.my,10,70);
-  ctx.fillText("sectors: "+Object.keys(sectors).length,10,80);
-  
+  if (debug){
+    // TODO: Remove from final dist, may be
+    ctx.font = "10px Arial";
+    ctx.fillStyle = "white";
+    ctx.fillText("Player",10,10);
+    ctx.fillText("x: "+player.x,10,20);
+    ctx.fillText("y: "+player.y,10,30);
+    ctx.fillText("dx: "+player.dx,10,40);
+    ctx.fillText("dy: "+player.dy,10,50);
+    ctx.fillText("mx: "+player.mx,10,60);
+    ctx.fillText("my: "+player.my,10,70);
+    ctx.fillText("sectors: "+Object.keys(sectors),10,80);
+    const leftZone = player.x < player.mx * SECTOR_SIZE + SECTOR_SIZE / 2;
+    const rightZone = player.x > player.mx * SECTOR_SIZE + SECTOR_SIZE / 2;
+    const downZone = player.y > player.my * SECTOR_SIZE + SECTOR_SIZE / 2;
+    const upZone = player.y < player.my * SECTOR_SIZE + SECTOR_SIZE / 2;
+    ctx.fillText("leftZone: "+leftZone,10,90);
+    ctx.fillText("rightZone: "+rightZone,10,100);
+    ctx.fillText("downZone: "+downZone,10,110);
+    ctx.fillText("upZone: "+upZone,10,120);
+  }
 }
 
 function keyboard(){
@@ -224,6 +241,7 @@ function keyboard(){
     if (key.isDown(38)){
       player.dy = -500;
     }
+    // TODO: Allow moving on the air
     if (key.isDown(37)){
       if (player.dx > 0){
         player.dx -= 40;
@@ -239,6 +257,7 @@ function keyboard(){
       }
     }
   }
+  
 }
 
 raf.start(function(elapsed) {
