@@ -7,5 +7,8 @@ module.exports = {
 	},
 	isDown: function(keyCode){
 		return pressed[keyCode];
+	},
+	typed: function(keyCode, callback){
+		window.addEventListener("keypress", callback);
 	}
 }

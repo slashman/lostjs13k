@@ -22,10 +22,15 @@ const player = {
   dy: 0,
   onGround: false,
   mx: 0,
-  my: 0
+  my: 0,
+  jetpack: false
 };
 
 entities.push(player);
+
+key.typed(74, function(){
+  player.jetpack = !player.jetpack;
+});
 
 const camera = {
   x: 20,
@@ -43,6 +48,9 @@ function update(elapsed){
     // TODO: Optimize, only do this if moved (or gravity pulled)
     // Gravity
     e.dy += elapsed * 1500;
+    if (e.jetpack){
+      e.dy -= elapsed * 1550;
+    }
     const tx = e.x + e.dx * elapsed;
     var ty = e.y + e.dy * elapsed;
     var vCollision = false;
@@ -92,8 +100,8 @@ function update(elapsed){
     // TODO: Remove hard collision, fix slopes
     if (!hCollision){
       e.x = tx;
-      if (e.onGround && e.dx != 0)
-        e.dy = -50; // Chibi jump, for slopes!
+      /*if (e.onGround && e.dx != 0)
+        e.dy = -50; // Chibi jump, for slopes!*/
     } else if (e.dy < -50 || e.dy > 30){ // Hard collision
       if (e.dx < 0){
         e.dx = 120;
@@ -212,6 +220,11 @@ function draw(){
     ctx.fillStyle = "white";
     ctx.fillText(Math.floor(player.y/20)+"mt", 300,20);
   }
+  if (player.jetpack){
+    ctx.font = "16px sans-serif";
+    ctx.fillStyle = "white";
+    ctx.fillText("Jetpack", 300,40);
+  }
   if (debug){
     // TODO: Remove from final dist, may be
     ctx.font = "10px Arial";
@@ -240,7 +253,6 @@ function keyboard(){
     if (key.isDown(38)){
       player.dy = -500;
     }
-    // TODO: Allow moving on the air
     if (key.isDown(37)){
       if (player.dx > 0){
         player.dx -= 40;
@@ -255,12 +267,19 @@ function keyboard(){
         player.dx = 120;
       }
     }
+  } else if (player.jetpack){
+    if (key.isDown(37)){
+      player.dx -= 3;
+    }
+    if (key.isDown(39)){
+      player.dx += 3;
+    }
   }
-  
 }
 
 raf.start(function(elapsed) {
   keyboard();
+  //TODO: Framerate limiter?
   update(elapsed);
   draw();
 });
