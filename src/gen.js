@@ -11,6 +11,10 @@ var rules = [
 	{ type: 1, op: '>', q: 1, sType: 2, nType: 2, chance: 80}
 ];
 
+var terrainRules = [
+	{ type: 0, op: '>', q: 0, sType: 1, nType: 1, chance: 80}
+];
+
 const TYPE_COLORS = [
   "#F4A460", "#DAA520", "#CD853F", "#D2691E", "#8B4513", 
   "#A0522D", "#A52A2A", "#800000"
@@ -31,15 +35,19 @@ function checkAndAddSite(site, toSite){
  * - vs: Array of vertices forming the polygon for the site
  * - surroundingCells: Array of adjacent cells
  */
-function completeDiagram(diagram){
+function completeDiagram(diagram, includeSurrounding){
 	diagram.cells.forEach(function(cell){
 		const site = cell.site;
 		site.vs = [];
-	  	site.surroundingCells = [];
+		if (includeSurrounding){
+	  		site.surroundingCells = [];
+	  	}
 		cell.halfedges.forEach(function (halfedge){
 	    	site.vs.push([halfedge.getStartpoint().x, halfedge.getStartpoint().y]);
-	    	checkAndAddSite(halfedge.edge.lSite, site);
-	    	checkAndAddSite(halfedge.edge.rSite, site);
+	    	if (includeSurrounding){
+		    	checkAndAddSite(halfedge.edge.lSite, site);
+		    	checkAndAddSite(halfedge.edge.rSite, site);
+		    }
 	    });
 	});
 }
@@ -56,12 +64,19 @@ module.exports = {
 		  });
 		}
 		let diagram = voronoi.compute(sites, bbox);
-		completeDiagram(diagram);
-		const stones = [];
+		completeDiagram(diagram, true);
+		let stones = [];
 		diagram.cells.forEach(function(cell){
-		  if (rand.range(0,100) < 50)
-		    return;
+		  if (rand.range(0,100) < 20){
+		  	cell.site.type = 1;
+		  } else {
+		  	cell.site.type = 0;
+		  }
 		  stones.push(cell.site);
+		});
+		ca.run(terrainRules, 1, stones, rand);
+		stones = stones.filter(function(stone){
+			return stone.type === 1;
 		});
 		const bgSites = [];
 		for (var i = 0; i < 1450; i++){
@@ -71,14 +86,14 @@ module.exports = {
 		  });
 		}
 		diagram = voronoi.compute(bgSites, bbox);
-		completeDiagram(diagram);
+		completeDiagram(diagram, false);
 		const bgStones = [];
 		diagram.cells.forEach(function(cell){
 			const site = cell.site;
 		    site.type = rand.range(0,3);
 		    bgStones.push(cell.site);
 		});
-		ca.run(rules, 1, bgStones, rand);
+		//ca.run(rules, 1, bgStones, rand);
 		bgStones.forEach(function(stone){
 			stone.color = TYPE_COLORS[stone.type];
 		})
