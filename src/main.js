@@ -34,7 +34,8 @@ key.typed(74, function(){
 
 const camera = {
   x: 20,
-  y: 20
+  y: 20,
+  zoom: 0.5
 }
 
 const debug = true;
@@ -179,19 +180,19 @@ function generateSector(dx, dy){
 }
 
 function transX(x){
-  return x - camera.x;
+  return (x - camera.x) * camera.zoom;
 }
 
 function transY(y){
-  return y - camera.y;
+  return (y - camera.y) * camera.zoom;
 }
 
 function transW(w){
-  return w;
+  return w * camera.zoom;
 }
 
 function transH(h){
-  return h;
+  return h * camera.zoom;
 }
 
 function moveTo(ctx, x, y){
