@@ -53,26 +53,28 @@ function update(elapsed){
     }
     const tx = e.x + e.dx * elapsed;
     var ty = e.y + e.dy * elapsed;
-    var vCollision = false;
-    var hCollision = false;
+    let vCollision = false;
+    let hCollision = false;
     for (sector in sectors){
       sector = sectors[sector];
-      sector.stones.forEach(function(s){
-        //TODO: Optimize to not use forEach, split checks for vCollision and hCollision in order to break
-        //TODO: Optimize, sort stones by distance to entity
-        if (e.dx != 0){ 
+      if (e.dx != 0){
+        hCollision = sector.stones.find(function(s){
+          //TODO: Optimize, sort stones by distance to entity
           if (e.dx > 0){
             if (inside([tx+e.w,ty+e.h/2], s.vs)){
-              hCollision = true;
+              return true;
             }
           } else if (e.dx < 0){
             if (inside([tx,ty+e.h/2], s.vs)){
-              hCollision = true;
+              return true;
             }
           }
-        }
+          return false;
+        });
+      }
+      vCollision = sector.stones.find(function(s){
         if (inside([tx+e.w/2,ty+e.h], s.vs)){
-          vCollision = true;
+          return true;
         }
         if (e.dy > 100){
           //Prevent falling through thin borders at high acc
@@ -81,10 +83,13 @@ function update(elapsed){
             b: {x: tx+e.w/2, y: ty+e.h}},
             s.vs
           )){
-           vCollision = true; 
+           return true; 
           }
         }
+        return false;
       });
+      if (hCollision || vCollision)
+        break;
     };
     if (vCollision){
       e.dy = 0;
