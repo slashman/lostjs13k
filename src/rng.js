@@ -47,6 +47,9 @@ module.exports = function(seed) {
     range: function(min, max) {
       return rng.int(max - min) + min;
     },
+    chance: function(val) {
+      return rng.range(0,100) <= val;
+    },
     /**
      * Pick an element from the source.
      *
