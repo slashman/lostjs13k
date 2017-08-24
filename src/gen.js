@@ -16,7 +16,36 @@ const TYPE_COLORS = [
   "#A0522D", "#A52A2A", "#800000"
 ];
 
+function checkAndAddSite(site, toSite){
+	if (site === null || site.voronoiId === toSite.voronoiId)
+		return;
+	if (!toSite.surroundingCells.find(function(cell){
+		return cell.voronoiId === site.voronoiId;
+	})){
+		toSite.surroundingCells.push(site);
+	}
+};
+
+/**
+ * Adds the following to each site object:
+ * - vs: Array of vertices forming the polygon for the site
+ * - surroundingCells: Array of adjacent cells
+ */
+function completeDiagram(diagram){
+	diagram.cells.forEach(function(cell){
+		const site = cell.site;
+		site.vs = [];
+	  	site.surroundingCells = [];
+		cell.halfedges.forEach(function (halfedge){
+	    	site.vs.push([halfedge.getStartpoint().x, halfedge.getStartpoint().y]);
+	    	checkAndAddSite(halfedge.edge.lSite, site);
+	    	checkAndAddSite(halfedge.edge.rSite, site);
+	    });
+	});
+}
+
 module.exports = {
+	
 	generateSegment: function(x,y,w,h){
 		const bbox = {xl: x, xr: x+w, yt: y, yb: y+h};
 		const sites = [];
@@ -27,44 +56,25 @@ module.exports = {
 		  });
 		}
 		let diagram = voronoi.compute(sites, bbox);
+		completeDiagram(diagram);
 		const stones = [];
 		diagram.cells.forEach(function(cell){
 		  if (rand.range(0,100) < 50)
 		    return;
-		  const vs = [];
-		  cell.halfedges.forEach(function (halfedge){
-		    vs.push([halfedge.getStartpoint().x, halfedge.getStartpoint().y]);
-		  });
-		  stones.push({vs: vs});
+		  stones.push(cell.site);
 		});
 		const bgSites = [];
 		for (var i = 0; i < 1450; i++){
 		  bgSites.push({
 		    x: rand.range(bbox.xl, bbox.xr),
-		    y: rand.range(bbox.yt, bbox.yb),
-		    id: i
+		    y: rand.range(bbox.yt, bbox.yb)
 		  });
 		}
 		diagram = voronoi.compute(bgSites, bbox);
-		function checkAndAddSite(site, toSite){
-			if (site === null || site.id === toSite.id)
-				return;
-			if (!toSite.surroundingCells.find(function(cell){
-				return cell.id === site.id;
-			})){
-				toSite.surroundingCells.push(site);
-			}
-		}
+		completeDiagram(diagram);
 		const bgStones = [];
 		diagram.cells.forEach(function(cell){
 			const site = cell.site;
-			site.vs = [];
-		  	site.surroundingCells = [];
-			cell.halfedges.forEach(function (halfedge){
-		    	site.vs.push([halfedge.getStartpoint().x, halfedge.getStartpoint().y]);
-		    	checkAndAddSite(halfedge.edge.lSite, site);
-		    	checkAndAddSite(halfedge.edge.rSite, site);
-		    });
 		    site.type = rand.range(0,3);
 		    bgStones.push(cell.site);
 		});
