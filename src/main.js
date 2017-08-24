@@ -178,6 +178,34 @@ function generateSector(dx, dy){
   sectors[(player.mx+dx)+":"+(player.my+dy)] = gen.generateSegment((player.mx+dx)*SECTOR_SIZE, (player.my+dy)*SECTOR_SIZE, SECTOR_SIZE, SECTOR_SIZE);
 }
 
+function transX(x){
+  return x - camera.x;
+}
+
+function transY(y){
+  return y - camera.y;
+}
+
+function transW(w){
+  return w;
+}
+
+function transH(h){
+  return h;
+}
+
+function moveTo(ctx, x, y){
+  ctx.moveTo(transX(x), transY(y));
+}
+
+function lineTo(ctx, x, y){
+  ctx.lineTo(transX(x), transY(y));
+}
+
+function fillRect(ctx, x, y, w, h){
+  ctx.fillRect(transX(x), transY(y), transW(w), transH(h));  
+}
+
 function draw(){
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   // Background
@@ -191,9 +219,9 @@ function draw(){
       ctx.fillStyle = s.color;
       ctx.strokeStyle = s.color;
       ctx.beginPath();
-      ctx.moveTo(s.vs[0][0]-camera.x, s.vs[0][1]-camera.y);
+      moveTo(ctx, s.vs[0][0], s.vs[0][1])
       for (var i = 1; i < s.vs.length; i++){
-        ctx.lineTo(s.vs[i][0]-camera.x, s.vs[i][1]-camera.y);
+        lineTo(ctx, s.vs[i][0], s.vs[i][1]);
       }
       ctx.closePath();
       ctx.fill();
@@ -203,7 +231,7 @@ function draw(){
   
   entities.forEach(function(e){
     ctx.fillStyle="#FF0000";
-    ctx.fillRect(e.x-camera.x, e.y-camera.y, e.w, e.h);
+    fillRect(ctx, e.x, e.y, e.w, e.h);
   });
   for (sector in sectors){
     sector = sectors[sector];
@@ -211,9 +239,9 @@ function draw(){
       ctx.fillStyle = '#000';
       ctx.strokeStyle = '#000';
       ctx.beginPath();
-      ctx.moveTo(s.vs[0][0]-camera.x, s.vs[0][1]-camera.y);
+      moveTo(ctx, s.vs[0][0], s.vs[0][1])
       for (var i = 1; i < s.vs.length; i++){
-        ctx.lineTo(s.vs[i][0]-camera.x, s.vs[i][1]-camera.y);
+        lineTo(ctx, s.vs[i][0], s.vs[i][1]);
       }
       ctx.closePath();
       ctx.fill();
