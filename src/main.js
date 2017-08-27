@@ -1,12 +1,15 @@
+/* jshint node: true */
+/* jshint loopfunc: true */
+
+"use strict";
+
 var raf = require('./raf');
-var rng = require('./rng');
 var key = require('./key');
 var gen = require('./gen');
 
 var canvas = document.querySelector('#game');
 var ctx = canvas.getContext('2d');
 
-var rand = rng();
 key.init(canvas);
 
 var entities = [];
@@ -36,17 +39,55 @@ key.typed(74, function(){
   player.jetpack = !player.jetpack;
 });
 
+key.typed(106, function(){
+  player.jetpack = !player.jetpack;
+});
+
 const camera = {
   x: 20,
   y: 20,
-  zoom: 0.1
-}
+  zoom: 0.3
+};
+
+key.typed(90, function(){
+  if (camera.zoom >= 1)
+    camera.zoom = 0.3;
+  else
+    camera.zoom += 0.1;
+});
+
+key.typed(122, function(){
+  if (camera.zoom >= 1)
+    camera.zoom = 0.3;
+  else
+    camera.zoom += 0.1;
+});
 
 const debug = true;
 
 const sectors = {};
 sectors["0:0"] = gen.generateSegment(0, 0, SECTOR_SIZE, SECTOR_SIZE);
 sectors["-1:0"] = gen.generateSegment(-SECTOR_SIZE, 0, SECTOR_SIZE, SECTOR_SIZE);
+
+function sortStones(){
+  let tmx;
+  if (player.dx > 0){
+    tmx = Math.floor((player.x+player.w) / SECTOR_SIZE);
+  } else {
+    tmx = Math.floor(player.x / SECTOR_SIZE);
+  }
+  const tmy = Math.floor((player.y+player.h) / SECTOR_SIZE);
+  const sector = sectors[tmx+":"+tmy];
+  if (sector){
+    sector.stones.sort(function(a, b){
+      return Math.abs((a.x - player.x) + (a.y - player.y)) - 
+             Math.abs((b.x - player.x) + (b.y - player.y));
+    });
+  }
+  setTimeout(sortStones, 5000);
+}
+
+setTimeout(sortStones, 5000);
 
 function update(elapsed){
   entities.forEach(function(e){
@@ -58,11 +99,18 @@ function update(elapsed){
     }
     const tx = e.x + e.dx * elapsed;
     var ty = e.y + e.dy * elapsed;
+    let tmx;
+    if (e.dx > 0){
+      tmx = Math.floor((tx+e.w) / SECTOR_SIZE);
+    } else {
+      tmx = Math.floor(tx / SECTOR_SIZE);
+    }
+    const tmy = Math.floor((ty+e.h) / SECTOR_SIZE);
     let vCollision = false;
     let hCollision = false;
-    for (sector in sectors){
-      sector = sectors[sector];
-      if (e.dx != 0){
+    let sector = sectors[tmx+":"+tmy];
+    if (sector){
+      if (e.dx !== 0){
         hCollision = sector.stones.find(function(s){
           //TODO: Optimize, sort stones by distance to entity
           if (e.dx > 0){
@@ -93,18 +141,16 @@ function update(elapsed){
         }
         return false;
       });
-      if (hCollision || vCollision)
-        break;
-    };
+    }
     if (vCollision){
       e.dy = 0;
       // Friction
-      if (e.dx != 0){ 
+      if (e.dx !== 0){ 
         e.dx -= e.dx > 0 ? 15 : -15; //TODO: Based on stone surface?
       }
       e.onGround = true;
     } else {
-      e.y = ty 
+      e.y = ty;
       e.onGround = false;
     }
     // TODO: Remove hard collision, fix slopes
@@ -214,18 +260,20 @@ function fillRect(ctx, x, y, w, h){
 function draw(){
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   // Background
-  ctx.fillStyle="#000";
+  ctx.fillStyle="#F00";
   ctx.fillRect(0, 0, 400, 400);
   ctx.fillStyle="#87CEEB";
   ctx.fillRect(0, transY(-500), canvas.width, transH(500));
-  for (sector in sectors){
+  for (var sector in sectors){
     // TODO: Calculate distance, only draw based on zoom
     sector = sectors[sector];
     sector.bgStones.forEach(function(s){
+      if (Math.abs((s.x - player.x) + (s.y - player.y)) > 1000)
+        return;
       ctx.fillStyle = s.color;
       ctx.strokeStyle = s.color;
       ctx.beginPath();
-      moveTo(ctx, s.vs[0][0], s.vs[0][1])
+      moveTo(ctx, s.vs[0][0], s.vs[0][1]);
       for (var i = 1; i < s.vs.length; i++){
         lineTo(ctx, s.vs[i][0], s.vs[i][1]);
       }
@@ -241,10 +289,12 @@ function draw(){
   for (sector in sectors){
     sector = sectors[sector];
     sector.stones.forEach(function(s){
+      if (Math.abs((s.x - player.x) + (s.y - player.y)) > 1000)
+        return;
       ctx.fillStyle = '#000';
       ctx.strokeStyle = '#000';
       ctx.beginPath();
-      moveTo(ctx, s.vs[0][0], s.vs[0][1])
+      moveTo(ctx, s.vs[0][0], s.vs[0][1]);
       for (var i = 1; i < s.vs.length; i++){
         lineTo(ctx, s.vs[i][0], s.vs[i][1]);
       }
@@ -283,6 +333,7 @@ function draw(){
     ctx.fillText("rightZone: "+rightZone,10,100);
     ctx.fillText("downZone: "+downZone,10,110);
     ctx.fillText("upZone: "+upZone,10,120);
+    ctx.fillText("zoom: "+camera.zoom,10,130);
   }
 }
 
@@ -334,13 +385,12 @@ function inside(point, vs) {
         var xi = vs[i][0], yi = vs[i][1];
         var xj = vs[j][0], yj = vs[j][1];
 
-        var intersect = ((yi > y) != (yj > y))
-            && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        var intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
         if (intersect) inside = !inside;
     }
 
     return inside;
-};
+}
 
 function polygonIntersects(line, vs) {
     for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
@@ -350,7 +400,7 @@ function polygonIntersects(line, vs) {
           return true;
     }
     return false;
-};
+}
 
 function intersects(a,b,c,d,p,q,r,s) {
   var det, gamma, lambda;
@@ -362,4 +412,4 @@ function intersects(a,b,c,d,p,q,r,s) {
     gamma = ((b - d) * (r - a) + (c - a) * (s - b)) / det;
     return (0 < lambda && lambda < 1) && (0 < gamma && gamma < 1);
   }
-};
+}
