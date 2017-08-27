@@ -23,7 +23,11 @@ const player = {
   onGround: false,
   mx: 0,
   my: 0,
-  jetpack: false
+  jetpack: false,
+  draw: function(ctx){
+    ctx.fillStyle="#FF0000";
+    fillRect(ctx, this.x, this.y, this.w, this.h);
+  }
 };
 
 entities.push(player);
@@ -35,7 +39,7 @@ key.typed(74, function(){
 const camera = {
   x: 20,
   y: 20,
-  zoom: 0.5
+  zoom: 0.1
 }
 
 const debug = true;
@@ -120,8 +124,8 @@ function update(elapsed){
   checkLoadFragment();
   player.mx = Math.floor(player.x / SECTOR_SIZE);
   player.my = Math.floor(player.y / SECTOR_SIZE);
-  camera.x = player.x - canvas.width / 2;
-  camera.y = player.y - canvas.height / 2;
+  camera.x = player.x;
+  camera.y = player.y;
 }
 
 function createAndDeleteSectorAt(cx, cy, dx, dy) {
@@ -180,11 +184,11 @@ function generateSector(dx, dy){
 }
 
 function transX(x){
-  return (x - camera.x) * camera.zoom;
+  return (x - camera.x) * camera.zoom + canvas.width / 2;
 }
 
 function transY(y){
-  return (y - camera.y) * camera.zoom;
+  return (y - camera.y) * camera.zoom + canvas.height / 2;
 }
 
 function transW(w){
@@ -213,8 +217,9 @@ function draw(){
   ctx.fillStyle="#000";
   ctx.fillRect(0, 0, 400, 400);
   ctx.fillStyle="#87CEEB";
-  ctx.fillRect(0, -500-camera.y, 400, 500);
+  ctx.fillRect(0, transY(-500), canvas.width, transH(500));
   for (sector in sectors){
+    // TODO: Calculate distance, only draw based on zoom
     sector = sectors[sector];
     sector.bgStones.forEach(function(s){
       ctx.fillStyle = s.color;
@@ -231,8 +236,7 @@ function draw(){
   }
   
   entities.forEach(function(e){
-    ctx.fillStyle="#FF0000";
-    fillRect(ctx, e.x, e.y, e.w, e.h);
+    e.draw(ctx);
   });
   for (sector in sectors){
     sector = sectors[sector];
