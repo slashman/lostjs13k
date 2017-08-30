@@ -16,9 +16,16 @@ var terrainRules = [
 ];
 
 const TYPE_COLORS = [
-  "#F4A460", "#DAA520", "#CD853F", "#D2691E", "#8B4513", 
-  "#A0522D", "#A52A2A", "#800000"
+  //"#F4A460", "#DAA520", "#CD853F", "#D2691E", "#8B4513", 
+  //"#A0522D", "#A52A2A", "#800000"
+"#abd6d6",
+"#76b4ad",
+"#68877f",
+"#544879",
+"#5d3f48"
 ];
+
+
 
 function checkAndAddSite(site, toSite){
 	if (site === null || site.voronoiId === toSite.voronoiId)
@@ -57,7 +64,7 @@ module.exports = {
 	generateSegment: function(x,y,w,h){
 		const bbox = {xl: x, xr: x+w, yt: y, yb: y+h};
 		const sites = [];
-		for (let i = 0; i < 530; i++){
+		for (let i = 0; i < 1000; i++){
 		  sites.push({
 		    x: rand.range(bbox.xl+20, bbox.xr-20),
 		    y: rand.range(bbox.yt+20, bbox.yb-20)
