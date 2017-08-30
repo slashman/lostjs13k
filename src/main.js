@@ -19,30 +19,20 @@ const SECTOR_SIZE = 3000;
 
 const player = {
   x: 20,
-  y: -350,
+  y: 1000,
   h: 32,
   w: 16,
   dx: 60,
   dy: 0,
-  onGround: false,
   mx: 0,
   my: 0,
-  jetpack: false,
   draw: function(ctx){
-    ctx.fillStyle="#FF0000";
+    ctx.fillStyle="#FF00FF";
     fillRect(ctx, this.x, this.y, this.w, this.h);
   }
 };
 
 entities.push(player);
-
-key.typed(74, function(){
-  player.jetpack = !player.jetpack;
-});
-
-key.typed(106, function(){
-  player.jetpack = !player.jetpack;
-});
 
 const camera = {
   x: 20,
@@ -64,7 +54,7 @@ key.typed(122, function(){
     camera.zoom += 0.1;
 });
 
-const debug = true;
+const debug = false;
 
 const sectors = {};
 sectors["0:0"] = gen.generateSegment(0, 0, SECTOR_SIZE, SECTOR_SIZE);
@@ -93,11 +83,6 @@ setTimeout(sortStones, 5000);
 function update(elapsed){
   entities.forEach(function(e){
     // TODO: Optimize, only do this if moved (or gravity pulled)
-    // Gravity
-    e.dy += elapsed * 1500;
-    if (e.jetpack){
-      e.dy -= elapsed * 1550;
-    }
     const tx = e.x + e.dx * elapsed;
     var ty = e.y + e.dy * elapsed;
     let tmx;
@@ -107,65 +92,32 @@ function update(elapsed){
       tmx = Math.floor(tx / SECTOR_SIZE);
     }
     const tmy = Math.floor((ty+e.h) / SECTOR_SIZE);
-    let vCollision = false;
-    let hCollision = false;
+    let collision = false;
     let sector = sectors[tmx+":"+tmy];
     if (sector){
-      if (e.dx !== 0){
-        hCollision = sector.stones.find(function(s){
-          //TODO: Optimize, sort stones by distance to entity
-          if (e.dx > 0){
-            if (geo.inside([tx+e.w,ty+e.h/2], s.vs)){
-              return true;
-            }
-          } else if (e.dx < 0){
-            if (geo.inside([tx,ty+e.h/2], s.vs)){
-              return true;
-            }
-          }
-          return false;
-        });
-      }
-      vCollision = sector.stones.find(function(s){
-        if (geo.inside([tx+e.w/2,ty+e.h], s.vs)){
-          return true;
+      collision = sector.stones.find(function(s){
+        if (geo.polygonIntersects({
+          a: {x: e.x+e.w/2, y: e.y+e.h},
+          b: {x: tx+e.w/2, y: ty+e.h}},
+          s.vs
+        )){
+         return true; 
         }
-        if (e.dy > 100){
-          //Prevent falling through thin borders at high acc
-          if (geo.polygonIntersects({
-            a: {x: e.x+e.w/2, y: e.y+e.h},
-            b: {x: tx+e.w/2, y: ty+e.h}},
-            s.vs
-          )){
-           return true; 
-          }
-        }
-        return false;
       });
     }
-    if (vCollision){
+    if (collision){
+      e.dx = 0;
       e.dy = 0;
-      // Friction
-      if (e.dx !== 0){ 
-        e.dx -= e.dx > 0 ? 15 : -15; //TODO: Based on stone surface?
-      }
-      e.onGround = true;
     } else {
-      e.y = ty;
-      e.onGround = false;
-    }
-    // TODO: Remove hard collision, fix slopes
-    if (!hCollision){
       e.x = tx;
-      /*if (e.onGround && e.dx != 0)
-        e.dy = -50; // Chibi jump, for slopes!*/
-    } else if (e.dy < -50 || e.dy > 30){ // Hard collision
-      if (e.dx < 0){
-        e.dx = 120;
-      } else if (e.dx > 0){
-        e.dx = -120;
-      }
+      e.y = ty;
+      // Friction
+      e.dx += (e.dx > 0 ? -1 : e.dx < 0 ? 1 : 0) * 3;
+      e.dy += (e.dy > 0 ? -1 : e.dy < 0 ? 1 : 0) * 3;
     }
+    // Gravity
+    e.dy += elapsed * 200;
+ 
   });
   // Should we load another fragment?
   checkLoadFragment();
@@ -258,6 +210,10 @@ function fillRect(ctx, x, y, w, h){
   ctx.fillRect(transX(x), transY(y), transW(w), transH(h));  
 }
 
+function translate(ctx, x, y){
+  ctx.translate(transX(x), transY(y));  
+}
+
 function draw(){
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   // Background
@@ -266,7 +222,6 @@ function draw(){
   ctx.fillStyle="#87CEEB";
   ctx.fillRect(0, transY(-500), canvas.width, transH(500));
   for (var sector in sectors){
-    // TODO: Calculate distance, only draw based on zoom
     sector = sectors[sector];
     sector.bgStones.forEach(function(s){
       if (Math.abs((s.x - player.x) + (s.y - player.y)) > 1000)
@@ -309,11 +264,6 @@ function draw(){
     ctx.fillStyle = "white";
     ctx.fillText(Math.floor(player.y/20)+"mt", 300,20);
   }
-  if (player.jetpack){
-    ctx.font = "16px sans-serif";
-    ctx.fillStyle = "white";
-    ctx.fillText("Jetpack", 300,40);
-  }
   if (debug){
     // TODO: Remove from final dist, may be
     ctx.font = "10px Arial";
@@ -339,30 +289,23 @@ function draw(){
 }
 
 function keyboard(){
-  if (player.onGround){
-    if (key.isDown(38)){
-      player.dy = -500;
+  if (key.isDown(38)){ // Rise
+    player.dy -= 10;
+    if (player.dy < -120){
+      player.dy = -120;
     }
-    if (key.isDown(37)){
-      if (player.dx > 0){
-        player.dx -= 40;
-      } else {
-        player.dx = -120;
-      }
+  } else if (key.isDown(40)){ // Sink
+    if (player.dy < 60){
+      player.dy += 10;
     }
-    if (key.isDown(39)){
-      if (player.dx < 0){
-        player.dx += 40;
-      } else {
-        player.dx = 120;
-      }
+  } 
+  if (key.isDown(37)){
+    if (player.dx > -120){
+      player.dx -= 15;
     }
-  } else if (player.jetpack){
-    if (key.isDown(37)){
-      player.dx -= 3;
-    }
-    if (key.isDown(39)){
-      player.dx += 3;
+  } else if (key.isDown(39)){
+    if (player.dx < 120){
+      player.dx += 15;
     }
   }
 }
