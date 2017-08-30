@@ -6,6 +6,7 @@
 var raf = require('./raf');
 var key = require('./key');
 var gen = require('./gen');
+var geo = require('./geo');
 
 var canvas = document.querySelector('#game');
 var ctx = canvas.getContext('2d');
@@ -114,11 +115,11 @@ function update(elapsed){
         hCollision = sector.stones.find(function(s){
           //TODO: Optimize, sort stones by distance to entity
           if (e.dx > 0){
-            if (inside([tx+e.w,ty+e.h/2], s.vs)){
+            if (geo.inside([tx+e.w,ty+e.h/2], s.vs)){
               return true;
             }
           } else if (e.dx < 0){
-            if (inside([tx,ty+e.h/2], s.vs)){
+            if (geo.inside([tx,ty+e.h/2], s.vs)){
               return true;
             }
           }
@@ -126,12 +127,12 @@ function update(elapsed){
         });
       }
       vCollision = sector.stones.find(function(s){
-        if (inside([tx+e.w/2,ty+e.h], s.vs)){
+        if (geo.inside([tx+e.w/2,ty+e.h], s.vs)){
           return true;
         }
         if (e.dy > 100){
           //Prevent falling through thin borders at high acc
-          if (polygonIntersects({
+          if (geo.polygonIntersects({
             a: {x: e.x+e.w/2, y: e.y+e.h},
             b: {x: tx+e.w/2, y: ty+e.h}},
             s.vs
@@ -372,44 +373,3 @@ raf.start(function(elapsed) {
   update(elapsed);
   draw();
 });
-
-
-function inside(point, vs) {
-    // ray-casting algorithm based on
-    // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
-
-    var x = point[0], y = point[1];
-
-    var inside = false;
-    for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
-        var xi = vs[i][0], yi = vs[i][1];
-        var xj = vs[j][0], yj = vs[j][1];
-
-        var intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-        if (intersect) inside = !inside;
-    }
-
-    return inside;
-}
-
-function polygonIntersects(line, vs) {
-    for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
-        var xi = vs[i][0], yi = vs[i][1];
-        var xj = vs[j][0], yj = vs[j][1];
-        if (intersects(line.a.x, line.a.y, line.b.x, line.b.y, xi, yi, xj, yj))
-          return true;
-    }
-    return false;
-}
-
-function intersects(a,b,c,d,p,q,r,s) {
-  var det, gamma, lambda;
-  det = (c - a) * (s - q) - (r - p) * (d - b);
-  if (det === 0) {
-    return false;
-  } else {
-    lambda = ((s - q) * (r - a) + (p - r) * (s - b)) / det;
-    gamma = ((b - d) * (r - a) + (c - a) * (s - b)) / det;
-    return (0 < lambda && lambda < 1) && (0 < gamma && gamma < 1);
-  }
-}
