@@ -135,12 +135,40 @@ function update(elapsed){
     let collision = false;
     let sector = sectors[tmx+":"+tmy];
     if (sector){
+      //TODO: Optimize only check for nearby stones!
       collision = sector.stones.find(function(s){
-        if (geo.polygonIntersects({
+        if (
+        geo.polygonIntersects({
+          a: {x: tx, y: ty},
+          b: {x: tx+e.w, y: ty}},
+          s.vs
+        )
+        || 
+        geo.polygonIntersects({
+          a: {x: tx, y: ty},
+          b: {x: tx, y: ty+e.h}},
+          s.vs
+        )
+        || 
+        geo.polygonIntersects({
+          a: {x: tx+e.w, y: ty},
+          b: {x: tx+e.w, y: ty+e.h}},
+          s.vs
+        )
+        || 
+        geo.polygonIntersects({
+          a: {x: tx, y: ty+e.h},
+          b: {x: tx+e.w, y: ty+e.h}},
+          s.vs
+        )
+        || 
+        geo.polygonIntersects({
           a: {x: e.x+e.w/2, y: e.y+e.h},
           b: {x: tx+e.w/2, y: ty+e.h}},
           s.vs
-        )){
+        )
+
+        ){
          return true; 
         }
       });
