@@ -14,7 +14,7 @@ var htmlmin = require('gulp-htmlmin');
 var less = require('gulp-less');
 var micro = require('gulp-micro');
 var size = require('gulp-size');
-var uglify = require('gulp-uglify');
+var uglify = require('gulp-uglify-es').default;
 var zip = require('gulp-zip');
 var source = require('vinyl-source-stream');
 
