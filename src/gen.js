@@ -12,7 +12,7 @@ var rules = [
 ];
 
 var terrainRules = [
-	{ type: 0, op: '>', q: 0, sType: 1, nType: 1, chance: 80}
+	{ type: 0, op: '>', q: 1, sType: 1, nType: 1, chance: 80}
 ];
 
 const TYPE_COLORS = [
