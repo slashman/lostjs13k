@@ -30,6 +30,20 @@ const player = {
   my: 0,
   flipped: false,
   draw: function(ctx){
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.beginPath();
+    if (this.flipped){
+      moveTo(ctx, this.x, this.y - 3);
+      lineTo(ctx, this.x - 500, this.y - 200);
+      lineTo(ctx, this.x - 500, this.y + 200);
+    } else {
+      moveTo(ctx, this.x + 15, this.y - 3);
+      lineTo(ctx, this.x + 500, this.y - 200);
+      lineTo(ctx, this.x + 500, this.y + 200);
+    }
+    ctx.closePath();
+    ctx.fill();
+
     ctx.fillStyle="#000";
     fillArc(ctx, this.x+this.w/2, this.y+this.w/2, this.w, 0, 2*Math.PI, false);
     if (this.flipped){
