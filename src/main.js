@@ -8,6 +8,8 @@ var key = require('./key');
 var gen = require('./gen');
 var geo = require('./geo');
 
+const rand = require('./rng')();
+
 var canvas = document.querySelector('#game');
 var ctx = canvas.getContext('2d');
 
@@ -20,24 +22,39 @@ const SECTOR_SIZE = 3000;
 const player = {
   x: 20,
   y: 1000,
-  h: 32,
+  h: 16,
   w: 16,
   dx: 60,
   dy: 0,
   mx: 0,
   my: 0,
+  flipped: false,
   draw: function(ctx){
-    ctx.fillStyle="#FF00FF";
-    fillRect(ctx, this.x, this.y, this.w, this.h);
+    ctx.fillStyle="#000";
+    fillArc(ctx, this.x+this.w/2, this.y+this.w/2, this.w, 0, 2*Math.PI, false);
+    if (this.flipped){
+      fillRect(ctx, this.x - 8, this.y-7, 14, 16);
+    } else {
+      fillRect(ctx, this.x + 8, this.y-7, 14, 16);
+    }
+    fillArc(ctx, this.x-3, this.y+16+3, 8, 0, 2*Math.PI, false);
+    fillArc(ctx, this.x+16+3, this.y+16+3, 8, 0, 2*Math.PI, false);
+    // Hitbox
+    if (debug){
+      ctx.strokeStyle="#FF0000";
+      strokeRect(ctx, this.x, this.y, this.w, this.h);
+    }
   }
 };
 
 entities.push(player);
 
+const bubbles = [];
+
 const camera = {
   x: 20,
   y: 20,
-  zoom: 0.3
+  zoom: 1
 };
 
 key.typed(90, function(){
@@ -81,6 +98,15 @@ function sortStones(){
 setTimeout(sortStones, 5000);
 
 function update(elapsed){
+  bubbles.forEach(function (b, k){
+    b.life--;
+    b.x += b.dx * elapsed;
+    b.y += b.dy * elapsed;
+    if (b.life <= 0){
+      bubbles.splice(k, 1);
+    }
+
+  });
   entities.forEach(function(e){
     // TODO: Optimize, only do this if moved (or gravity pulled)
     const tx = e.x + e.dx * elapsed;
@@ -183,7 +209,7 @@ function generateSector(dx, dy){
 }
 
 function transX(x){
-  return (x - camera.x) * camera.zoom + canvas.width / 2;
+  return (x - camera.x) * camera.zoom + canvas.width / 2 ;
 }
 
 function transY(y){
@@ -208,6 +234,22 @@ function lineTo(ctx, x, y){
 
 function fillRect(ctx, x, y, w, h){
   ctx.fillRect(transX(x), transY(y), transW(w), transH(h));  
+}
+
+function strokeRect(ctx, x, y, w, h){
+  ctx.strokeRect(transX(x), transY(y), transW(w), transH(h));  
+}
+
+function fillArc(ctx, x, y, r, a, b, c){
+  ctx.beginPath();
+  ctx.arc(transX(x), transY(y), transW(r), a, b, c);  
+  ctx.fill();
+}
+
+function strokeArc(ctx, x, y, r, a, b, c){
+  ctx.beginPath();
+  ctx.arc(transX(x), transY(y), transW(r), a, b, c);  
+  ctx.stroke();
 }
 
 function translate(ctx, x, y){
@@ -238,10 +280,14 @@ function draw(){
       ctx.stroke();
     });
   }
-  
+  bubbles.forEach(function (b){
+    ctx.strokeStyle = '#ccc';
+    strokeArc(ctx, b.x, b.y, 2, 0, 2*Math.PI, false);
+  });
   entities.forEach(function(e){
     e.draw(ctx);
   });
+  
   for (sector in sectors){
     sector = sectors[sector];
     sector.stones.forEach(function(s){
@@ -294,20 +340,73 @@ function keyboard(){
     if (player.dy < -120){
       player.dy = -120;
     }
+    addBubbles("left");
+    addBubbles("right");
   } else if (key.isDown(40)){ // Sink
     if (player.dy < 60){
       player.dy += 10;
     }
+    addBubbles("top");
   } 
   if (key.isDown(37)){
+    player.flipped = true;
     if (player.dx > -120){
       player.dx -= 15;
     }
+    addBubbles("right");
   } else if (key.isDown(39)){
+    player.flipped = false;
     if (player.dx < 120){
       player.dx += 15;
     }
+    addBubbles("left");
   }
+}
+
+const baseVar = {
+  left: function(){
+    return {
+      x: player.x-11,
+      y: player.y+16+8,
+      dx: -3
+    }
+  },
+  right: function(){
+    return {
+      x: player.x+24+3,
+      y: player.y+16+8,
+      dx: 3
+    }
+  },
+  top: function(){
+    return {
+      x: player.x+8,
+      y: player.y+8
+    }
+  },
+}
+
+function addBubbles(place, q){
+  if (q === undefined){
+    q = 5;
+  }
+  if (q === 0){
+    return;
+  }
+  const basePosition = baseVar[place]();
+  for (var i = 0; i < 1; i++){
+    bubbles.push({
+      x: rand.range(basePosition.x-5, basePosition.x+5),
+      y: rand.range(basePosition.y-5, basePosition.y+5),
+      dx: rand.range(basePosition.dx-5, basePosition.dx+5),
+      dy: rand.range(-200, 0),
+      life:  rand.range(15, 100),
+    })
+  }
+  setTimeout(function(){
+    addBubbles(place, q-1);
+  },
+  100);
 }
 
 raf.start(function(elapsed) {
