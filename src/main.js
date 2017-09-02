@@ -406,12 +406,15 @@ function keyboard(){
     if (player.dx > -120){
       player.dx -= 15;
     }
+    // Generate some lift
+    player.dy -= 5;
     addBubbles("right");
   } else if (key.isDown(39)){
     player.flipped = false;
     if (player.dx < 120){
       player.dx += 15;
     }
+    player.dy -= 5;
     addBubbles("left");
   }
 }
