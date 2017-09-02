@@ -88,26 +88,6 @@ const debug = false;
 const sectors = {};
 sectors["5:0"] = gen.generateSegment(5, 0);
 
-function sortStones(){
-  let tmx;
-  if (player.dx > 0){
-    tmx = Math.floor((player.x+player.w) / SECTOR_SIZE);
-  } else {
-    tmx = Math.floor(player.x / SECTOR_SIZE);
-  }
-  const tmy = Math.floor((player.y+player.h) / SECTOR_SIZE);
-  const sector = sectors[tmx+":"+tmy];
-  if (sector){
-    sector.stones.sort(function(a, b){
-      return Math.abs((a.x - player.x) + (a.y - player.y)) - 
-             Math.abs((b.x - player.x) + (b.y - player.y));
-    });
-  }
-  setTimeout(sortStones, 5000);
-}
-
-setTimeout(sortStones, 5000);
-
 function update(elapsed){
   bubbles.forEach(function (b, k){
     b.life--;
@@ -134,6 +114,8 @@ function update(elapsed){
     if (sector){
       //TODO: Optimize only check for nearby stones!
       collision = sector.stones.find(function(s){
+        if (geo.mdist(tx, ty, s.x, s.y) > 300)
+          return false;
         if (
         geo.polygonIntersects({
           a: {x: tx, y: ty},
@@ -297,7 +279,7 @@ function draw(){
   for (var sector in sectors){
     sector = sectors[sector];
     sector.bgStones.forEach(function(s){
-      if (Math.abs((s.x - player.x) + (s.y - player.y)) > 1000)
+      if (geo.mdist(s.x, s.y, player.x, player.y) > 1000)
         return;
       ctx.fillStyle = s.color;
       ctx.strokeStyle = s.color;
@@ -322,7 +304,7 @@ function draw(){
   for (sector in sectors){
     sector = sectors[sector];
     sector.stones.forEach(function(s){
-      if (Math.abs((s.x - player.x) + (s.y - player.y)) > 1000)
+      if (geo.mdist(s.x, s.y, player.x, player.y) > 1000)
         return;
       ctx.fillStyle = '#000';
       ctx.strokeStyle = '#000';
