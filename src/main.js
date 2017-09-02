@@ -434,7 +434,8 @@ const baseVar = {
   top: function(){
     return {
       x: player.x+8,
-      y: player.y+8
+      y: player.y+8,
+      dx: 0
     };
   },
 };
