@@ -10,13 +10,16 @@ var rand = rng();
 
 var voronoi = new Voronoi();
 
-var rules = [
-	{ type: 1, op: '>', q: 1, sType: 2, nType: 2, chance: 80}
-];
-
-var terrainRules = [
-	{ type: 0, op: '>', q: 1, sType: 1, nType: 1, chance: 80}
-];
+const RULES = {
+	TIGHT_CAVE: [
+		{ type: 0, op: '>', q: 1, sType: 1, nType: 1, chance: 60},
+		{ type: 1, op: '<', q: 1, sType: 1, nType: 0, chance: 90},
+	],
+	OPEN_CAVE: [
+		{ type: 0, op: '>', q: 1, sType: 1, nType: 1, chance: 30},
+		{ type: 1, op: '<', q: 2, sType: 1, nType: 0, chance: 90},
+	]
+};
 
 const STANDARD_COLORS = ["#001c33", "#002a4d", "#0e3f66"];
 
@@ -29,15 +32,15 @@ const SECTOR_INFO = [
 ];
 
 const SECTOR_DATA = {
-	F: {c:["#3B5323", "#526F35", "#636F57"]},
-	C: {},
-	G: {},
-	O: {},
-	T: {},
-	R: {},
-	D: {c: ["#000"]},
-	S: {},
-	V: {}
+	F: {c:["#3B5323", "#526F35", "#636F57"], open: 20, ca: 0, rules: []},
+	C: {open: 50, ca: 1, rules: RULES.TIGHT_CAVE},
+	G: {open: 30, ca: 2, rules: RULES.OPEN_CAVE},
+	O: {open: 20, ca: 2, rules: []},
+	T: {open: 80, ca: 0, rules: []},
+	R: {open: 80, ca: 0, rules: []},
+	D: {c: ["#000"], open: 70, ca: 1, rules: RULES.OPEN_CAVE},
+	S: {open: 80, ca: 1, rules: RULES.TIGHT_CAVE},
+	V: {open: 70, ca: 1, rules: RULES.OPEN_CAVE},
 };
 
 
@@ -96,8 +99,8 @@ module.exports = {
 		let stones = [];
 		diagram.cells.forEach(c => stones.push(c.site));
 		stones.forEach(s => {
-			// Initial seeding (TODO: Use metadata)
-			if (rand.range(0,100) < 20){
+			// Initial seeding
+			if (rand.range(0,100) < metadata.open){
 				s.type = 1; // Rock
 			} else {
 				s.type = 0; // Emptiness
@@ -134,8 +137,7 @@ module.exports = {
 				}
 			}
 		});
-		// TODO: Use metadata rules, at least for # of times
-		ca.run(terrainRules, 3, stones, rand);
+		ca.run(metadata.rules, metadata.ca+1, stones, rand);
 		stones = stones.filter(s => s.type === 1 || s.type === 4);
 		const bgSites = [];
 		for (var i = 0; i < 1450; i++){
