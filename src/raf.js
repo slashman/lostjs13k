@@ -1,3 +1,7 @@
+/* jshint node: true */
+"use strict";
+
+
 // Holds last iteration timestamp.
 var time = 0;
 

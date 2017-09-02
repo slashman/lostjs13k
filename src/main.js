@@ -1,6 +1,4 @@
-/* jshint node: true */
-/* jshint loopfunc: true */
-
+/* jshint node: true, loopfunc: true */
 "use strict";
 
 var raf = require('./raf');
@@ -142,26 +140,22 @@ function update(elapsed){
           a: {x: tx, y: ty},
           b: {x: tx+e.w, y: ty}},
           s.vs
-        )
-        || 
+        ) || 
         geo.polygonIntersects({
           a: {x: tx, y: ty},
           b: {x: tx, y: ty+e.h}},
           s.vs
-        )
-        || 
+        ) || 
         geo.polygonIntersects({
           a: {x: tx+e.w, y: ty},
           b: {x: tx+e.w, y: ty+e.h}},
           s.vs
-        )
-        || 
+        ) || 
         geo.polygonIntersects({
           a: {x: tx, y: ty+e.h},
           b: {x: tx+e.w, y: ty+e.h}},
           s.vs
-        )
-        || 
+        ) || 
         geo.polygonIntersects({
           a: {x: e.x+e.w/2, y: e.y+e.h},
           b: {x: tx+e.w/2, y: ty+e.h}},
@@ -294,10 +288,6 @@ function strokeArc(ctx, x, y, r, a, b, c){
   ctx.stroke();
 }
 
-function translate(ctx, x, y){
-  ctx.translate(transX(x), transY(y));  
-}
-
 function draw(){
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   // Background
@@ -411,22 +401,22 @@ const baseVar = {
       x: player.x-11,
       y: player.y+16+8,
       dx: -3
-    }
+    };
   },
   right: function(){
     return {
       x: player.x+24+3,
       y: player.y+16+8,
       dx: 3
-    }
+    };
   },
   top: function(){
     return {
       x: player.x+8,
       y: player.y+8
-    }
+    };
   },
-}
+};
 
 function addBubbles(place, q){
   if (q === undefined){
@@ -443,7 +433,7 @@ function addBubbles(place, q){
       dx: rand.range(basePosition.dx-5, basePosition.dx+5),
       dy: rand.range(-200, 0),
       life:  rand.range(15, 100),
-    })
+    });
   }
   setTimeout(function(){
     addBubbles(place, q-1);

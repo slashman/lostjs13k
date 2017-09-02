@@ -1,3 +1,6 @@
+/* jshint node: true */
+"use strict";
+
 module.exports = function(seed) {
   /*function random() {
     var x = Math.sin(.8765111159592828 + seed++) * 1e4

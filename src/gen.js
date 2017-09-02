@@ -1,3 +1,5 @@
+/* jshint node: true */
+/* globals Voronoi */
 'use strict';
 
 const rng = require('./rng');
@@ -33,7 +35,7 @@ function checkAndAddSite(site, toSite){
 	})){
 		toSite.surroundingCells.push(site);
 	}
-};
+}
 
 /**
  * Adds the following to each site object:
@@ -101,7 +103,7 @@ module.exports = {
 		//ca.run(rules, 1, bgStones, rand);
 		bgStones.forEach(function(stone){
 			stone.color = TYPE_COLORS[stone.type];
-		})
+		});
 		return {
 			stones: stones,
 			bgStones: bgStones
