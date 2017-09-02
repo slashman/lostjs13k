@@ -34,7 +34,7 @@ const SECTOR_INFO = [
 const SECTOR_DATA = {
 	F: {c:["#3B5323", "#526F35", "#636F57"], open: 20, ca: 0, rules: []},
 	C: {open: 50, ca: 1, rules: RULES.TIGHT_CAVE},
-	G: {open: 30, ca: 2, rules: RULES.OPEN_CAVE},
+	G: {open: 30, ca: 2, rules: RULES.OPEN_CAVE, gate: true},
 	O: {open: 20, ca: 2, rules: []},
 	T: {open: 80, ca: 0, rules: []},
 	R: {open: 80, ca: 0, rules: []},
@@ -79,7 +79,7 @@ function completeDiagram(diagram, includeSurrounding){
 const SECTOR_SIZE = 3000;
 
 module.exports = {
-	generateSegment: function(mx,my){
+	generateSegment: function(mx,my,player){
 		let w = SECTOR_SIZE;
 		let h = SECTOR_SIZE;
 		let x = mx * w;
@@ -156,7 +156,17 @@ module.exports = {
 		});
 		//ca.run(rules, 1, bgStones, rand);
 		bgStones.forEach(stone => stone.color = colors[stone.type]);
+		let orb = false;
+		if (metadata.gem && !player.orbs[metadata.gem]){
+			orb = {
+				type: metadata.gem,
+				x: x+w/2,
+				y: y+h/2
+			}
+		}
 		return {
+			gate: metadata.gate ? {x: x+w/2, y: y+h/2} : false,
+			orb: orb,
 			stones: stones,
 			bgStones: bgStones
 		};

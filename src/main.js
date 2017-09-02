@@ -22,11 +22,13 @@ const player = {
   y: 0.5 * SECTOR_SIZE,
   h: 16,
   w: 16,
-  dx: 60,
+  dx: 200,
   dy: 0,
   mx: 0,
   my: 0,
   flipped: false,
+  //orbs: {"1": true, "2": true, "4": true},
+  orbs: {},
   draw: function(ctx){
     ctx.fillStyle = 'rgba(255,255,255,0.5)';
     ctx.beginPath();
@@ -86,7 +88,7 @@ key.typed(122, function(){
 const debug = false;
 
 const sectors = {};
-sectors["5:0"] = gen.generateSegment(5, 0);
+sectors["5:0"] = gen.generateSegment(5, 0, player);
 
 function update(elapsed){
   bubbles.forEach(function (b, k){
@@ -160,7 +162,17 @@ function update(elapsed){
     }
     // Gravity
     e.dy += elapsed * 200;
- 
+    if (sector.orb && geo.mdist(sector.orb.x, sector.orb.y, player.x, player.y) < 10){
+      player.orbs[sector.orb.type] = true;
+      sector.orb = false;
+    }
+    if (sector.gate && geo.mdist(sector.gate.x, sector.gate.y, player.x, player.y) < 20){
+      if (player.orbs[4] &&  player.orbs[1] && player.orbs[2] && player.orbs[3]){
+        alert("You win!");
+        //TODO: Win sequence
+        player.orbs = {};
+      }
+    }
   });
   // Should we load another fragment?
   checkLoadFragment();
@@ -222,7 +234,7 @@ function checkLoadFragment(){
 function generateSector(dx, dy){
   if (player.my+dy < 0)
     return;
-  sectors[(player.mx+dx)+":"+(player.my+dy)] = gen.generateSegment(player.mx+dx, player.my+dy);
+  sectors[(player.mx+dx)+":"+(player.my+dy)] = gen.generateSegment(player.mx+dx, player.my+dy, player);
 }
 
 function transX(x){
@@ -269,6 +281,13 @@ function strokeArc(ctx, x, y, r, a, b, c){
   ctx.stroke();
 }
 
+const ORB_COLORS = [
+  "255,255,0",
+  "255,0,0",
+  "0,255,0",
+  "0,0,255",
+];
+
 function draw(){
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   // Background
@@ -292,6 +311,26 @@ function draw(){
       ctx.fill();
       ctx.stroke();
     });
+    if (sector.orb){
+      ctx.fillStyle="rgba("+ORB_COLORS[sector.orb.type-1]+",0.5)";
+      fillArc(ctx, sector.orb.x+10, sector.orb.y+10, 40, 0, 2*Math.PI, false);
+      ctx.fillStyle="rgb("+ORB_COLORS[sector.orb.type-1]+")";
+      fillArc(ctx, sector.orb.x+10, sector.orb.y+10, 5, 0, 2*Math.PI, false);
+    }
+    if (sector.gate){
+      ctx.fillStyle="#000";
+      fillArc(ctx, sector.gate.x, sector.gate.y, 50, 0, 2*Math.PI, false);
+      fillRect(ctx, sector.gate.x - 70, sector.gate.y-15, 140, 30);
+      fillRect(ctx, sector.gate.x - 15, sector.gate.y-70, 30, 140);
+      ctx.fillStyle="rgb(100,100,0)";
+      fillArc(ctx, sector.gate.x+55, sector.gate.y, 5, 0, 2*Math.PI, false);
+      ctx.fillStyle="rgb(100,0,0)";
+      fillArc(ctx, sector.gate.x-55, sector.gate.y, 5, 0, 2*Math.PI, false);
+      ctx.fillStyle="rgb(0,100,0)";
+      fillArc(ctx, sector.gate.x, sector.gate.y+55, 5, 0, 2*Math.PI, false);
+      ctx.fillStyle="rgb(0,0,100)";
+      fillArc(ctx, sector.gate.x, sector.gate.y-55, 5, 0, 2*Math.PI, false);
+    }
   }
   bubbles.forEach(function (b){
     ctx.strokeStyle = '#ccc';
@@ -323,6 +362,14 @@ function draw(){
     ctx.fillStyle = "white";
     ctx.fillText(Math.floor(player.y/20)+"mt", 720,20);
   }
+  for (let i in player.orbs){
+    if (player.orbs[i]){
+      ctx.fillStyle="rgb("+ORB_COLORS[i-1]+")";
+      ctx.beginPath();
+      ctx.arc(i*30, 40, 10, 0, 2*Math.PI, false);  
+      ctx.fill();
+    }
+  }
   if (debug){
     // TODO: Remove from final dist, may be
     ctx.font = "10px Arial";
@@ -335,14 +382,7 @@ function draw(){
     ctx.fillText("mx: "+player.mx,10,60);
     ctx.fillText("my: "+player.my,10,70);
     ctx.fillText("sectors: "+Object.keys(sectors),10,80);
-    const leftZone = player.x < player.mx * SECTOR_SIZE + SECTOR_SIZE / 2;
-    const rightZone = player.x > player.mx * SECTOR_SIZE + SECTOR_SIZE / 2;
-    const downZone = player.y > player.my * SECTOR_SIZE + SECTOR_SIZE / 2;
-    const upZone = player.y < player.my * SECTOR_SIZE + SECTOR_SIZE / 2;
-    ctx.fillText("leftZone: "+leftZone,10,90);
-    ctx.fillText("rightZone: "+rightZone,10,100);
-    ctx.fillText("downZone: "+downZone,10,110);
-    ctx.fillText("upZone: "+upZone,10,120);
+    ctx.fillText("orbs: "+Object.keys(player.orbs),10,90);
     ctx.fillText("zoom: "+camera.zoom,10,130);
   }
 }
