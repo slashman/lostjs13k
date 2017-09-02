@@ -1,5 +1,4 @@
-/* jshint node: true */
-/* jshint loopfunc: true */
+/* jshint node: true, loopfunc: true */
 
 "use strict";
 

@@ -162,7 +162,7 @@ module.exports = {
 				type: metadata.gem,
 				x: x+w/2,
 				y: y+h/2
-			}
+			};
 		}
 		return {
 			gate: metadata.gate ? {x: x+w/2, y: y+h/2} : false,

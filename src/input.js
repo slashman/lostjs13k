@@ -1,3 +1,7 @@
+/* jshint node: true */
+"use strict";
+
+
 const key = require('./key');
 const ui = require('./ui');
 const rand = require('./rng')();
@@ -8,14 +12,14 @@ let player = false;
 let world = false;
 
 key.typed(90, function(){
-  if (camera.zoom >= 1)
+  if (ui.camera.zoom >= 1)
     ui.camera.zoom = 0.3;
   else
     ui.camera.zoom += 0.1;
 });
 
 key.typed(122, function(){
-  if (camera.zoom >= 1)
+  if (ui.camera.zoom >= 1)
     ui.camera.zoom = 0.3;
   else
     ui.camera.zoom += 0.1;
@@ -104,4 +108,4 @@ module.exports = {
       addBubbles("left");
     }
   }
-}
+};
