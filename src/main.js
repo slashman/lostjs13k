@@ -273,7 +273,7 @@ function draw(){
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   // Background
   ctx.fillStyle="#F00";
-  ctx.fillRect(0, 0, 400, 400);
+  ctx.fillRect(0, 0, 800, 600);
   ctx.fillStyle="#87CEEB";
   ctx.fillRect(0, transY(-500), canvas.width, transH(500));
   for (var sector in sectors){
@@ -321,7 +321,7 @@ function draw(){
   if (player.y > 0){
     ctx.font = "16px sans-serif";
     ctx.fillStyle = "white";
-    ctx.fillText(Math.floor(player.y/20)+"mt", 300,20);
+    ctx.fillText(Math.floor(player.y/20)+"mt", 720,20);
   }
   if (debug){
     // TODO: Remove from final dist, may be
