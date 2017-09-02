@@ -2,6 +2,7 @@
 /* globals Voronoi */
 'use strict';
 
+const geo = require('./geo');
 const rng = require('./rng');
 const ca = require('./ca');
 
@@ -17,14 +18,27 @@ var terrainRules = [
 	{ type: 0, op: '>', q: 1, sType: 1, nType: 1, chance: 80}
 ];
 
-const TYPE_COLORS = [
-  //"#F4A460", "#DAA520", "#CD853F", "#D2691E", "#8B4513", 
-  //"#A0522D", "#A52A2A", "#800000"
-"#001c33",
-"#002a4d",
-"#0e3f66"
+const STANDARD_COLORS = ["#001c33", "#002a4d", "#0e3f66"];
+
+const SECTOR_INFO = [
+	[ "Fdr", "Fdl", "Cdr", "Cdl1", "Cdr", "Gl" ],
+	[ "Fur", "Fuld", "Cur", "Odlr", "Oudl", "Td2" ],
+	[ "", "Rur", "Rlr", "Oudlr", "Oulr", "Tudl" ],
+	[ "", "", "", "Dud", "", "Vud" ],
+	[ "", "", "", "Su3", "", "Vu4" ]
 ];
 
+const SECTOR_DATA = {
+	F: {c:["#3B5323", "#526F35", "#636F57"]},
+	C: {},
+	G: {},
+	O: {},
+	T: {},
+	R: {},
+	D: {c: ["#000"]},
+	S: {},
+	V: {}
+};
 
 
 function checkAndAddSite(site, toSite){
@@ -59,10 +73,17 @@ function completeDiagram(diagram, includeSurrounding){
 	});
 }
 
+const SECTOR_SIZE = 3000;
+
 module.exports = {
-	
-	generateSegment: function(x,y,w,h){
+	generateSegment: function(mx,my){
+		let w = SECTOR_SIZE;
+		let h = SECTOR_SIZE;
+		let x = mx * w;
+		let y = my * h;
 		const bbox = {xl: x, xr: x+w, yt: y, yb: y+h};
+		const metadata = getMetadata(mx, my);
+		const colors = metadata.c || STANDARD_COLORS;
 		const sites = [];
 		for (let i = 0; i < 1000; i++){
 		  sites.push({
@@ -73,18 +94,49 @@ module.exports = {
 		let diagram = voronoi.compute(sites, bbox);
 		completeDiagram(diagram, true);
 		let stones = [];
-		diagram.cells.forEach(function(cell){
-		  if (rand.range(0,100) < 20){
-		  	cell.site.type = 1;
-		  } else {
-		  	cell.site.type = 0;
-		  }
-		  stones.push(cell.site);
+		diagram.cells.forEach(c => stones.push(c.site));
+		stones.forEach(s => {
+			// Initial seeding (TODO: Use metadata)
+			if (rand.range(0,100) < 20){
+				s.type = 1; // Rock
+			} else {
+				s.type = 0; // Emptiness
+			}
+			// Borders
+			if (Math.abs(s.x - x) < 100 ||
+				Math.abs(s.x - (x+w)) < 100 ||
+				Math.abs(s.y - y) < 100 ||
+				Math.abs(s.y - (y+h)) < 100){
+				s.type = 4; // Indestructible rock
+			}
+			// Bore hole in the middle
+			if (geo.mdist(s.x, s.y, x+w/2, y+h/2) < 300){
+				s.type = 3; // Irreplaceable emptiness
+			}
+			if (metadata.u){
+				if (s.y < y+h/2 && Math.abs(s.x - (x+w/2)) < 200){
+					s.type = 3;
+				}
+			}
+			if (metadata.d){
+				if (s.y > y+h/2 && Math.abs(s.x - (x+w/2)) < 200){
+					s.type = 3;
+				}
+			}
+			if (metadata.l){
+				if (s.x < x+w/2 && Math.abs(s.y - (y+h/2)) < 200){
+					s.type = 3;
+				}
+			}
+			if (metadata.r){
+				if (s.x > x+w/2 && Math.abs(s.y - (y+h/2)) < 200){
+					s.type = 3;
+				}
+			}
 		});
-		ca.run(terrainRules, 1, stones, rand);
-		stones = stones.filter(function(stone){
-			return stone.type === 1;
-		});
+		// TODO: Use metadata rules, at least for # of times
+		ca.run(terrainRules, 3, stones, rand);
+		stones = stones.filter(s => s.type === 1 || s.type === 4);
 		const bgSites = [];
 		for (var i = 0; i < 1450; i++){
 		  bgSites.push({
@@ -95,18 +147,33 @@ module.exports = {
 		diagram = voronoi.compute(bgSites, bbox);
 		completeDiagram(diagram, false);
 		const bgStones = [];
-		diagram.cells.forEach(function(cell){
+		diagram.cells.forEach(cell => {
 			const site = cell.site;
-		    site.type = rand.range(0,3);
+		    site.type = rand.range(0,colors.length);
 		    bgStones.push(cell.site);
 		});
 		//ca.run(rules, 1, bgStones, rand);
-		bgStones.forEach(function(stone){
-			stone.color = TYPE_COLORS[stone.type];
-		});
+		bgStones.forEach(stone => stone.color = colors[stone.type]);
 		return {
 			stones: stones,
 			bgStones: bgStones
 		};
 	}
 };
+
+
+function getMetadata(mx, my){
+	let sectorInfo = SECTOR_INFO[my] ? SECTOR_INFO[my][mx] : false;
+	let baseData; 
+	if (!sectorInfo){
+		baseData = SECTOR_DATA.C;
+		sectorInfo = ""; // TODO: Random uldr
+	} else {
+		baseData = SECTOR_DATA[sectorInfo.charAt(0)];
+	}
+	return Object.assign({}, baseData, 
+		{ u: sectorInfo.indexOf("u") != -1, d: sectorInfo.indexOf("d") != -1,
+		  l: sectorInfo.indexOf("l") != -1, r: sectorInfo.indexOf("r") != -1,
+		  gem: /([0-9])/g.exec(sectorInfo)?/([0-9])/g.exec(sectorInfo)[0]:false
+		});
+}

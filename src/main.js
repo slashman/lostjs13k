@@ -18,8 +18,8 @@ var entities = [];
 const SECTOR_SIZE = 3000;
 
 const player = {
-  x: 20,
-  y: 1000,
+  x: 5.5 * SECTOR_SIZE,
+  y: 0.5 * SECTOR_SIZE,
   h: 16,
   w: 16,
   dx: 60,
@@ -86,8 +86,7 @@ key.typed(122, function(){
 const debug = false;
 
 const sectors = {};
-sectors["0:0"] = gen.generateSegment(0, 0, SECTOR_SIZE, SECTOR_SIZE);
-sectors["-1:0"] = gen.generateSegment(-SECTOR_SIZE, 0, SECTOR_SIZE, SECTOR_SIZE);
+sectors["5:0"] = gen.generateSegment(5, 0);
 
 function sortStones(){
   let tmx;
@@ -241,7 +240,7 @@ function checkLoadFragment(){
 function generateSector(dx, dy){
   if (player.my+dy < 0)
     return;
-  sectors[(player.mx+dx)+":"+(player.my+dy)] = gen.generateSegment((player.mx+dx)*SECTOR_SIZE, (player.my+dy)*SECTOR_SIZE, SECTOR_SIZE, SECTOR_SIZE);
+  sectors[(player.mx+dx)+":"+(player.my+dy)] = gen.generateSegment(player.mx+dx, player.my+dy);
 }
 
 function transX(x){

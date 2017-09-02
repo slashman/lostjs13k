@@ -43,8 +43,13 @@ function intersects(a,b,c,d,p,q,r,s) {
   }
 }
 
+function mdist(xa,ya,xb,yb){
+  return Math.abs(xa-xb)+Math.abs(ya-yb);
+}
+
 module.exports = {
   inside: inside,
   polygonIntersects: polygonIntersects,
-  intersects: intersects
+  intersects: intersects,
+  mdist: mdist
 };
