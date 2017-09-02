@@ -114,22 +114,22 @@ module.exports = {
 				s.type = 3; // Irreplaceable emptiness
 			}
 			if (metadata.u){
-				if (s.y < y+h/2 && Math.abs(s.x - (x+w/2)) < 200){
+				if (s.y < y+h/2 && Math.abs(s.x - (x+w/2)) < 150){
 					s.type = 3;
 				}
 			}
 			if (metadata.d){
-				if (s.y > y+h/2 && Math.abs(s.x - (x+w/2)) < 200){
+				if (s.y > y+h/2 && Math.abs(s.x - (x+w/2)) < 150){
 					s.type = 3;
 				}
 			}
 			if (metadata.l){
-				if (s.x < x+w/2 && Math.abs(s.y - (y+h/2)) < 200){
+				if (s.x < x+w/2 && Math.abs(s.y - (y+h/2)) < 150){
 					s.type = 3;
 				}
 			}
 			if (metadata.r){
-				if (s.x > x+w/2 && Math.abs(s.y - (y+h/2)) < 200){
+				if (s.x > x+w/2 && Math.abs(s.y - (y+h/2)) < 150){
 					s.type = 3;
 				}
 			}
