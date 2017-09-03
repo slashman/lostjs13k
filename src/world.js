@@ -4,6 +4,7 @@
 const geo = require('./geo');
 const gen = require('./gen');
 const ui = require('./ui');
+const Entity = require('./Entity.class')
 
 const SECTOR_SIZE = 3000;
 
@@ -19,6 +20,8 @@ const player = {
   mx: 0,
   my: 0,
   flipped: false,
+  invul: false,
+  hull: 100,
   //orbs: {"1": true, "2": true, "4": true},
   orbs: {}
 };
@@ -42,7 +45,6 @@ function update(elapsed){
 
   });
   entities.forEach(function(e){
-    // TODO: Optimize, only do this if moved (or gravity pulled)
     const tx = e.x + e.dx * elapsed;
     var ty = e.y + e.dy * elapsed;
     let tmx;
@@ -55,7 +57,6 @@ function update(elapsed){
     let collision = false;
     let sector = sectors[tmx+":"+tmy];
     if (sector){
-      //TODO: Optimize only check for nearby stones!
       collision = sector.stones.find(function(s){
         if (geo.mdist(tx, ty, s.x, s.y) > 300)
           return false;
@@ -103,15 +104,24 @@ function update(elapsed){
     }
     // Gravity
     e.dy += elapsed * 200;
-    if (sector.orb && geo.mdist(sector.orb.x, sector.orb.y, player.x, player.y) < 10){
-      player.orbs[sector.orb.type] = true;
-      sector.orb = false;
-    }
-    if (sector.gate && geo.mdist(sector.gate.x, sector.gate.y, player.x, player.y) < 20){
-      if (player.orbs[4] && player.orbs[1] && player.orbs[2] && player.orbs[3]){
-        alert("You win!");
-        //TODO: Win sequence
-        player.orbs = {};
+    if (e === player){
+      if (sector.orb && geo.mdist(sector.orb.x, sector.orb.y, player.x, player.y) < 10){
+        player.orbs[sector.orb.type] = true;
+        sector.orb = false;
+      }
+      if (sector.gate && geo.mdist(sector.gate.x, sector.gate.y, player.x, player.y) < 20){
+        if (player.orbs[4] && player.orbs[1] && player.orbs[2] && player.orbs[3]){
+          //TODO: Win sequence
+          player.orbs = {};
+        }
+      }
+    } else {
+      if (!player.invul && geo.mdist(e.x, e.y, player.x, player.y) < e.w){
+        player.hull--; // TODO: Use enemy attack
+        player.dx = e.dx * 2;
+        player.dy = e.dy * 2;
+        player.invul = true;
+        setTimeout(()=>player.invul = false, 500);
       }
     }
   });
@@ -183,5 +193,13 @@ module.exports = {
   player: player,
   sectors: sectors,
   bubbles: bubbles,
-  entities: entities
+  entities: entities,
+  addEntity: function(){
+    entities.push(new Entity(this, 5.5 * SECTOR_SIZE, 0.5 * SECTOR_SIZE, 8, 32, 32, 'n'));
+    entities.push(new Entity(this, 5.5 * SECTOR_SIZE, 0.5 * SECTOR_SIZE, 4, 16, 16, 'n'));
+    entities.push(new Entity(this, 5.5 * SECTOR_SIZE, 0.5 * SECTOR_SIZE, 3, 12, 12, 'n'));
+    entities.push(new Entity(this, 5.5 * SECTOR_SIZE, 0.5 * SECTOR_SIZE, 3, 12, 12, 'n'));
+    entities.push(new Entity(this, 5.5 * SECTOR_SIZE, 0.5 * SECTOR_SIZE, 3, 12, 12, 'n'));
+    entities.push(new Entity(this, 5.5 * SECTOR_SIZE, 0.5 * SECTOR_SIZE, 12, 48, 48, 'n'));
+  }
 };

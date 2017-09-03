@@ -8,6 +8,7 @@ const input = require('./input');
 
 ui.init(world);
 input.init(world);
+world.addEntity();
 
 raf.start(function(elapsed) {
   input.keyboard();

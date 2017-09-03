@@ -15,11 +15,13 @@ const camera = {
 };
 
 let w = false; // World
+let player = false; // World
 
 module.exports = {
 	camera: camera,
 	init: function(w_){
 		w = w_;
+		player = w.player;
 	},
 	draw: function (){
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -31,7 +33,7 @@ module.exports = {
 		for (var sector in w.sectors){
 			sector = w.sectors[sector];
 			sector.bgStones.forEach(function(s){
-				if (geo.mdist(s.x, s.y, w.player.x, w.player.y) > 1000)
+				if (geo.mdist(s.x, s.y, player.x, player.y) > 1000)
 					return;
 				ctx.fillStyle = s.color;
 				ctx.strokeStyle = s.color;
@@ -69,13 +71,11 @@ module.exports = {
 			ctx.strokeStyle = '#ccc';
 			strokeArc(ctx, b.x, b.y, 2, 0, 2*Math.PI, false);
 		});
-		this.drawPlayer(ctx, w.player);
-		w.entities.forEach(e => this.drawEntity(e));
-
+		w.entities.forEach(e => this.drawEntity(ctx, e));
 		for (sector in w.sectors){
 			sector = w.sectors[sector];
 			sector.stones.forEach(function(s){
-				if (geo.mdist(s.x, s.y, w.player.x, w.player.y) > 1000)
+				if (geo.mdist(s.x, s.y, player.x, player.y) > 1000)
 					return;
 				ctx.fillStyle = '#000';
 				ctx.strokeStyle = '#000';
@@ -89,13 +89,12 @@ module.exports = {
 				ctx.stroke();
 			});
 		}
-		if (w.player.y > 0){
-			ctx.font = "16px sans-serif";
-			ctx.fillStyle = "white";
-			ctx.fillText(Math.floor(w.player.y/20)+"mt", 720,20);
-		}
-		for (let i in w.player.orbs){
-			if (w.player.orbs[i]){
+		ctx.font = "16px sans-serif";
+		ctx.fillStyle = "white";
+		ctx.fillText(Math.floor(player.y/20)+"mt", 720,20);
+		ctx.fillText(player.hull+"%", 720,40);
+		for (let i in player.orbs){
+			if (player.orbs[i]){
 				ctx.fillStyle="rgb("+ORB_COLORS[i-1]+")";
 				ctx.beginPath();
 				ctx.arc(i*30, 40, 10, 0, 2*Math.PI, false);  
@@ -107,21 +106,43 @@ module.exports = {
 			ctx.font = "10px Arial";
 			ctx.fillStyle = "white";
 			ctx.fillText("Player",10,10);
-			ctx.fillText("x: "+w.player.x,10,20);
-			ctx.fillText("y: "+w.player.y,10,30);
-			ctx.fillText("dx: "+w.player.dx,10,40);
-			ctx.fillText("dy: "+w.player.dy,10,50);
-			ctx.fillText("mx: "+w.player.mx,10,60);
-			ctx.fillText("my: "+w.player.my,10,70);
+			ctx.fillText("x: "+player.x,10,20);
+			ctx.fillText("y: "+player.y,10,30);
+			ctx.fillText("dx: "+player.dx,10,40);
+			ctx.fillText("dy: "+player.dy,10,50);
+			ctx.fillText("mx: "+player.mx,10,60);
+			ctx.fillText("my: "+player.my,10,70);
 			ctx.fillText("sectors: "+Object.keys(w.sectors),10,80);
-			ctx.fillText("orbs: "+Object.keys(w.player.orbs),10,90);
+			ctx.fillText("orbs: "+Object.keys(player.orbs),10,90);
 			ctx.fillText("zoom: "+camera.zoom,10,130);
 		}
 	},
-	drawEntity: function(ctx, entity){
-
+	drawEntity: function(ctx, e){
+		if (e === player){
+			this.drawPlayer(ctx);
+			return;
+		}
+		ctx.fillStyle="#000";
+		fillArc(ctx, e.x+2*e.size, e.y+2*e.size, 2*e.size, Math.PI,2*Math.PI, false);
+		if (e.flipped){
+			fillArc(ctx, e.x+3*e.size, e.y+2*e.size, e.size, 0, 2*Math.PI, false);
+			fillCircle(ctx, e.x+3*e.size, e.y+2*e.size, 3*e.size, Math.PI/2, Math.PI, false);
+		} else {
+			fillArc(ctx, e.x+e.size, e.y+2*e.size, e.size, 0, 2*Math.PI, false);
+			fillCircle(ctx, e.x+e.size, e.y+2*e.size, 3*e.size, 0, Math.PI/2, false);
+		}
+		ctx.fillStyle="#00F";
+		if (e.flipped){
+			fillArc(ctx, e.x+3*e.size, e.y+3*e.size, e.size/2, 0, 2*Math.PI, false);
+		} else {
+			fillArc(ctx, e.x+e.size, e.y+3*e.size, e.size/2, 0, 2*Math.PI, false);
+		}
+		if (DEBUG){
+			ctx.strokeStyle="#FF0000";
+			strokeRect(ctx, e.x, e.y, e.w, e.h);
+		}
 	},
-	drawPlayer: function(ctx, player){
+	drawPlayer: function(ctx){
 		ctx.fillStyle = 'rgba(255,255,255,0.5)';
 		ctx.beginPath();
 		if (player.flipped){
@@ -190,6 +211,16 @@ function fillRect(ctx, x, y, w, h){
 
 function strokeRect(ctx, x, y, w, h){
   ctx.strokeRect(transX(x), transY(y), transW(w), transH(h));  
+}
+
+function fillCircle(ctx, x, y, r, a, b, c){
+  ctx.save();
+  ctx.beginPath();
+  moveTo(ctx, x, y);
+  ctx.arc(transX(x), transY(y), transW(r), a, b, c);  
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
 }
 
 function fillArc(ctx, x, y, r, a, b, c){
