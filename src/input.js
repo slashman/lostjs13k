@@ -11,7 +11,7 @@ key.init();
 let player = false;
 let world = false;
 
-key.typed(90, function(){
+/*key.typed(90, function(){
   if (ui.camera.zoom >= 1)
     ui.camera.zoom = 0.3;
   else
@@ -23,6 +23,12 @@ key.typed(122, function(){
     ui.camera.zoom = 0.3;
   else
     ui.camera.zoom += 0.1;
+});*/
+
+key.typed(90, function(){
+  if (player.sonic){
+    world.sonicBoom(player.flipped ? - 1 : 1);
+  }
 });
 
 const baseVar = {

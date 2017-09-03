@@ -20,6 +20,7 @@ function Entity(world, x, y, size, w, h, type){
     this.sight = 400; //TODO: Param
     this.spda = 70; //TODO: Param
     this.spdb = 150; //TODO: Param
+    this.life = 1; //TODO: Param
     this.act();
 }
 
@@ -43,6 +44,18 @@ Entity.prototype = {
 			return false;
 		else
 			return this.world.player;
+	},
+	takeDamage: function(d){
+		if (d === undefined){
+			d = 1;
+		}
+		this.life -= d;
+		if (this.life <= 0){
+			this.die();
+		}
+	},
+	die: function(){
+		this.dead = true;
 	}
 };
 

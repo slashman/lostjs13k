@@ -4,6 +4,7 @@
 const geo = require('./geo');
 const gen = require('./gen');
 const ui = require('./ui');
+const rand = require('./rng')();
 const Entity = require('./Entity.class')
 
 const SECTOR_SIZE = 3000;
@@ -21,6 +22,7 @@ const player = {
   my: 0,
   flipped: false,
   invul: false,
+  sonic: true, // Powerup
   hull: 100,
   //orbs: {"1": true, "2": true, "4": true},
   orbs: {}
@@ -29,6 +31,7 @@ const player = {
 entities.push(player);
 
 const bubbles = [];
+const booms = [];
 
 const sectors = {};
 
@@ -44,7 +47,19 @@ function update(elapsed){
     }
 
   });
-  entities.forEach(function(e){
+  booms.forEach(function (b, k){
+    b.life--;
+    b.x += b.dx * elapsed;
+    b.y += b.dy * elapsed;
+    if (b.life <= 0){
+      booms.splice(k, 1);
+    }
+  });
+  entities.forEach(function(e, k){
+    if (e.dead){
+      entities.splice(k, 1);
+      return;
+    }
     const tx = e.x + e.dx * elapsed;
     var ty = e.y + e.dy * elapsed;
     let tmx;
@@ -123,6 +138,12 @@ function update(elapsed){
         player.invul = true;
         setTimeout(()=>player.invul = false, 500);
       }
+      booms.forEach(function (b, k){
+        if (geo.mdist(e.x, e.y, b.x, b.y) < 24){
+          e.takeDamage();
+          booms.splice(k, 1);
+        }
+      });
     }
   });
   // Should we load another fragment?
@@ -193,6 +214,7 @@ module.exports = {
   player: player,
   sectors: sectors,
   bubbles: bubbles,
+  booms: booms,
   entities: entities,
   addEntity: function(){
     entities.push(new Entity(this, 5.5 * SECTOR_SIZE, 0.5 * SECTOR_SIZE, 8, 32, 32, 'n'));
@@ -201,5 +223,20 @@ module.exports = {
     entities.push(new Entity(this, 5.5 * SECTOR_SIZE, 0.5 * SECTOR_SIZE, 3, 12, 12, 'n'));
     entities.push(new Entity(this, 5.5 * SECTOR_SIZE, 0.5 * SECTOR_SIZE, 3, 12, 12, 'n'));
     entities.push(new Entity(this, 5.5 * SECTOR_SIZE, 0.5 * SECTOR_SIZE, 12, 48, 48, 'n'));
+  },
+  sonicBoom: function(dx, q){
+    if (q === undefined)
+      q = 5;
+    if (q === 0){
+      return;
+    }
+    this.booms.push({
+      x: rand.range(player.x-5, player.x+5),
+      y: rand.range(player.y-5, player.y+5),
+      dx: rand.range(250, 280) * dx,
+      dy: rand.range(-10, 10),
+      life:  rand.range(80, 100),
+    });
+    setTimeout(()=> this.sonicBoom(dx, q-1), 100);
   }
 };

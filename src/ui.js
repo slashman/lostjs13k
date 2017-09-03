@@ -4,6 +4,7 @@
 const DEBUG = false;
 
 const geo = require('./geo');
+const rand = require('./rng')();
 
 var canvas = document.querySelector('#game');
 var ctx = canvas.getContext('2d');
@@ -70,6 +71,10 @@ module.exports = {
 		w.bubbles.forEach(function (b){
 			ctx.strokeStyle = '#ccc';
 			strokeArc(ctx, b.x, b.y, 2, 0, 2*Math.PI, false);
+		});
+		w.booms.forEach(function (b){
+			ctx.strokeStyle = '#fcc';
+			strokeArc(ctx, b.x, b.y, 5+rand.range(0,5), 0, 2*Math.PI, false);
 		});
 		w.entities.forEach(e => this.drawEntity(ctx, e));
 		for (sector in w.sectors){
