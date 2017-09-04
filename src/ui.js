@@ -107,7 +107,10 @@ module.exports = {
 			}
 		}
 		if (this.currentText){
-			ctx.font = "italic 24px serif";
+			if (this.currentTextStyle === "italic")
+				ctx.font = "italic 24px serif";
+			else
+				ctx.font = "24px sans-serif";
 			ctx.fillStyle = "white";
 			ctx.textAlign="center"; 
 			ctx.fillText(this.currentText, 400,550);
@@ -187,7 +190,14 @@ module.exports = {
 	showText: function(t, when){
 		when = when || 0;
 		setTimeout(()=>{
+			let style = 'italic';
+			if (t.charAt(0) === "*"){
+				style = 'normal';
+				t = t.substr(1);	
+			}
+			this.currentTextStyle = style;
 			this.currentText = t;
+			// TODO: Wrap text using ctx.measureText
 			setTimeout(()=>this.currentText=false, 4500);
 		}, when);
 	}

@@ -33,7 +33,18 @@ const SECTOR_INFO = [
 
 const CLUES = {
 	// Intro
-	A: "I know you can hear me. I have been waiting for you for a long, long time", 
+	A: [
+		"*You wake up to find yourself in an underwater cavern", 
+		"*How long has it been? The onscreen navigation controls are not working",
+		"*You are lost in the depths of the sea, but you can still move around",
+		"*You'll need to find an exit.",
+		"*(Press the arrow keys to move around).",
+	],
+	P: [
+		"I know you can hear me.", 
+		"I have been waiting for you for a long, long time"
+	],
+
 	O: [
 		"This is the gate of Atlantis, the only passage connecting this world with Earth.",
 		"The only way to open it is to find the four orbs, scattered around the city."
