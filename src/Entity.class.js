@@ -20,7 +20,7 @@ function Entity(world, x, y, size, w, h, type){
     this.sight = 400; //TODO: Param
     this.spda = 70; //TODO: Param
     this.spdb = 150; //TODO: Param
-    this.life = 1; //TODO: Param
+    this.life = 10; //TODO: Param
     this.act();
 }
 
@@ -53,9 +53,12 @@ Entity.prototype = {
 		if (this.life <= 0){
 			this.die();
 		}
+		this.takingDamage = true;
+		setTimeout(()=>this.takingDamage = false, 50);
 	},
 	die: function(){
 		this.dead = true;
+		this.world.bubblePuff(this.x, this.y, 50);
 	}
 };
 

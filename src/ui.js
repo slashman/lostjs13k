@@ -127,7 +127,8 @@ module.exports = {
 			this.drawPlayer(ctx);
 			return;
 		}
-		ctx.fillStyle="#000";
+		const baseFill = e.takingDamage ? '#444' : '#000';
+		ctx.fillStyle = baseFill;
 		fillArc(ctx, e.x+2*e.size, e.y+2*e.size, 2*e.size, Math.PI,2*Math.PI, false);
 		if (e.flipped){
 			fillArc(ctx, e.x+3*e.size, e.y+2*e.size, e.size, 0, 2*Math.PI, false);
@@ -136,7 +137,7 @@ module.exports = {
 			fillArc(ctx, e.x+e.size, e.y+2*e.size, e.size, 0, 2*Math.PI, false);
 			fillCircle(ctx, e.x+e.size, e.y+2*e.size, 3*e.size, 0, Math.PI/2, false);
 		}
-		ctx.fillStyle="#00F";
+		ctx.fillStyle="#00F"; // TODO: Based on nautilus type
 		if (e.flipped){
 			fillArc(ctx, e.x+3*e.size, e.y+3*e.size, e.size/2, 0, 2*Math.PI, false);
 		} else {
@@ -161,8 +162,8 @@ module.exports = {
 		}
 		ctx.closePath();
 		ctx.fill();
-
-		ctx.fillStyle="#000";
+		const baseFill = player.takingDamage ? '#444' : '#000';
+		ctx.fillStyle=baseFill;
 		fillArc(ctx, player.x+player.w/2, player.y+player.w/2, player.w, 0, 2*Math.PI, false);
 		if (player.flipped){
 			fillRect(ctx, player.x - 8, player.y-7, 14, 16);

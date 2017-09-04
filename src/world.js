@@ -132,6 +132,8 @@ function update(elapsed){
       }
     } else {
       if (!player.invul && geo.mdist(e.x, e.y, player.x, player.y) < e.w){
+        player.takingDamage = true;
+        setTimeout(()=>player.takingDamage = false, 50);
         player.hull--; // TODO: Use enemy attack
         player.dx = e.dx * 2;
         player.dy = e.dy * 2;
@@ -139,7 +141,7 @@ function update(elapsed){
         setTimeout(()=>player.invul = false, 500);
       }
       booms.forEach(function (b, k){
-        if (geo.mdist(e.x, e.y, b.x, b.y) < 24){
+        if (geo.mdist(e.x, e.y, b.x, b.y) < e.w){
           e.takeDamage();
           booms.splice(k, 1);
         }
@@ -238,5 +240,16 @@ module.exports = {
       life:  rand.range(80, 100),
     });
     setTimeout(()=> this.sonicBoom(dx, q-1), 100);
+  },
+  bubblePuff: function(x,y,size){
+    for (var i = 0; i < size; i++){
+      this.bubbles.push({
+        x: rand.range(x-5, x+5),
+        y: rand.range(y-5, y+5),
+        dx: rand.range(-40, 40),
+        dy: rand.range(-200, 0),
+        life:  rand.range(15, 100),
+      });
+    }
   }
 };
