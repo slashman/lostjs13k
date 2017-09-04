@@ -24,11 +24,11 @@ const RULES = {
 const STANDARD_COLORS = ["#001c33", "#002a4d", "#0e3f66"];
 
 const SECTOR_INFO = [
-	[ "Fdr", "Fdl", "Cdr", "Cdl1", "CdCr", "GlBcOr", "ClPcA" ],
-	[ "Fur", "Fuld", "Cur", "Odlr", "Oudl", "Td2" ],
-	[ "", "Rur", "Rlr", "Oudlr", "Oulr", "Tudl" ],
-	[ "", "", "", "Dud", "", "Vud" ],
-	[ "", "", "", "Su3", "", "Vu4" ]
+	[ "FdrcF3", "Fdl",  "Cdr", "ClcE1",  "CdCr",   "GlBcOr", "ClPcA" ],
+	[ "Fur",    "Fuld", "Cur", "Odlr",   "OudlQ",  "TdcD2" ],
+	[ "",       "RuJr", "Rlr", "OudKlHr","OulrI",  "TudQl" ],
+	[ "CcMr5",  "SlcLr","ClNr","Dul",   "",          "Vud" ],
+	[ "",       "",     "",    "",    "",          "VucG4" ]
 ];
 
 const CLUES = {
@@ -58,26 +58,78 @@ const CLUES = {
 	],
 	C: [
 		"The areas beyond are full of dangerous beasts.",
-		"In order to survive you will need to find the ancient artifacts"
+		"Finding the orbs will grant you special powers to survive.",
+		"There are two orbs nearby: one is at the Temple of Poseidon.",
+		"To find it dive deeper and travel east.",
+	],
+	Q: [
+		"If you continue west you'll find the entrance to a cave",
+		"Another orb was hidden there."
 	],
 	
 	// Artifacts
-	D: "The horn of Verra Kera will let you emit deadly sonic booms which will crush any creature underwater",
-	E: "The leafs of Hortencia will cover your vessel, protecting it from harm. The will regenerate when contacting certain plants",
-	F: "The invisible bubble of Cosiaca will allow you to withstand extreme temperatures",
-	G: "The XXX will strengten your thrust, allowing you to cross strong currents",
+	D: [
+		"The orb of Verra Kera will let you emit deadly sonic booms",
+		"which will crush any creature underwater",
+		"*(Press Z to shoot a sonic beam)"
+	],
+	E: [
+		"The orb of Hortencia will cover your vessel,",
+		"protecting it from harm.",
+		"The shell will regenerate when contacting certain plants",
+	],
+	F: "The orb of Cosiaca will allow you to withstand extreme temperatures",
+	G: [
+		"The orb of Athena will strengten you, allowing to move quicker",
+		"and against strong currents"
+	],
 		
 	// Places
-	H: "Behold, the ruins of our great underwater city, XXX. This area used to be dry, but the forces that contained the water are long gone.",
-	I: "Our great temple to Poseidon, the lord of the seas. Herein we studied his ancient wisdom, which gave us the domain of the forces of the water.",
-	J: "These used to be the very fertile farmlands, our people fed mainly with XX and XX plants. We despised animal suffering.",
-	K: "The darkness abyss.",
+	H: [
+		"Behold, the ruins of our great underwater city.",
+		"This area used to be dry, but the forces that contained the water",
+		"are long gone.",
+	],
+	I: [
+		"Our great temple to Poseidon, the lord of the seas.",
+		"Herein we studied his ancient wisdom, which gave us",
+		"the domain of the forces of the water.",
+	],
+	J: [
+		"These used to be the very fertile farmlands,",
+		"our people fed only with plants.",
+		"We despised animal suffering.",
+	],
+	K: [
+		"The darkness abyss, this area was cursed with eternal darkness.",
+		"I was unjustly imprisoned in the area below, but you'll need",
+		"the power of Athena to make it through.",
+		"Please don't give up!",
+	],
+	Q: [
+		"Below is the volcanic rift, a place full of geothermal energy.",
+		"Only the power of the Orb of Cosiaca will let you go in safely!"
+	],
 
 	// Ending
-	L: "I can feel you are close... I'm so eager to meet you!",
-	M: "I need to tell you something... my appearance... may not be what you expect.",
-	N: "The Atlanteans, they were so fool... with the power of Poseidon, all our enemies would have perished, drowned in the sea",
-}
+	N: [
+		"A strong current blocks the entrance here...",
+		"You will need the Orb of Athena to make it through!"
+	],
+	L: [
+		"I can feel you are close... I'm so eager to meet you!",
+		"I need to tell you something... my appearance... ",
+		"may not be what you expect.",
+	],
+	M: [
+		"Thank you for saving me! I hold the last orb.",
+		"Let me join you to the Atlantis gate, and bid you",
+		"farewell!"
+	],
+	
+
+	// N: "The Atlanteans, they were so fool... with the power of Poseidon, all our enemies would have perished, drowned in the sea",
+};
 
 const SECTOR_DATA = {
 	F: {c:["#3B5323", "#526F35", "#636F57"], open: 20, ca: 0, rules: []},
@@ -276,7 +328,7 @@ function getMetadata(mx, my){
 		l: sectorInfo.indexOf("l"),
 		r: sectorInfo.indexOf("r"),
 		c: sectorInfo.indexOf("c"),
-	}
+	};
 	for (let d in stories){
 		stories[d] = stories[d] == -1 ? false : CLUES[sectorInfo.charAt(stories[d]+1)];
 	}

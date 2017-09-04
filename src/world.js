@@ -17,7 +17,7 @@ const player = {
   w: 16,
   dx: 0,
   dy: 0,
-  mx: 0,
+  mx: 6,
   my: 0,
   flipped: false,
   invul: false,
@@ -34,7 +34,7 @@ const booms = [];
 
 const sectors = {};
 
-sectors["6:0"] = gen.generateSegment(6, 0, player);
+sectors[player.mx+":"+player.my] = gen.generateSegment(player.mx, player.my, player);
 
 function update(elapsed){
   bubbles.forEach(function (b, k){
