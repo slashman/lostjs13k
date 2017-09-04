@@ -24,12 +24,43 @@ const RULES = {
 const STANDARD_COLORS = ["#001c33", "#002a4d", "#0e3f66"];
 
 const SECTOR_INFO = [
-	[ "Fdr", "Fdl", "Cdr", "Cdl1", "Cdr", "Gl" ],
+	[ "Fdr", "Fdl", "Cdr", "Cdl1", "Cdr", "GlcOrB", "ClcA" ],
 	[ "Fur", "Fuld", "Cur", "Odlr", "Oudl", "Td2" ],
 	[ "", "Rur", "Rlr", "Oudlr", "Oulr", "Tudl" ],
 	[ "", "", "", "Dud", "", "Vud" ],
 	[ "", "", "", "Su3", "", "Vu4" ]
 ];
+
+const CLUES = {
+	// Intro
+	A: "I know you can hear me. I have been waiting for you for a long, long time", 
+	O: [
+		"This is the gate of Atlantis, the only passage connecting this world with Earth.",
+		"The only way to open it is to find the four orbs, scattered around the city."
+	],
+	B: [
+		"You must want to go back to your home world. I can help you find the orbs!",
+		"But I need your help too... I'm trapped in these cold depths. I want to return home too.",
+	],
+	C: "The areas beyond are full of dangerous beasts. In order to survive you will need to find the ancient artifacts",
+	
+	// Artifacts
+	D: "The horn of Verra Kera will let you emit deadly sonic booms which will crush any creature underwater",
+	E: "The leafs of Hortencia will cover your vessel, protecting it from harm. The will regenerate when contacting certain plants",
+	F: "The invisible bubble of Cosiaca will allow you to withstand extreme temperatures",
+	G: "The XXX will strengten your thrust, allowing you to cross strong currents",
+		
+	// Places
+	H: "Behold, the ruins of our great underwater city, XXX. This area used to be dry, but the forces that contained the water are long gone.",
+	I: "Our great temple to Poseidon, the lord of the seas. Herein we studied his ancient wisdom, which gave us the domain of the forces of the water.",
+	J: "These used to be the very fertile farmlands, our people fed mainly with XX and XX plants. We despised animal suffering.",
+	K: "The darkness abyss.",
+
+	// Ending
+	L: "I can feel you are close... I'm so eager to meet you!",
+	M: "I need to tell you something... my appearance... may not be what you expect.",
+	N: "The Atlanteans, they were so fool... with the power of Poseidon, all our enemies would have perished, drowned in the sea",
+}
 
 const SECTOR_DATA = {
 	F: {c:["#3B5323", "#526F35", "#636F57"], open: 20, ca: 0, rules: []},
@@ -164,11 +195,50 @@ module.exports = {
 				y: y+h/2
 			};
 		}
+		const stories = [];
+		if (metadata.stories){
+			if (metadata.stories.u){
+				stories.push({
+					x: x+w/2,
+					y: y,
+					t: metadata.stories.u
+				});
+			} 
+			if (metadata.stories.d){
+				stories.push({
+					x: x+w/2,
+					y: y+h,
+					t: metadata.stories.d
+				});
+			} 
+			if (metadata.stories.l){
+				stories.push({
+					x: x,
+					y: y+h/2,
+					t: metadata.stories.l
+				});
+			} 
+			if (metadata.stories.r){
+				stories.push({
+					x: x+w,
+					y: y+h/2,
+					t: metadata.stories.r
+				});
+			} 
+			if (metadata.stories.c){
+				stories.push({
+					x: x+w/2,
+					y: y+h/2,
+					t: metadata.stories.c
+				});
+			}
+		}
 		return {
 			gate: metadata.gate ? {x: x+w/2, y: y+h/2} : false,
 			orb: orb,
 			stones: stones,
-			bgStones: bgStones
+			bgStones: bgStones,
+			stories: stories
 		};
 	}
 };
@@ -183,8 +253,18 @@ function getMetadata(mx, my){
 	} else {
 		baseData = SECTOR_DATA[sectorInfo.charAt(0)];
 	}
+	let stories = {
+		u: sectorInfo.indexOf("u"),
+		d: sectorInfo.indexOf("d"),
+		l: sectorInfo.indexOf("l"),
+		r: sectorInfo.indexOf("r"),
+		c: sectorInfo.indexOf("c"),
+	}
+	for (let d in stories){
+		stories[d] = stories[d] == -1 ? false : CLUES[sectorInfo.charAt(stories[d]+1)];
+	}
 	return Object.assign({}, baseData, 
-		{ u: sectorInfo.indexOf("u") != -1, d: sectorInfo.indexOf("d") != -1,
+		{ stories: stories, u: sectorInfo.indexOf("u") != -1, d: sectorInfo.indexOf("d") != -1,
 		  l: sectorInfo.indexOf("l") != -1, r: sectorInfo.indexOf("r") != -1,
 		  gem: /([0-9])/g.exec(sectorInfo)?/([0-9])/g.exec(sectorInfo)[0]:false
 		});

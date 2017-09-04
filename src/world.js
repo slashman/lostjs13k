@@ -5,18 +5,17 @@ const geo = require('./geo');
 const gen = require('./gen');
 const ui = require('./ui');
 const rand = require('./rng')();
-const Entity = require('./Entity.class')
+const Entity = require('./Entity.class');
 
 const SECTOR_SIZE = 3000;
 
 var entities = [];
-
 const player = {
-  x: 5.5 * SECTOR_SIZE,
+  x: 6.5 * SECTOR_SIZE,
   y: 0.5 * SECTOR_SIZE,
   h: 16,
   w: 16,
-  dx: 200,
+  dx: 0,
   dy: 0,
   mx: 0,
   my: 0,
@@ -35,7 +34,7 @@ const booms = [];
 
 const sectors = {};
 
-sectors["5:0"] = gen.generateSegment(5, 0, player);
+sectors["6:0"] = gen.generateSegment(6, 0, player);
 
 function update(elapsed){
   bubbles.forEach(function (b, k){
@@ -55,6 +54,15 @@ function update(elapsed){
       booms.splice(k, 1);
     }
   });
+  let sector = sectors[player.mx+":"+player.my];
+  if (sector){
+    sector.stories.forEach((s, k)=>{
+      if (geo.mdist(s.x, s.y, player.x, player.y) < 300){
+        this.showStory(s);
+        sector.stories.splice(k,1);
+      }
+    });
+  }
   entities.forEach(function(e, k){
     if (e.dead){
       entities.splice(k, 1);
@@ -250,6 +258,13 @@ module.exports = {
         dy: rand.range(-200, 0),
         life:  rand.range(15, 100),
       });
+    }
+  },
+  showStory: function(s){
+    if (typeof s.t === "string"){
+      ui.showText(s.t);
+    } else {
+      s.t.forEach((s,k)=>ui.showText(s, k*5000));
     }
   }
 };

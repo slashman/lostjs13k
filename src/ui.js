@@ -94,10 +94,10 @@ module.exports = {
 				ctx.stroke();
 			});
 		}
-		ctx.font = "16px sans-serif";
+		ctx.font = "bold 20px sans-serif";
 		ctx.fillStyle = "white";
-		ctx.fillText(Math.floor(player.y/20)+"mt", 720,20);
-		ctx.fillText(player.hull+"%", 720,40);
+		//ctx.fillText(Math.floor(player.y/20)+"mt", 720,20);
+		ctx.fillText(player.hull+"%", 700,40);
 		for (let i in player.orbs){
 			if (player.orbs[i]){
 				ctx.fillStyle="rgb("+ORB_COLORS[i-1]+")";
@@ -105,6 +105,12 @@ module.exports = {
 				ctx.arc(i*30, 40, 10, 0, 2*Math.PI, false);  
 				ctx.fill();
 			}
+		}
+		if (this.currentText){
+			ctx.font = "italic 24px serif";
+			ctx.fillStyle = "white";
+			ctx.textAlign="center"; 
+			ctx.fillText(this.currentText, 400,550);
 		}
 		if (DEBUG){
 			// TODO: Remove from final dist, may be
@@ -177,6 +183,13 @@ module.exports = {
 			ctx.strokeStyle="#FF0000";
 			strokeRect(ctx, player.x, player.y, player.w, player.h);
 		}
+	},
+	showText: function(t, when){
+		when = when || 0;
+		setTimeout(()=>{
+			this.currentText = t;
+			setTimeout(()=>this.currentText=false, 4500);
+		}, when);
 	}
 };
 
