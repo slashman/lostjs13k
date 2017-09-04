@@ -24,7 +24,7 @@ const RULES = {
 const STANDARD_COLORS = ["#001c33", "#002a4d", "#0e3f66"];
 
 const SECTOR_INFO = [
-	[ "Fdr", "Fdl", "Cdr", "Cdl1", "Cdr", "GlcOrB", "ClcA" ],
+	[ "Fdr", "Fdl", "Cdr", "Cdl1", "CdCr", "GlBcOr", "ClPcA" ],
 	[ "Fur", "Fuld", "Cur", "Odlr", "Oudl", "Td2" ],
 	[ "", "Rur", "Rlr", "Oudlr", "Oulr", "Tudl" ],
 	[ "", "", "", "Dud", "", "Vud" ],
@@ -41,8 +41,10 @@ const CLUES = {
 		"*(Press the arrow keys to move around).",
 	],
 	P: [
-		"I know you can hear me.", 
-		"I have been waiting for you for a long, long time"
+		"*You hear a sweet voice in your head.", 
+		"Hello. I know you can hear me.", 
+		"I have been waiting for you for a long, long time",
+		"I am the princess Melkaia."
 	],
 
 	O: [
@@ -51,9 +53,13 @@ const CLUES = {
 	],
 	B: [
 		"You must want to go back to your home world. I can help you find the orbs!",
-		"But I need your help too... I'm trapped in these cold depths. I want to return home too.",
+		"But I need your help too... I'm trapped in these cold depths.",
+		"I want to return home too."
 	],
-	C: "The areas beyond are full of dangerous beasts. In order to survive you will need to find the ancient artifacts",
+	C: [
+		"The areas beyond are full of dangerous beasts.",
+		"In order to survive you will need to find the ancient artifacts"
+	],
 	
 	// Artifacts
 	D: "The horn of Verra Kera will let you emit deadly sonic booms which will crush any creature underwater",
