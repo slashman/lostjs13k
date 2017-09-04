@@ -5,6 +5,7 @@
 const key = require('./key');
 const ui = require('./ui');
 const rand = require('./rng')();
+const sound = require('./sound');
 
 key.init();
 
@@ -85,6 +86,7 @@ module.exports = {
   },
   keyboard: function (){
     if (key.isDown(38)){ // Rise
+      sound.play();
       player.dy -= 10;
       if (player.dy < -120){
         player.dy = -120;
@@ -92,12 +94,14 @@ module.exports = {
       addBubbles("left");
       addBubbles("right");
     } else if (key.isDown(40)){ // Sink
+      sound.play();
       if (player.dy < 60){
         player.dy += 10;
       }
       addBubbles("top");
     } 
     if (key.isDown(37)){
+      sound.play();
       player.flipped = true;
       if (player.dx > -120){
         player.dx -= 15;
@@ -106,6 +110,7 @@ module.exports = {
       player.dy -= 5;
       addBubbles("right");
     } else if (key.isDown(39)){
+      sound.play();
       player.flipped = false;
       if (player.dx < 120){
         player.dx += 15;
