@@ -11,8 +11,12 @@ input.init(world);
 world.addEntity();
 
 raf.start(function(elapsed) {
-  input.keyboard();
-  //TODO: Framerate limiter?
-  world.update(elapsed);
-  ui.draw();
+	// Safety toogle
+	if (elapsed > 1){
+		return;
+	}
+	input.keyboard();
+	//TODO: Framerate limiter?
+	world.update(elapsed);
+	ui.draw();
 });
