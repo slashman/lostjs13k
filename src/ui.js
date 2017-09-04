@@ -108,7 +108,7 @@ module.exports = {
 		}
 		if (this.currentText){
 			if (this.currentTextStyle === "italic")
-				ctx.font = "italic 24px serif";
+				ctx.font = "italic 28px serif";
 			else
 				ctx.font = "24px sans-serif";
 			ctx.fillStyle = "white";
