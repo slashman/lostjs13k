@@ -27,7 +27,7 @@ module.exports = {
 	draw: function (){
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		// Background
-		ctx.fillStyle="#F00";
+		ctx.fillStyle="#333";
 		ctx.fillRect(0, 0, 800, 600);
 		ctx.fillStyle="#87CEEB";
 		ctx.fillRect(0, transY(-500), canvas.width, transH(500));
@@ -116,6 +116,7 @@ module.exports = {
 			ctx.fillText(this.currentText, 400,550);
 		}
 		if (DEBUG){
+			ctx.textAlign="left"; 
 			// TODO: Remove from final dist, may be
 			ctx.font = "10px Arial";
 			ctx.fillStyle = "white";

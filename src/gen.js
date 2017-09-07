@@ -10,6 +10,11 @@ var rand = rng();
 
 var voronoi = new Voronoi();
 
+const SECTOR_SIZE = 3000;
+const W = SECTOR_SIZE / 24;
+const H = SECTOR_SIZE / 18;
+
+
 const RULES = {
 	TIGHT_CAVE: [
 		{ type: 0, op: '>', q: 1, sType: 1, nType: 1, chance: 60},
@@ -21,12 +26,17 @@ const RULES = {
 	]
 };
 
+const MAPS = [
+"FFFFFF03F8E101C0C001D8C001D8C0031CC07FFFC041FFE151C3FF5380FFDF8383D90F80DB83830B80DFE3C3DFF9FFDFFF0FC0FFEFFF",
+"FFEFFF398FC1018781011C800185C1458DEFFFFDEFFF8187FFE184000084000080FF0184FF0184FF01ECFF03EEFFFF87FF0F80FF8FFF"
+]
+
 const STANDARD_COLORS = ["#001c33", "#002a4d", "#0e3f66"];
 
 const SECTOR_INFO = [
 	[ "FdrcF3", "Fdl",  "Cdr", "ClcE1",  "CdCr",   "GlBcOr", "ClPcA" ],
-	[ "Fur",    "Fuld", "Cur", "Odlr",   "OudlQ",  "TdcD2" ],
-	[ "",       "RuJr", "Rlr", "OudKlHr","OulrI",  "TudQl" ],
+	[ "Fur",    "Fuld", "Cur", "Odlr",   "OudlQ",  "Td" ],
+	[ "",       "RuJr", "Rlr", "OudKlHr","OulrI",  "QudQl" ],
 	[ "CcMr5",  "SlcLr","ClNr","Dul",   "",          "Vud" ],
 	[ "",       "",     "",    "",    "",          "VucG4" ]
 ];
@@ -132,15 +142,16 @@ const CLUES = {
 };
 
 const SECTOR_DATA = {
-	F: {c:["#3B5323", "#526F35", "#636F57"], open: 20, ca: 0, rules: []},
-	C: {open: 50, ca: 1, rules: RULES.TIGHT_CAVE},
-	G: {open: 30, ca: 2, rules: RULES.OPEN_CAVE, gate: true},
-	O: {open: 20, ca: 2, rules: []},
-	T: {open: 80, ca: 0, rules: [], s: 't'},
-	R: {open: 80, ca: 0, rules: [], s: 'r'},
-	D: {c: ["#000"], open: 70, ca: 1, rules: RULES.OPEN_CAVE},
-	S: {open: 80, ca: 1, rules: RULES.TIGHT_CAVE},
-	V: {open: 70, ca: 1, rules: RULES.OPEN_CAVE},
+	F: {cv: true, c:["#3B5323", "#526F35", "#636F57"], open: 20, ca: 0, rules: []},
+	C: {cv: true, open: 50, ca: 1, rules: RULES.TIGHT_CAVE},
+	G: {cv: true, open: 30, ca: 2, rules: RULES.OPEN_CAVE, gate: true},
+	O: {cv: true, open: 20, ca: 2, rules: []},
+	T: {s: 0, orb: {type: 2, x: 5*SECTOR_SIZE+20*W, y:SECTOR_SIZE+6*H, s: 'D'}},
+	Q: {s: 1},
+	R: {cv: true, open: 80, ca: 0, rules: []},
+	D: {cv: true, c: ["#000"], open: 70, ca: 1, rules: RULES.OPEN_CAVE},
+	S: {cv: true, open: 80, ca: 1, rules: RULES.TIGHT_CAVE},
+	V: {cv: true, open: 70, ca: 1, rules: RULES.OPEN_CAVE},
 };
 
 
@@ -176,7 +187,7 @@ function completeDiagram(diagram, includeSurrounding){
 	});
 }
 
-const SECTOR_SIZE = 3000;
+
 
 module.exports = {
 	generateSegment: function(mx,my,player){
@@ -200,7 +211,7 @@ module.exports = {
 		let stones = [];
 		diagram.cells.forEach(c => stones.push(c.site));
 		stones.forEach(s => {
-			if (!metadata.s){ // Special
+			if (metadata.cv){ // Special
 				// Initial seeding
 				if (rand.range(0,100) < metadata.open){
 					s.type = 1; // Rock
@@ -245,7 +256,7 @@ module.exports = {
 		ca.run(metadata.rules, metadata.ca+1, stones, rand);
 		stones = stones.filter(s => s.type === 1 || s.type === 4);
 		const bgStones = [];
-		if (!metadata.s){
+		if (metadata.cv){
 			const bgSites = [];
 			for (var i = 0; i < 1450; i++){
 			  bgSites.push({
@@ -263,15 +274,25 @@ module.exports = {
 			//ca.run(rules, 1, bgStones, rand);
 			bgStones.forEach(stone => stone.color = colors[stone.type]);
 		}
-		let orb = false;
-		if (metadata.gem && !player.orbs[metadata.gem]){
-			orb = {
-				type: metadata.gem,
-				x: x+w/2,
-				y: y+h/2
-			};
+		if (metadata.s != undefined){
+			this.fillBlocks(metadata.s, stones, mx, my);
 		}
+		let orb = false;
 		const stories = [];
+		if (metadata.orb && !player.orbs[metadata.orb.type]){
+			orb = {
+				type: metadata.orb.type,
+				x: metadata.orb.x,
+				y: metadata.orb.y
+			};
+			if (metadata.orb.s){
+				stories.push({
+					x: orb.x,
+					y: orb.y,
+					t: CLUES[metadata.orb.s]
+				});
+			}
+		}
 		if (metadata.stories){ // TODO: Check if player already readed so they are not dupped
 			if (metadata.stories.u){
 				stories.push({
@@ -316,8 +337,42 @@ module.exports = {
 			bgStones: bgStones,
 			stories: stories
 		};
+	},
+	fillBlocks: function(n,s,bx,by){
+		bx *= SECTOR_SIZE;
+		by *= SECTOR_SIZE;
+		const map = MAPS[n];
+		let index = 0;
+		let chunk = map.substr(index, 2);
+		const mask = [];
+		while (chunk != ""){
+			const n = parseInt(chunk , 16)
+			mask.push([n&1,n&2,n&4,n&8,n&16,n&32,n&64,n&128]);
+			index++;
+			chunk = map.substr(index*2, 2);
+		}
+		mask.forEach((a,k)=>this.fillBlock(a,k,s,bx,by));
+	},
+	fillBlock: function(a,k,s,bx,by){
+		let x = ((k % 3) * 8)*W;
+		let y = Math.floor(k/3) * H;
+		a.forEach((v,k)=>{
+			if (!v)
+				return;
+			s.push({
+				x: bx+x+k*W,
+				y: by+y,
+				vs: [
+					[bx+x+k*W,by+y],
+					[bx+x+(k+1)*W,by+y],
+					[bx+x+(k+1)*W,by+y+H],
+					[bx+x+k*W,by+y+H]
+				]
+			});
+		});
 	}
 };
+
 
 
 function getMetadata(mx, my){
@@ -339,9 +394,14 @@ function getMetadata(mx, my){
 	for (let d in stories){
 		stories[d] = stories[d] == -1 ? false : CLUES[sectorInfo.charAt(stories[d]+1)];
 	}
+	let orb = baseData.orb ? baseData.orb : /([0-9])/g.exec(sectorInfo)?{
+		type: /([0-9])/g.exec(sectorInfo)[0],
+		x: (mx + 0.5) * SECTOR_SIZE,
+		y: (my + 0.5) * SECTOR_SIZE
+	}:false;
 	return Object.assign({}, baseData, 
 		{ stories: stories, u: sectorInfo.indexOf("u") != -1, d: sectorInfo.indexOf("d") != -1,
 		  l: sectorInfo.indexOf("l") != -1, r: sectorInfo.indexOf("r") != -1,
-		  gem: /([0-9])/g.exec(sectorInfo)?/([0-9])/g.exec(sectorInfo)[0]:false
+		  orb: orb
 		});
 }
