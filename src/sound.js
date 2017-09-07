@@ -14,7 +14,7 @@ const SOUNDS = {
 
 const AUDIOS = [];
 
-for (var i = 0; i < 100; i++){
+for (var i = 0; i < 10; i++){
 	const x = new Audio();
 	x.src = SOUNDS.BUBBLE;
 	AUDIOS.push(x);
