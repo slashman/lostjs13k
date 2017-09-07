@@ -8,7 +8,7 @@ const input = require('./input');
 
 ui.init(world);
 input.init(world);
-world.addEntity();
+world.start();
 
 raf.start(function(elapsed) {
 	// Safety toogle

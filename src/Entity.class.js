@@ -4,8 +4,7 @@
 const rand = require('./rng')();
 const geo = require('./geo');
 
-function Entity(world, x, y, size, w, h, type){
-	this.world = world;
+function Entity(x, y, size, w, h, type){
 	this.x = x;
 	this.y = y;
 	this.size = size;
@@ -21,7 +20,6 @@ function Entity(world, x, y, size, w, h, type){
     this.spda = 70; //TODO: Param
     this.spdb = 150; //TODO: Param
     this.life = 10; //TODO: Param
-    this.act();
 }
 
 Entity.prototype = {

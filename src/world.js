@@ -9,7 +9,6 @@ const Entity = require('./Entity.class');
 
 const SECTOR_SIZE = 3000;
 
-var entities = [];
 const player = {
   x: 6.5 * SECTOR_SIZE,
   y: 0.5 * SECTOR_SIZE,
@@ -27,10 +26,9 @@ const player = {
   orbs: {}
 };
 
-entities.push(player);
-
 const bubbles = [];
 const booms = [];
+const entities = [];
 
 const sectors = {};
 
@@ -55,107 +53,25 @@ function update(elapsed){
     }
   });
   let sector = sectors[player.mx+":"+player.my];
-  if (sector){
-    sector.stories.forEach((s, k)=>{
-      if (geo.mdist(s.x, s.y, player.x, player.y) < 300){
-        this.showStory(s);
-        sector.stories.splice(k,1);
-      }
-    });
+  if (!sector){
+    return;
   }
-  entities.forEach(function(e, k){
-    if (e.dead){
-      entities.splice(k, 1);
-      return;
-    }
-    const tx = e.x + e.dx * elapsed;
-    var ty = e.y + e.dy * elapsed;
-    let tmx;
-    if (e.dx > 0){
-      tmx = Math.floor((tx+e.w) / SECTOR_SIZE);
-    } else {
-      tmx = Math.floor(tx / SECTOR_SIZE);
-    }
-    const tmy = Math.floor((ty+e.h) / SECTOR_SIZE);
-    let collision = false;
-    let sector = sectors[tmx+":"+tmy];
-    if (sector){
-      collision = sector.stones.find(function(s){
-        if (geo.mdist(tx, ty, s.x, s.y) > 300)
-          return false;
-        if (
-        geo.polygonIntersects({
-          a: {x: tx, y: ty},
-          b: {x: tx+e.w, y: ty}},
-          s.vs
-        ) || 
-        geo.polygonIntersects({
-          a: {x: tx, y: ty},
-          b: {x: tx, y: ty+e.h}},
-          s.vs
-        ) || 
-        geo.polygonIntersects({
-          a: {x: tx+e.w, y: ty},
-          b: {x: tx+e.w, y: ty+e.h}},
-          s.vs
-        ) || 
-        geo.polygonIntersects({
-          a: {x: tx, y: ty+e.h},
-          b: {x: tx+e.w, y: ty+e.h}},
-          s.vs
-        ) || 
-        geo.polygonIntersects({
-          a: {x: e.x+e.w/2, y: e.y+e.h},
-          b: {x: tx+e.w/2, y: ty+e.h}},
-          s.vs
-        )
-
-        ){
-         return true; 
-        }
-      });
-    }
-    if (collision){
-      e.dx = 0;
-      e.dy = 0;
-    } else {
-      e.x = tx;
-      e.y = ty;
-      // Friction
-      e.dx += (e.dx > 0 ? -1 : e.dx < 0 ? 1 : 0) * 3;
-      e.dy += (e.dy > 0 ? -1 : e.dy < 0 ? 1 : 0) * 3;
-    }
-    // Gravity
-    e.dy += elapsed * 200;
-    if (e === player){
-      if (sector.orb && geo.mdist(sector.orb.x, sector.orb.y, player.x, player.y) < 10){
-        player.orbs[sector.orb.type] = true;
-        sector.orb = false;
-      }
-      if (sector.gate && geo.mdist(sector.gate.x, sector.gate.y, player.x, player.y) < 20){
-        if (player.orbs[4] && player.orbs[1] && player.orbs[2] && player.orbs[3]){
-          //TODO: Win sequence
-          player.orbs = {};
-        }
-      }
-    } else {
-      if (!player.invul && geo.mdist(e.x, e.y, player.x, player.y) < e.w){
-        player.takingDamage = true;
-        setTimeout(()=>player.takingDamage = false, 50);
-        player.hull--; // TODO: Use enemy attack
-        player.dx = e.dx * 2;
-        player.dy = e.dy * 2;
-        player.invul = true;
-        setTimeout(()=>player.invul = false, 500);
-      }
-      booms.forEach(function (b, k){
-        if (geo.mdist(e.x, e.y, b.x, b.y) < e.w){
-          e.takeDamage();
-          booms.splice(k, 1);
-        }
-      });
+  sector.stories.forEach((s, k)=>{
+    if (geo.mdist(s.x, s.y, player.x, player.y) < 300){
+      this.showStory(s);
+      sector.stories.splice(k,1);
     }
   });
+  this.updateEntity(player, elapsed);
+  entities.forEach((e, k)=>{
+    if (e.dead || geo.mdist(e.x, e.y, player.x, player.y) > 3000){
+      entities.splice(k, 1);
+      // This probably causes one entity to miss his turn.
+      return;
+    }
+    this.updateEntity(e, elapsed);
+  });
+
   // Should we load another fragment?
   checkLoadFragment();
   player.mx = Math.floor(player.x / SECTOR_SIZE);
@@ -214,7 +130,8 @@ function checkLoadFragment(){
 }
 
 function generateSector(dx, dy){
-  sectors[(player.mx+dx)+":"+(player.my+dy)] = gen.generateSegment(player.mx+dx, player.my+dy, player);
+  var s = gen.generateSegment(player.mx+dx, player.my+dy, player)
+  sectors[(player.mx+dx)+":"+(player.my+dy)] = s;
 }
 
 module.exports = {
@@ -223,14 +140,42 @@ module.exports = {
   sectors: sectors,
   bubbles: bubbles,
   booms: booms,
-  entities: entities,
-  addEntity: function(){
-    entities.push(new Entity(this, 5.5 * SECTOR_SIZE, 0.5 * SECTOR_SIZE, 8, 32, 32, 'n'));
-    entities.push(new Entity(this, 5.5 * SECTOR_SIZE, 0.5 * SECTOR_SIZE, 4, 16, 16, 'n'));
-    entities.push(new Entity(this, 5.5 * SECTOR_SIZE, 0.5 * SECTOR_SIZE, 3, 12, 12, 'n'));
-    entities.push(new Entity(this, 5.5 * SECTOR_SIZE, 0.5 * SECTOR_SIZE, 3, 12, 12, 'n'));
-    entities.push(new Entity(this, 5.5 * SECTOR_SIZE, 0.5 * SECTOR_SIZE, 3, 12, 12, 'n'));
-    entities.push(new Entity(this, 5.5 * SECTOR_SIZE, 0.5 * SECTOR_SIZE, 12, 48, 48, 'n'));
+  start: function(){
+    this.addEnemiesNearby();
+  },
+  addEnemiesNearby: function(){
+    if (entities.length > 20){
+      setTimeout(()=> this.addEnemiesNearby(), 5000);
+      return;
+    }
+    for (var i = 0; i < 5; i++){ //TODO: quantity based on depth
+      //TODO: Different kind of enemies
+      var size = rand.range(3, 12);
+      // TODO: Source code optimize
+      if (player.dx !== 0){
+        var x = player.x+rand.range(1000, 1200)*Math.sign(player.dx);
+        var y = player.y+rand.range(100, 200)*rand.sign();  
+      } else if (player.dy !== 0){
+        var x = player.x+rand.range(100, 200)*rand.sign();
+        var y = player.y+rand.range(1000, 1200)*Math.sign(player.dy)  ;
+      } else {
+        var x = player.x+rand.range(1000, 1200)*rand.sign();
+        var y = player.y+rand.range(1000, 1200)*rand.sign();  
+      }
+      let e = new Entity(x, y, size, size*4, size*4, 'n');
+      const tmx = Math.floor(x / SECTOR_SIZE);
+      const tmy = Math.floor(y / SECTOR_SIZE);
+      let sector = sectors[tmx+":"+tmy];
+      if (!sector){
+        continue;
+      }
+      if (!this.entityCollides(sector, e.x, e.y, e)){
+        e.world = this;
+        entities.push(e);
+        e.act();
+      }
+    }
+    setTimeout(()=> this.addEnemiesNearby(), 5000);
   },
   sonicBoom: function(dx, q){
     if (q === undefined)
@@ -264,5 +209,100 @@ module.exports = {
     } else {
       s.t.forEach((s,k)=>ui.showText(s, k*5000));
     }
+  },
+  updateEntity: function(e, elapsed){
+    const tx = e.x + e.dx * elapsed;
+    var ty = e.y + e.dy * elapsed;
+    let tmx;
+    if (e.dx > 0){
+      tmx = Math.floor((tx+e.w) / SECTOR_SIZE);
+    } else {
+      tmx = Math.floor(tx / SECTOR_SIZE);
+    }
+    const tmy = Math.floor((ty+e.h) / SECTOR_SIZE);
+    let collision = false;
+    let sector = sectors[tmx+":"+tmy];
+    if (sector){
+      collision = this.entityCollides(sector,tx,ty,e)
+    } else {
+      collision = true;
+    }
+    if (collision){
+      e.dx = 0;
+      e.dy = 0;
+    } else {
+      e.x = tx;
+      e.y = ty;
+      // Friction
+      e.dx += (e.dx > 0 ? -1 : e.dx < 0 ? 1 : 0) * 3;
+      e.dy += (e.dy > 0 ? -1 : e.dy < 0 ? 1 : 0) * 3;
+    }
+    // Gravity
+    e.dy += elapsed * 200;
+    if (e === player){
+      if (sector.orb && geo.mdist(sector.orb.x, sector.orb.y, player.x, player.y) < 10){
+        player.orbs[sector.orb.type] = true;
+        sector.orb = false;
+      }
+      if (sector.gate && geo.mdist(sector.gate.x, sector.gate.y, player.x, player.y) < 20){
+        if (player.orbs[4] && player.orbs[1] && player.orbs[2] && player.orbs[3]){
+          //TODO: Win sequence
+          player.orbs = {};
+        }
+      }
+    } else {
+      if (!player.invul && geo.mdist(e.x, e.y, player.x, player.y) < e.w){
+        player.takingDamage = true;
+        setTimeout(()=>player.takingDamage = false, 50);
+        player.hull--; // TODO: Use enemy attack
+        player.dx = e.dx * 2;
+        player.dy = e.dy * 2;
+        player.invul = true;
+        setTimeout(()=>player.invul = false, 500);
+      }
+      booms.forEach(function (b, k){
+        if (geo.mdist(e.x, e.y, b.x, b.y) < e.w){
+          e.takeDamage();
+          booms.splice(k, 1);
+        }
+      });
+    }
+  },
+  entities: entities,
+  entityCollides: function(sector,tx,ty,e){
+    return sector.stones.find(function(s){
+      if (geo.mdist(tx, ty, s.x, s.y) > 300)
+        return false;
+      if (
+        geo.polygonIntersects({
+          a: {x: tx, y: ty},
+          b: {x: tx+e.w, y: ty}},
+          s.vs
+        ) || 
+        geo.polygonIntersects({
+          a: {x: tx, y: ty},
+          b: {x: tx, y: ty+e.h}},
+          s.vs
+        ) || 
+        geo.polygonIntersects({
+          a: {x: tx+e.w, y: ty},
+          b: {x: tx+e.w, y: ty+e.h}},
+          s.vs
+        ) || 
+        geo.polygonIntersects({
+          a: {x: tx, y: ty+e.h},
+          b: {x: tx+e.w, y: ty+e.h}},
+          s.vs
+        ) || 
+        geo.polygonIntersects({
+          a: {x: e.x+e.w/2, y: e.y+e.h},
+          b: {x: tx+e.w/2, y: ty+e.h}},
+          s.vs
+        )
+
+        ){
+         return true; 
+        }
+      });
   }
 };

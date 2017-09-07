@@ -50,6 +50,9 @@ module.exports = function(seed) {
     range: function(min, max) {
       return rng.int(max - min) + min;
     },
+    sign: function(){
+      return rng.bool() ? 1 : -1;
+    },
     chance: function(val) {
       return rng.range(0,100) <= val;
     },

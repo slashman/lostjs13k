@@ -77,6 +77,7 @@ module.exports = {
 			strokeArc(ctx, b.x, b.y, 5+rand.range(0,5), 0, 2*Math.PI, false);
 		});
 		w.entities.forEach(e => this.drawEntity(ctx, e));
+		this.drawPlayer(ctx);
 		for (sector in w.sectors){
 			sector = w.sectors[sector];
 			sector.stones.forEach(function(s){
@@ -129,6 +130,7 @@ module.exports = {
 			ctx.fillText("my: "+player.my,10,70);
 			ctx.fillText("sectors: "+Object.keys(w.sectors),10,80);
 			ctx.fillText("orbs: "+Object.keys(player.orbs),10,90);
+			ctx.fillText("entities: "+w.entities.length,10,100);
 			ctx.fillText("zoom: "+camera.zoom,10,130);
 		}
 	},
@@ -137,6 +139,9 @@ module.exports = {
 			this.drawPlayer(ctx);
 			return;
 		}
+		if (geo.mdist(e.x, e.y, player.x, player.y) > 1000){
+	      return;
+	    }
 		const baseFill = e.takingDamage ? '#444' : '#000';
 		ctx.fillStyle = baseFill;
 		fillArc(ctx, e.x+2*e.size, e.y+2*e.size, 2*e.size, Math.PI,2*Math.PI, false);
