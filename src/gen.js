@@ -136,8 +136,8 @@ const SECTOR_DATA = {
 	C: {open: 50, ca: 1, rules: RULES.TIGHT_CAVE},
 	G: {open: 30, ca: 2, rules: RULES.OPEN_CAVE, gate: true},
 	O: {open: 20, ca: 2, rules: []},
-	T: {open: 80, ca: 0, rules: []},
-	R: {open: 80, ca: 0, rules: []},
+	T: {open: 80, ca: 0, rules: [], s: 't'},
+	R: {open: 80, ca: 0, rules: [], s: 'r'},
 	D: {c: ["#000"], open: 70, ca: 1, rules: RULES.OPEN_CAVE},
 	S: {open: 80, ca: 1, rules: RULES.TIGHT_CAVE},
 	V: {open: 70, ca: 1, rules: RULES.OPEN_CAVE},
@@ -186,6 +186,7 @@ module.exports = {
 		let y = my * h;
 		const bbox = {xl: x, xr: x+w, yt: y, yb: y+h};
 		const metadata = getMetadata(mx, my);
+
 		const colors = metadata.c || STANDARD_COLORS;
 		const sites = [];
 		for (let i = 0; i < 1000; i++){
@@ -199,9 +200,13 @@ module.exports = {
 		let stones = [];
 		diagram.cells.forEach(c => stones.push(c.site));
 		stones.forEach(s => {
-			// Initial seeding
-			if (rand.range(0,100) < metadata.open){
-				s.type = 1; // Rock
+			if (!metadata.s){ // Special
+				// Initial seeding
+				if (rand.range(0,100) < metadata.open){
+					s.type = 1; // Rock
+				} else {
+					s.type = 0; // Emptiness
+				}
 			} else {
 				s.type = 0; // Emptiness
 			}
@@ -239,23 +244,25 @@ module.exports = {
 		});
 		ca.run(metadata.rules, metadata.ca+1, stones, rand);
 		stones = stones.filter(s => s.type === 1 || s.type === 4);
-		const bgSites = [];
-		for (var i = 0; i < 1450; i++){
-		  bgSites.push({
-		    x: rand.range(bbox.xl, bbox.xr),
-		    y: rand.range(bbox.yt, bbox.yb)
-		  });
-		}
-		diagram = voronoi.compute(bgSites, bbox);
-		completeDiagram(diagram, false);
 		const bgStones = [];
-		diagram.cells.forEach(cell => {
-			const site = cell.site;
-		    site.type = rand.range(0,colors.length);
-		    bgStones.push(cell.site);
-		});
-		//ca.run(rules, 1, bgStones, rand);
-		bgStones.forEach(stone => stone.color = colors[stone.type]);
+		if (!metadata.s){
+			const bgSites = [];
+			for (var i = 0; i < 1450; i++){
+			  bgSites.push({
+			    x: rand.range(bbox.xl, bbox.xr),
+			    y: rand.range(bbox.yt, bbox.yb)
+			  });
+			}
+			diagram = voronoi.compute(bgSites, bbox);
+			completeDiagram(diagram, false);
+			diagram.cells.forEach(cell => {
+				const site = cell.site;
+			    site.type = rand.range(0,colors.length);
+			    bgStones.push(cell.site);
+			});
+			//ca.run(rules, 1, bgStones, rand);
+			bgStones.forEach(stone => stone.color = colors[stone.type]);
+		}
 		let orb = false;
 		if (metadata.gem && !player.orbs[metadata.gem]){
 			orb = {
@@ -265,7 +272,7 @@ module.exports = {
 			};
 		}
 		const stories = [];
-		if (metadata.stories){
+		if (metadata.stories){ // TODO: Check if player already readed so they are not dupped
 			if (metadata.stories.u){
 				stories.push({
 					x: x+w/2,
