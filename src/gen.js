@@ -28,15 +28,17 @@ const RULES = {
 
 const MAPS = [
 "FFFFFF03F8E101C0C001D8C001D8C0031CC07FFFC041FFE151C3FF5380FFDF8383D90F80DB83830B80DFE3C3DFF9FFDFFF0FC0FFEFFF",
-"FFEFFF398FC1018781011C800185C1458DEFFFFDEFFF8187FFE184000084000080FF0184FF0184FF01ECFF03EEFFFF87FF0F80FF8FFF"
-]
+"FFEFFF398FC1018781011C800185C1458DEFFFFDEFFF8187FFE184000084000080FF0184FF0184FF01ECFF03EEFFFF87FF0F80FF8FFF",
+"FFFFFFE1FF8FE1FF8FE11F8061308C7B708F40518DC05BFD00000000000040E7FB40C3C177C3C121E6C121C2EFE1C3C1E1E7C1FFFFFF",
+"FFC1FFFFE383E1F783E1F783E1F783F9F7EBE1F701E18001030000030000E18001E1F701E1FFABFBFF81E1FAAB01C0FF63F5FFFFFFFF"
+];
 
 const STANDARD_COLORS = ["#001c33", "#002a4d", "#0e3f66"];
 
 const SECTOR_INFO = [
 	[ "FdrcF3", "Fdl",  "Cdr", "ClcE1",  "CdCr",   "GlBcOr", "ClPcA" ],
 	[ "Fur",    "Fuld", "Cur", "Odlr",   "OudlQ",  "Td" ],
-	[ "",       "RuJr", "Rlr", "OudKlHr","OulrI",  "QudQl" ],
+	[ "",       "PuJr", "Rlr", "OudKlHr","OulrI",  "QudQl" ],
 	[ "CcMr5",  "SlcLr","ClNr","Dul",   "",          "Vud" ],
 	[ "",       "",     "",    "",    "",          "VucG4" ]
 ];
@@ -146,14 +148,14 @@ const SECTOR_DATA = {
 	C: {cv: true, open: 50, ca: 1, rules: RULES.TIGHT_CAVE},
 	G: {cv: true, open: 30, ca: 2, rules: RULES.OPEN_CAVE, gate: true},
 	O: {cv: true, open: 20, ca: 2, rules: []},
-	T: {s: 0, orb: {type: 2, x: 5*SECTOR_SIZE+20*W, y:SECTOR_SIZE+6*H, s: 'D'}},
-	Q: {s: 1},
-	R: {cv: true, open: 80, ca: 0, rules: []},
+	T: {s: 0, bg: "#1c0030", orb: {type: 2, x: 5*SECTOR_SIZE+20*W, y:SECTOR_SIZE+6*H, s: 'D'}},
+	Q: {s: 1, bg: "#1c0030"},
+	R: {s: 2, bg: "#001c33"},
+	P: {s: 3, bg: "#001c33"},
 	D: {cv: true, c: ["#000"], open: 70, ca: 1, rules: RULES.OPEN_CAVE},
 	S: {cv: true, open: 80, ca: 1, rules: RULES.TIGHT_CAVE},
 	V: {cv: true, open: 70, ca: 1, rules: RULES.OPEN_CAVE},
 };
-
 
 function checkAndAddSite(site, toSite){
 	if (site === null || site.voronoiId === toSite.voronoiId)
@@ -331,11 +333,13 @@ module.exports = {
 			}
 		}
 		return {
+			x:x,y:y,
 			gate: metadata.gate ? {x: x+w/2, y: y+h/2} : false,
 			orb: orb,
 			stones: stones,
 			bgStones: bgStones,
-			stories: stories
+			stories: stories,
+			bg: metadata.bg
 		};
 	},
 	fillBlocks: function(n,s,bx,by){

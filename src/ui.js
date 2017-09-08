@@ -9,6 +9,8 @@ const rand = require('./rng')();
 var canvas = document.querySelector('#game');
 var ctx = canvas.getContext('2d');
 
+const SECTOR_SIZE = 3000;
+
 const camera = {
   x: 20,
   y: 20,
@@ -26,13 +28,15 @@ module.exports = {
 	},
 	draw: function (){
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
-		// Background
-		ctx.fillStyle="#333";
-		ctx.fillRect(0, 0, 800, 600);
-		ctx.fillStyle="#87CEEB";
-		ctx.fillRect(0, transY(-500), canvas.width, transH(500));
 		for (var sector in w.sectors){
 			sector = w.sectors[sector];
+			if (sector.bg){
+				ctx.fillStyle=sector.bg;
+				ctx.strokeStyle=sector.bg;
+				fillRect(ctx, sector.x, sector.y, SECTOR_SIZE, SECTOR_SIZE);
+				strokeRect(ctx, sector.x, sector.y, SECTOR_SIZE, SECTOR_SIZE);
+			}
+
 			sector.bgStones.forEach(function(s){
 				if (geo.mdist(s.x, s.y, player.x, player.y) > 1000)
 					return;
