@@ -28,7 +28,7 @@ const RULES = {
 
 const MAPS = [
 "FFFFFF03F8E101C0C001D8C001D8C0031CC07FFFC041FFE151C3FF5380FFDF8383D90F80DB83830B80DFE3C3DFF9FFDFFF0FC0FFEFFF",
-"FFEFFF398FC1018781011C800185C1458DEFFFFDEFFF8187FFE184000084000080FF0184FF0184FF01ECFF03EEFFFF87FF0F80FF8FFF",
+"FFEFFF398FC1018781011C800185C1458DEFFFFDEFFF8187FFE184000084000080FF0184FF0184FF01ECFF03EEFFFF87FF0780FF87FF",
 "FFFFFFE1FF8FE1FF8FE11F8061308C7B708F40518DC05BFD00000000000040E7FB40C3C177C3C121E6C121C2EFE1C3C1E1E7C1FFFFFF",
 "FFC1FFFFE383E1F783E1F783E1F783F9F7EBE1F701E18001030000030000E18001E1F701E1FFABFBFF81E1FAAB01C0FF63F5FFFFFFFF"
 ];
@@ -154,7 +154,7 @@ const SECTOR_DATA = {
 	P: {s: 3, bg: "#001c33"},
 	D: {cv: true, c: ["#000"], open: 70, ca: 1, rules: RULES.OPEN_CAVE},
 	S: {cv: true, open: 80, ca: 1, rules: RULES.TIGHT_CAVE},
-	V: {cv: true, c:["#fdcf58", "#f27d0c", "#800909", "#f07f13"], open: 70, ca: 1, rules: RULES.OPEN_CAVE},
+	V: {cv: true, c:["#fdcf58", "#f27d0c", "#800909", "#f07f13"], open: 70, ca: 1, rules: RULES.OPEN_CAVE, bu: true},
 };
 
 function checkAndAddSite(site, toSite){
@@ -213,23 +213,24 @@ module.exports = {
 		let stones = [];
 		diagram.cells.forEach(c => stones.push(c.site));
 		stones.forEach(s => {
-			if (metadata.cv){ // Special
+			if (metadata.cv){ // Cave
 				// Initial seeding
 				if (rand.range(0,100) < metadata.open){
 					s.type = 1; // Rock
 				} else {
 					s.type = 0; // Emptiness
 				}
+				// Borders
+				if (Math.abs(s.x - x) < 100 ||
+					Math.abs(s.x - (x+w)) < 100 ||
+					Math.abs(s.y - y) < 100 ||
+					Math.abs(s.y - (y+h)) < 100){
+					s.type = 4; // Indestructible rock
+				}
 			} else {
 				s.type = 0; // Emptiness
 			}
-			// Borders
-			if (Math.abs(s.x - x) < 100 ||
-				Math.abs(s.x - (x+w)) < 100 ||
-				Math.abs(s.y - y) < 100 ||
-				Math.abs(s.y - (y+h)) < 100){
-				s.type = 4; // Indestructible rock
-			}
+			
 			// Bore hole in the middle
 			if (geo.mdist(s.x, s.y, x+w/2, y+h/2) < 300){
 				s.type = 3; // Irreplaceable emptiness
@@ -339,7 +340,8 @@ module.exports = {
 			stones: stones,
 			bgStones: bgStones,
 			stories: stories,
-			bg: metadata.bg
+			bg: metadata.bg,
+			bu: metadata.bu
 		};
 	},
 	fillBlocks: function(n,s,bx,by){
