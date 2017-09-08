@@ -154,7 +154,7 @@ const SECTOR_DATA = {
 	P: {s: 3, bg: "#001c33"},
 	D: {cv: true, c: ["#000"], open: 70, ca: 1, rules: RULES.OPEN_CAVE},
 	S: {cv: true, open: 80, ca: 1, rules: RULES.TIGHT_CAVE},
-	V: {cv: true, open: 70, ca: 1, rules: RULES.OPEN_CAVE},
+	V: {cv: true, c:["#fdcf58", "#f27d0c", "#800909", "#f07f13"], open: 70, ca: 1, rules: RULES.OPEN_CAVE},
 };
 
 function checkAndAddSite(site, toSite){
