@@ -27,6 +27,15 @@ module.exports = {
 		player = w.player;
 	},
 	draw: function (){
+		if (player.dead){
+			ctx.fillStyle = "#000";
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
+			ctx.font = "italic 28px serif";
+			ctx.fillStyle = "white";
+			ctx.textAlign="center"; 
+			ctx.fillText("Deep in the sea. You are forever lost.", 400,550);
+			return;
+		}
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		for (var sector in w.sectors){
 			sector = w.sectors[sector];
@@ -101,7 +110,6 @@ module.exports = {
 		}
 		ctx.font = "bold 20px sans-serif";
 		ctx.fillStyle = "white";
-		//ctx.fillText(Math.floor(player.y/20)+"mt", 720,20);
 		ctx.fillText(player.hull+"%", 700,40);
 		for (let i in player.orbs){
 			if (player.orbs[i]){

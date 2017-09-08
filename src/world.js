@@ -35,6 +35,9 @@ const sectors = {};
 sectors[player.mx+":"+player.my] = gen.generateSegment(player.mx, player.my, player);
 
 function update(elapsed){
+  if (player.dead){
+    return;
+  }
   bubbles.forEach(function (b, k){
     b.life--;
     b.x += b.dx * elapsed;
@@ -258,6 +261,9 @@ module.exports = {
         player.dx = e.dx * 2;
         player.dy = e.dy * 2;
         player.invul = true;
+        if (player.hull <= 0){
+          player.dead = true;
+        }
         setTimeout(()=>player.invul = false, 500);
       }
       booms.forEach(function (b, k){
