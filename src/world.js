@@ -34,8 +34,6 @@ const sectors = {};
 
 let world = false;
 
-generateSector(0,0,player);
-
 function update(elapsed){
   if (player.dead){
     return;
@@ -78,71 +76,69 @@ function update(elapsed){
   });
 
   // Should we load another fragment?
-  checkLoadFragment();
+  checkLoadFragment(this);
   player.mx = Math.floor(player.x / SECTOR_SIZE);
   player.my = Math.floor(player.y / SECTOR_SIZE);
   ui.camera.x = player.x;
   ui.camera.y = player.y;
 }
 
-function createAndDeleteSectorAt(cx, cy, dx, dy) {
+function createAndDeleteSectorAt(w, cx, cy, dx, dy) {
   if (sectors[(player.mx+cx)+":"+(player.my+cy)]){
     
   } else {
-    generateSector(cx, cy);
+    generateSector(w, cx, cy);
   }
   if (sectors[(player.mx+dx)+":"+(player.my+dy)]){
     delete sectors[(player.mx+dx)+":"+(player.my+dy)];
   }
 }
 
-function checkLoadFragment(){
+function checkLoadFragment(w){
   const leftZone = player.x < player.mx * SECTOR_SIZE + SECTOR_SIZE / 2;
   const rightZone = player.x > player.mx * SECTOR_SIZE + SECTOR_SIZE / 2;
   const downZone = player.y > player.my * SECTOR_SIZE + SECTOR_SIZE / 2;
   const upZone = player.y < player.my * SECTOR_SIZE + SECTOR_SIZE / 2;
   if (rightZone){
-    createAndDeleteSectorAt(1, 0, -1, 0);
-    createAndDeleteSectorAt(0, 0, -1, 1);
-    createAndDeleteSectorAt(0, 0, -1, -1);
+    createAndDeleteSectorAt(w, 1, 0, -1, 0);
+    createAndDeleteSectorAt(w, 0, 0, -1, 1);
+    createAndDeleteSectorAt(w, 0, 0, -1, -1);
     if (upZone){
-      createAndDeleteSectorAt(1, -1, -1, -1);
+      createAndDeleteSectorAt(w, 1, -1, -1, -1);
     }
     if (downZone){
-      createAndDeleteSectorAt(1, 1, -1, 1);
+      createAndDeleteSectorAt(w, 1, 1, -1, 1);
       
     }
   } else if (leftZone){
-    createAndDeleteSectorAt(-1, 0, 1, 0);
-    createAndDeleteSectorAt(0, 0,  1, -1);
-    createAndDeleteSectorAt(0, 0,  1, 1);
+    createAndDeleteSectorAt(w, -1, 0, 1, 0);
+    createAndDeleteSectorAt(w, 0, 0,  1, -1);
+    createAndDeleteSectorAt(w, 0, 0,  1, 1);
     if (upZone){
-      createAndDeleteSectorAt(-1, -1, 1, -1);
+      createAndDeleteSectorAt(w, -1, -1, 1, -1);
     }
     if (downZone){
-      createAndDeleteSectorAt(-1, 1, 1, 1);
+      createAndDeleteSectorAt(w, -1, 1, 1, 1);
     }
   } 
   if (upZone){
-    createAndDeleteSectorAt(0, -1, 0, 1);
-    createAndDeleteSectorAt(0, 0,  1, 1);
-    createAndDeleteSectorAt(0, 0, -1, 1);
+    createAndDeleteSectorAt(w, 0, -1, 0, 1);
+    createAndDeleteSectorAt(w, 0, 0,  1, 1);
+    createAndDeleteSectorAt(w, 0, 0, -1, 1);
   } else if (downZone){
-    createAndDeleteSectorAt(0, 1, 0, -1);
-    createAndDeleteSectorAt(0, 0, 1, -1);
-    createAndDeleteSectorAt(0, 0, -1, -1);
+    createAndDeleteSectorAt(w, 0, 1, 0, -1);
+    createAndDeleteSectorAt(w, 0, 0, 1, -1);
+    createAndDeleteSectorAt(w, 0, 0, -1, -1);
   }
 }
 
-function generateSector(dx, dy){
+function generateSector(w, dx, dy){
   var s = gen.generateSegment(player.mx+dx, player.my+dy, player)
   sectors[(player.mx+dx)+":"+(player.my+dy)] = s;
   if (s.bo && !player.bo){
     player.bo = true;
-    let e = new Entity((player.mx+dx+0.5) * SECTOR_SIZE, (player.my+dy+0.5) * SECTOR_SIZE, 50, 'n', 0);
-    console.log("x", e.x);
-    console.log("y", e.y);
-    e.world = world;
+    let e = new Entity((player.mx+dx+0.5) * SECTOR_SIZE, (player.my+dy+0.5) * SECTOR_SIZE, 80, 'e', 0);
+    e.world = w;
     e.bo = true;
     entities.push(e);
     e.act();
@@ -156,7 +152,7 @@ module.exports = {
   bubbles: bubbles,
   booms: booms,
   start: function(){
-    world = this;
+    generateSector(this, 0,0,player);
     this.addEnemiesNearby();
   },
   addEnemiesNearby: function(){
