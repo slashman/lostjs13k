@@ -10,20 +10,20 @@ const Entity = require('./Entity.class');
 const SECTOR_SIZE = 3000;
 
 const player = {
-  x: 6.5 * SECTOR_SIZE,
-  y: 0.5 * SECTOR_SIZE,
+  x: 0.5 * SECTOR_SIZE,
+  y: 3.5 * SECTOR_SIZE,
   h: 16,
   w: 16,
   dx: 0,
   dy: 0,
-  mx: 6,
-  my: 0,
+  mx: 0,
+  my: 3,
   flipped: false,
   invul: false,
   sonic: true, // Powerup
   hull: 100,
-  //orbs: {"1": true, "2": true, "4": true},
-  orbs: {}
+  orbs: {"1": true, "2": true, "4": true},
+  //orbs: {}
 };
 
 const bubbles = [];
@@ -32,7 +32,9 @@ const entities = [];
 
 const sectors = {};
 
-sectors[player.mx+":"+player.my] = gen.generateSegment(player.mx, player.my, player);
+let world = false;
+
+generateSector(0,0,player);
 
 function update(elapsed){
   if (player.dead){
@@ -135,6 +137,16 @@ function checkLoadFragment(){
 function generateSector(dx, dy){
   var s = gen.generateSegment(player.mx+dx, player.my+dy, player)
   sectors[(player.mx+dx)+":"+(player.my+dy)] = s;
+  if (s.bo && !player.bo){
+    player.bo = true;
+    let e = new Entity((player.mx+dx+0.5) * SECTOR_SIZE, (player.my+dy+0.5) * SECTOR_SIZE, 50, 'n', 0);
+    console.log("x", e.x);
+    console.log("y", e.y);
+    e.world = world;
+    e.bo = true;
+    entities.push(e);
+    e.act();
+  }
 }
 
 module.exports = {
@@ -144,6 +156,7 @@ module.exports = {
   bubbles: bubbles,
   booms: booms,
   start: function(){
+    world = this;
     this.addEnemiesNearby();
   },
   addEnemiesNearby: function(){
@@ -165,7 +178,8 @@ module.exports = {
         var x = player.x+rand.range(1000, 1200)*rand.sign();
         var y = player.y+rand.range(1000, 1200)*rand.sign();  
       }
-      let e = new Entity(x, y, size, size*4, size*4, 'n');
+      let t = 'n'; // TODO: rand.from(s.eco);
+      let e = new Entity(x, y, size, t, 0); //TODO: Level from sector data (range)
       const tmx = Math.floor(x / SECTOR_SIZE);
       const tmy = Math.floor(y / SECTOR_SIZE);
       let sector = sectors[tmx+":"+tmy];

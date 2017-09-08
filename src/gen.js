@@ -39,7 +39,7 @@ const SECTOR_INFO = [
 	[ "FdrcF3", "Fdl",  "Cdr", "ClcE1",  "CdCr",   "GlBcOr", "ClPcA" ],
 	[ "Fur",    "Fuld", "Cur", "Odlr",   "OudlQ",  "Td" ],
 	[ "",       "PuJr", "Rlr", "OudKlHr","OulrI",  "QudQl" ],
-	[ "CcMr5",  "SlcLr","ClNr","Dul",   "",          "Vud" ],
+	[ "CcMr*",  "SlcLr","ClNr","Dul",   "",          "Vud" ],
 	[ "",       "",     "",    "",    "",          "VucG4" ]
 ];
 
@@ -342,7 +342,8 @@ module.exports = {
 			stories: stories,
 			bg: metadata.bg,
 			bu: metadata.bu,
-			cu: metadata.cu
+			cu: metadata.cu,
+			bo: metadata.bo
 		};
 	},
 	fillBlocks: function(n,s,bx,by){
@@ -409,6 +410,7 @@ function getMetadata(mx, my){
 	return Object.assign({}, baseData, 
 		{ stories: stories, u: sectorInfo.indexOf("u") != -1, d: sectorInfo.indexOf("d") != -1,
 		  l: sectorInfo.indexOf("l") != -1, r: sectorInfo.indexOf("r") != -1,
-		  orb: orb
+		  orb: orb,
+		  bo: sectorInfo.indexOf("*")
 		});
 }
