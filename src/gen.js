@@ -153,7 +153,7 @@ const SECTOR_DATA = {
 	R: {s: 2, bg: "#001c33"},
 	P: {s: 3, bg: "#001c33"},
 	D: {cv: true, c: ["#000"], open: 70, ca: 1, rules: RULES.OPEN_CAVE},
-	S: {cv: true, open: 80, ca: 1, rules: RULES.TIGHT_CAVE},
+	S: {cv: true, open: 80, ca: 1, rules: RULES.TIGHT_CAVE, cu: true},
 	V: {cv: true, c:["#fdcf58", "#f27d0c", "#800909", "#f07f13"], open: 70, ca: 1, rules: RULES.OPEN_CAVE, bu: true},
 };
 
@@ -341,7 +341,8 @@ module.exports = {
 			bgStones: bgStones,
 			stories: stories,
 			bg: metadata.bg,
-			bu: metadata.bu
+			bu: metadata.bu,
+			cu: metadata.cu
 		};
 	},
 	fillBlocks: function(n,s,bx,by){

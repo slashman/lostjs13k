@@ -244,8 +244,11 @@ module.exports = {
     e.dy += elapsed * 200;
     if (e === player){
       if (sector.bu && !player.orbs[3]){
-        player.hull--; // TODO: Use enemy attack
+        player.hull--;
         e.dy = -400;
+      }
+      if (sector.cu && !player.orbs[4]){
+        e.dx = 400;
       }
       if (sector.orb && geo.mdist(sector.orb.x, sector.orb.y, player.x, player.y) < 10){
         player.orbs[sector.orb.type] = true;
