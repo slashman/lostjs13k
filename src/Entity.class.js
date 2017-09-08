@@ -21,7 +21,7 @@ function Entity(x, y, size, t, l){
 	this.mx = 0;
 	this.my = 0;
     this.flipped = false;
-    this.type = t;
+    this.t = t;
     if (t === "n"){
     	this.w = size * 4;
     	this.h = size * 4;
@@ -71,8 +71,8 @@ Entity.prototype = {
 	die: function(){
 		this.dead = true;
 		if (this.bo){
-			for (var i = 0; i < 10; i++)
-				this.world.bubblePuff(this.x+rand.range(-50, 50), this.y+rand.range(-50, 50), 50);	
+			for (var i = 0; i < 40; i++)
+				this.world.bubblePuff(this.x+rand.range(-150, 150), this.y+rand.range(-150, 150), 50);	
 		}
 		this.world.bubblePuff(this.x, this.y, 50);
 	}
