@@ -411,6 +411,6 @@ function getMetadata(mx, my){
 		{ stories: stories, u: sectorInfo.indexOf("u") != -1, d: sectorInfo.indexOf("d") != -1,
 		  l: sectorInfo.indexOf("l") != -1, r: sectorInfo.indexOf("r") != -1,
 		  orb: orb,
-		  bo: sectorInfo.indexOf("*")
+		  bo: sectorInfo.indexOf("*") != -1
 		});
 }
