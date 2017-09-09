@@ -157,27 +157,37 @@ module.exports = {
 		}
 	},
 	drawEn: function(ctx, e){
+		// Nautilus
 		const baseFill = e.takingDamage ? '#444' : '#000';
 		ctx.fillStyle = baseFill;
-		fillArc(ctx, e.x+2*e.size, e.y+2*e.size, 2*e.size, Math.PI,2*Math.PI, false);
+		fillArc(ctx, e.x+2*e.s, e.y+2*e.s, 2*e.s, Math.PI,2*Math.PI, false);
 		if (e.flipped){
-			fillArc(ctx, e.x+3*e.size, e.y+2*e.size, e.size, 0, 2*Math.PI, false);
-			fillCircle(ctx, e.x+3*e.size, e.y+2*e.size, 3*e.size, Math.PI/2, Math.PI, false);
+			fillArc(ctx, e.x+3*e.s, e.y+2*e.s, e.s, 0, 2*Math.PI, false);
+			fillCircle(ctx, e.x+3*e.s, e.y+2*e.s, 3*e.s, Math.PI/2, Math.PI, false);
 		} else {
-			fillArc(ctx, e.x+e.size, e.y+2*e.size, e.size, 0, 2*Math.PI, false);
-			fillCircle(ctx, e.x+e.size, e.y+2*e.size, 3*e.size, 0, Math.PI/2, false);
+			fillArc(ctx, e.x+e.s, e.y+2*e.s, e.s, 0, 2*Math.PI, false);
+			fillCircle(ctx, e.x+e.s, e.y+2*e.s, 3*e.s, 0, Math.PI/2, false);
 		}
 		ctx.fillStyle="#00F"; // TODO: Based on nautilus type
 		if (e.flipped){
-			fillArc(ctx, e.x+3*e.size, e.y+3*e.size, e.size/2, 0, 2*Math.PI, false);
+			fillArc(ctx, e.x+3*e.s, e.y+3*e.s, e.s/2, 0, 2*Math.PI, false);
 		} else {
-			fillArc(ctx, e.x+e.size, e.y+3*e.size, e.size/2, 0, 2*Math.PI, false);
+			fillArc(ctx, e.x+e.s, e.y+3*e.s, e.s/2, 0, 2*Math.PI, false);
 		}
 	},
-	drawEe: function(ctx, e){
+	drawEa: function(ctx, e){
 		const baseFill = e.takingDamage ? '#444' : '#000';
 		ctx.fillStyle = baseFill;
-		fillCircle(ctx, e.x+e.w/2, e.y+e.h/2, e.size/2, 0, 2*Math.PI, false);
+		fillCircle(ctx, e.x+e.s, e.y+2*e.s, 2*e.s, 0,2*Math.PI);
+		fillCircle(ctx, e.x+3*e.s, e.y+2*e.s, 2*e.s, 0,2*Math.PI);
+		fillCircle(ctx, e.x+2*e.s, e.y+e.s, 2*e.s, 0,2*Math.PI);
+		fillCircle(ctx, e.x+2*e.s, e.y+3*e.s, 2*e.s, 0,2*Math.PI);
+	},
+	drawEe: function(ctx, e){
+		// Boss
+		const baseFill = e.takingDamage ? '#444' : '#000';
+		ctx.fillStyle = baseFill;
+		fillCircle(ctx, e.x+e.w/2, e.y+e.h/2, e.s/2, 0, 2*Math.PI, false);
 	},
 	drawPlayer: function(ctx){
 		ctx.fillStyle = 'rgba(255,255,255,0.5)';

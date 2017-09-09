@@ -10,14 +10,14 @@ const Entity = require('./Entity.class');
 const SECTOR_SIZE = 3000;
 
 const player = {
-  x: 0.5 * SECTOR_SIZE,
-  y: 3.5 * SECTOR_SIZE,
+  x: 6.5 * SECTOR_SIZE,
+  y: 0.5 * SECTOR_SIZE,
   h: 16,
   w: 16,
   dx: 0,
   dy: 0,
-  mx: 0,
-  my: 3,
+  mx: 6,
+  my: 0,
   flipped: false,
   invul: false,
   sonic: true, // Powerup
@@ -174,7 +174,7 @@ module.exports = {
         var x = player.x+rand.range(1000, 1200)*rand.sign();
         var y = player.y+rand.range(1000, 1200)*rand.sign();  
       }
-      let t = 'n'; // TODO: rand.from(s.eco);
+      let t = 'a'; // TODO: rand.from(s.eco);
       let e = new Entity(x, y, size, t, 0); //TODO: Level from sector data (range)
       const tmx = Math.floor(x / SECTOR_SIZE);
       const tmy = Math.floor(y / SECTOR_SIZE);

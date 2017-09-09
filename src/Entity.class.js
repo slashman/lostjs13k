@@ -6,34 +6,35 @@ const geo = require('./geo');
 
 const BS = {
 	n: [400, 70, 150, 10],
+	a: [400, 70, 150, 10],
 	e: [500, 70, 200, 1000]
 }
 /*
  n: Nautilus
  e: Boss
  */
-function Entity(x, y, size, t, l){
+function Entity(x, y, s, t, l){
 	this.x = x;
 	this.y = y;
-	this.size = size;
+	this.s = s;
 	this.dx = 0;
 	this.dy = 0;
 	this.mx = 0;
 	this.my = 0;
     this.flipped = false;
     this.t = t;
-    if (t === "n"){
-    	this.w = size * 4;
-    	this.h = size * 4;
+    if (t === "n" || t === 'a'){
+    	this.w = s * 4;
+    	this.h = s * 4;
     } else {
-    	this.w = size;
-    	this.h = size;
+    	this.w = s;
+    	this.h = s;
     }
-    let s = BS[t];
-    this.sight = s[0] * (1+l/10);
-    this.spda = s[1] * (1+l/10);
-    this.spdb = s[2] * (1+l/10);
-    this.life = s[3] * (1+l/10);
+    let d = BS[t];
+    this.sight = d[0] * (1+l/10);
+    this.spda = d[1] * (1+l/10);
+    this.spdb = d[2] * (1+l/10);
+    this.life = d[3] * (1+l/10);
 }
 
 Entity.prototype = {
