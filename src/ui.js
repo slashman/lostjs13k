@@ -52,6 +52,27 @@ const JELLY4 = [ // Lines
 	[3,2,3,5]
 ];
 
+const FISH = [
+	[2,2,2,0.7,1.9]
+]
+
+const FISH2 = [
+	[4.5,-0.5,1]
+]
+
+const FISH3 = [
+	[4.5,-0.5,0.5]
+]
+
+const FISH4 = [
+	[3,1,0.3]
+]
+
+const JAW1 = [ // Shape
+	[1,3.5,4,3.5,4,2.2,3.6,3,1,3],
+	[3.8,1,3.8,2.5,2.5,1],
+	[1,1.5,-1,1.5,0,2,-1,2.5,1,2.5],
+];
 
 module.exports = {
 	camera: camera,
@@ -255,6 +276,17 @@ module.exports = {
 			ctx.stroke();	
 		})
 	},
+	dsh: (ctx, e, sh)=>{
+		sh.forEach(p=>{
+			ctx.beginPath();
+			moveTo(ctx, e.x+e.s*p[0], e.y+e.s*p[1]);
+			for (var i = 2; i < p.length; i+=2){
+				lineTo(ctx, e.x+e.s*p[i], e.y+e.s*p[i+1]);
+			}	
+			ctx.closePath();
+			ctx.fill();
+		})
+	},
 	drawEe: function(ctx, e){
 		// Spider
 		fillRect(ctx, e.x + 1.8*e.s, e.y+e.s, e.s*0.4, 2*e.s);
@@ -263,7 +295,7 @@ module.exports = {
 	dcs: (ctx, e, cs) => {
 		// Draw circles
 		cs.forEach(c=>{
-			fillCircle(ctx, e.x+c[0]*e.s, 
+			fillArc(ctx, e.x+c[0]*e.s, 
 				e.y+c[1]*e.s, 
 				e.s*c[2],
 				Math.PI * (c[3] || 0),
@@ -278,6 +310,17 @@ module.exports = {
 	drawEg: function(ctx, e){
 		this.dcs(ctx, e, JELLY3);
 		this.dls(ctx, e, JELLY4);
+	},
+	drawEh: function(ctx, e){
+		ctx.fillStyle = 'rgba(255,255,255,0.5)';
+		this.dcs(ctx, e, FISH2);
+		ctx.fillStyle = '#000';
+		this.dcs(ctx, e, FISH);
+		this.dsh(ctx, e, JAW1);
+		strokeArc(ctx, e.x+e.s*3.5, e.y, e.s*1.5, 1*Math.PI, 1.75*Math.PI);
+		this.dcs(ctx, e, FISH3);
+		ctx.fillStyle = '#F00';
+		this.dcs(ctx, e, FISH4);
 	},
 	drawEj: function(ctx, e){
 		fillCircle(ctx, e.x+e.w/2, e.y+e.h/2, e.s/2, 0, 2*Math.PI, false);
