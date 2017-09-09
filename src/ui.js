@@ -20,6 +20,17 @@ const camera = {
 let w = false; // World
 let player = false; // World
 
+const SPIDER = [
+	[1.8,1.7,1.25,1,1.75,0],
+	[1.8,2,1,1.8],
+	[1.8,2.3,1,2.8],
+	[1.8,2.9,1.5,3.5,1.8,4],
+	[2.2,1.7,2.75,1,2.75,0],
+	[2.2,2,3,1.8],
+	[2.2,2.3,3,2.8],
+	[2.2,2.9,2.5,3.5,2.2,4]
+];
+
 module.exports = {
 	camera: camera,
 	init: function(w_){
@@ -150,6 +161,7 @@ module.exports = {
 		if (geo.mdist(e.x, e.y, player.x, player.y) > 1000){
 	      return;
 	    }
+		ctx.fillStyle = e.takingDamage ? '#444' : '#000';
 	    this["drawE"+e.t](ctx, e);
 	    if (DEBUG){
 			ctx.strokeStyle="#FF0000";
@@ -158,8 +170,6 @@ module.exports = {
 	},
 	drawEi: function(ctx, e){
 		// Nautilus
-		const baseFill = e.takingDamage ? '#444' : '#000';
-		ctx.fillStyle = baseFill;
 		fillArc(ctx, e.x+2*e.s, e.y+2*e.s, 2*e.s, Math.PI,2*Math.PI, false);
 		if (e.flipped){
 			fillArc(ctx, e.x+3*e.s, e.y+2*e.s, e.s, 0, 2*Math.PI, false);
@@ -176,16 +186,12 @@ module.exports = {
 		}
 	},
 	drawEa: function(ctx, e){
-		const baseFill = e.takingDamage ? '#444' : '#000';
-		ctx.fillStyle = baseFill;
 		fillCircle(ctx, e.x+e.s, e.y+2*e.s, 2*e.s, 0,2*Math.PI);
 		fillCircle(ctx, e.x+3*e.s, e.y+2*e.s, 2*e.s, 0,2*Math.PI);
 		fillCircle(ctx, e.x+2*e.s, e.y+e.s, 2*e.s, 0,2*Math.PI);
 		fillCircle(ctx, e.x+2*e.s, e.y+3*e.s, 2*e.s, 0,2*Math.PI);
 	},
 	drawEb: function(ctx, e){
-		const baseFill = e.takingDamage ? '#444' : '#000';
-		ctx.fillStyle = baseFill;
 		fillCircle(ctx, e.x+2*e.s, e.y+2*e.s, 2*e.s, Math.PI, 2*Math.PI);
 		if (e.flipped)
 			fillCircle(ctx, e.x+e.s, e.y+2*e.s, e.s, 0,2*Math.PI);
@@ -194,8 +200,6 @@ module.exports = {
 	},
 	drawEc: function(ctx, e){
 		// Nautilus
-		const baseFill = e.takingDamage ? '#444' : '#000';
-		ctx.fillStyle = baseFill;
 		fillCircle(ctx, e.x+2*e.s, e.y+2*e.s, 2*e.s, 0, Math.PI*2, false);
 		if (e.flipped){
 			fillCircle(ctx, e.x+3*e.s, e.y+2*e.s, 3*e.s, Math.PI/4, Math.PI, false);
@@ -204,8 +208,6 @@ module.exports = {
 		}
 	},
 	drawEd: function(ctx, e){
-		const baseFill = e.takingDamage ? '#444' : '#000';
-		ctx.fillStyle = baseFill;
 		if (e.flipped){
 			fillCircle(ctx, e.x+2*e.s, e.y+2*e.s, 2*e.s, 0, Math.PI*1.25);
 			fillCircle(ctx, e.x+2*e.s, e.y+3*e.s, 2*e.s, Math.PI*1.5, Math.PI*2);
@@ -220,10 +222,23 @@ module.exports = {
 			fillArc(ctx, e.x+e.s, e.y+1.75*e.s, e.s/4, 0, 2*Math.PI);
 		}
 	},
+	dls: (ctx, e, ls)=>{
+		ctx.beginPath();
+		ls.forEach(l=>{
+			moveTo(ctx, e.x+e.s*l[0], e.y+e.s*l[1]);
+			for (var i = 2; i < l.length; i+=2){
+				lineTo(ctx, e.x+e.s*l[i], e.y+e.s*l[i+1]);
+			}
+			ctx.stroke();	
+		})
+	},
 	drawEe: function(ctx, e){
-		// Boss
-		const baseFill = e.takingDamage ? '#444' : '#000';
-		ctx.fillStyle = baseFill;
+		// Spider
+		fillRect(ctx, e.x + 1.8*e.s, e.y+e.s, e.s*0.4, 2*e.s);
+		ctx.strokeStyle="#000";
+		this.dls(ctx, e, SPIDER);
+	},
+	drawEj: function(ctx, e){
 		fillCircle(ctx, e.x+e.w/2, e.y+e.h/2, e.s/2, 0, 2*Math.PI, false);
 	},
 	drawPlayer: function(ctx){
@@ -240,8 +255,7 @@ module.exports = {
 		}
 		ctx.closePath();
 		ctx.fill();
-		const baseFill = player.takingDamage ? '#444' : '#000';
-		ctx.fillStyle=baseFill;
+		ctx.fillStyle=player.takingDamage ? '#444' : '#000';
 		fillArc(ctx, player.x+player.w/2, player.y+player.w/2, player.w, 0, 2*Math.PI, false);
 		if (player.flipped){
 			fillRect(ctx, player.x - 8, player.y-7, 14, 16);
