@@ -137,7 +137,7 @@ function generateSector(w, dx, dy){
   sectors[(player.mx+dx)+":"+(player.my+dy)] = s;
   if (s.bo && !player.bo){
     player.bo = true;
-    let e = new Entity((player.mx+dx+0.5) * SECTOR_SIZE, (player.my+dy+0.5) * SECTOR_SIZE, 80, 'e', 0);
+    let e = new Entity((player.mx+dx+0.5) * SECTOR_SIZE, (player.my+dy+0.5) * SECTOR_SIZE, 80, 'i', 0);
     e.world = w;
     e.bo = true;
     entities.push(e);
@@ -174,7 +174,7 @@ module.exports = {
         var x = player.x+rand.range(1000, 1200)*rand.sign();
         var y = player.y+rand.range(1000, 1200)*rand.sign();  
       }
-      let t = 'a'; // TODO: rand.from(s.eco);
+      let t = 'c'; // TODO: rand.from(s.eco);
       let e = new Entity(x, y, size, t, 0); //TODO: Level from sector data (range)
       const tmx = Math.floor(x / SECTOR_SIZE);
       const tmy = Math.floor(y / SECTOR_SIZE);

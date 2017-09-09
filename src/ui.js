@@ -1,7 +1,7 @@
 /* jshint node: true, loopfunc: true */
 "use strict";
 
-const DEBUG = false;
+const DEBUG = true;
 
 const geo = require('./geo');
 const rand = require('./rng')();
@@ -156,7 +156,7 @@ module.exports = {
 			strokeRect(ctx, e.x, e.y, e.w, e.h);
 		}
 	},
-	drawEn: function(ctx, e){
+	drawEi: function(ctx, e){
 		// Nautilus
 		const baseFill = e.takingDamage ? '#444' : '#000';
 		ctx.fillStyle = baseFill;
@@ -182,6 +182,26 @@ module.exports = {
 		fillCircle(ctx, e.x+3*e.s, e.y+2*e.s, 2*e.s, 0,2*Math.PI);
 		fillCircle(ctx, e.x+2*e.s, e.y+e.s, 2*e.s, 0,2*Math.PI);
 		fillCircle(ctx, e.x+2*e.s, e.y+3*e.s, 2*e.s, 0,2*Math.PI);
+	},
+	drawEb: function(ctx, e){
+		const baseFill = e.takingDamage ? '#444' : '#000';
+		ctx.fillStyle = baseFill;
+		fillCircle(ctx, e.x+2*e.s, e.y+2*e.s, 2*e.s, Math.PI, 2*Math.PI);
+		if (e.flipped)
+			fillCircle(ctx, e.x+e.s, e.y+2*e.s, e.s, 0,2*Math.PI);
+		else
+			fillCircle(ctx, e.x+3*e.s, e.y+2*e.s, e.s, 0,2*Math.PI);
+	},
+	drawEc: function(ctx, e){
+		// Nautilus
+		const baseFill = e.takingDamage ? '#444' : '#000';
+		ctx.fillStyle = baseFill;
+		fillCircle(ctx, e.x+2*e.s, e.y+2*e.s, 2*e.s, 0, Math.PI*2, false);
+		if (e.flipped){
+			fillCircle(ctx, e.x+3*e.s, e.y+2*e.s, 3*e.s, Math.PI/4, Math.PI, false);
+		} else {
+			fillCircle(ctx, e.x+e.s, e.y+2*e.s, 3*e.s, 0, Math.PI*0.75, false);
+		}
 	},
 	drawEe: function(ctx, e){
 		// Boss

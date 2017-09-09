@@ -5,8 +5,9 @@ const rand = require('./rng')();
 const geo = require('./geo');
 
 const BS = {
-	n: [400, 70, 150, 10],
 	a: [400, 70, 150, 10],
+	b: [400, 70, 150, 10],
+	c: [400, 70, 150, 10],
 	e: [500, 70, 200, 1000]
 }
 /*
@@ -23,12 +24,12 @@ function Entity(x, y, s, t, l){
 	this.my = 0;
     this.flipped = false;
     this.t = t;
-    if (t === "n" || t === 'a'){
-    	this.w = s * 4;
-    	this.h = s * 4;
-    } else {
+    if (t === "i"){
     	this.w = s;
     	this.h = s;
+    } else {
+    	this.w = s * 4;
+    	this.h = s * 4;
     }
     let d = BS[t];
     this.sight = d[0] * (1+l/10);
