@@ -31,6 +31,28 @@ const SPIDER = [
 	[2.2,2.9,2.5,3.5,2.2,4]
 ];
 
+const JELLY1 = [ // Circles
+	[2, 2, 2],
+	[2, 4, 2, 1, 2]
+];
+
+const JELLY2 = [ // Lines
+	[1,4,1,6],
+	[2,4,2,7],
+	[3,4,3,6]
+];
+
+const JELLY3 = [ // Circles
+	[2, 2, 2, 0.75, 2.25]
+];
+
+const JELLY4 = [ // Lines
+	[1,2,1,5],
+	[2,2,2,7],
+	[3,2,3,5]
+];
+
+
 module.exports = {
 	camera: camera,
 	init: function(w_){
@@ -162,6 +184,7 @@ module.exports = {
 	      return;
 	    }
 		ctx.fillStyle = e.takingDamage ? '#444' : '#000';
+	    ctx.strokeStyle = ctx.fillStyle;
 	    this["drawE"+e.t](ctx, e);
 	    if (DEBUG){
 			ctx.strokeStyle="#FF0000";
@@ -235,8 +258,26 @@ module.exports = {
 	drawEe: function(ctx, e){
 		// Spider
 		fillRect(ctx, e.x + 1.8*e.s, e.y+e.s, e.s*0.4, 2*e.s);
-		ctx.strokeStyle="#000";
 		this.dls(ctx, e, SPIDER);
+	},
+	dcs: (ctx, e, cs) => {
+		// Draw circles
+		cs.forEach(c=>{
+			fillCircle(ctx, e.x+c[0]*e.s, 
+				e.y+c[1]*e.s, 
+				e.s*c[2],
+				Math.PI * (c[3] || 0),
+				Math.PI * (c[4] || 2)
+			);	
+		})
+	},
+	drawEf: function(ctx, e){
+		this.dcs(ctx, e, JELLY1);
+		this.dls(ctx, e, JELLY2);
+	},
+	drawEg: function(ctx, e){
+		this.dcs(ctx, e, JELLY3);
+		this.dls(ctx, e, JELLY4);
 	},
 	drawEj: function(ctx, e){
 		fillCircle(ctx, e.x+e.w/2, e.y+e.h/2, e.s/2, 0, 2*Math.PI, false);
