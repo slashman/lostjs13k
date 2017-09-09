@@ -1,7 +1,7 @@
 /* jshint node: true, loopfunc: true */
 "use strict";
 
-const DEBUG = true;
+const DEBUG = false;
 
 const geo = require('./geo');
 const rand = require('./rng')();
@@ -201,6 +201,23 @@ module.exports = {
 			fillCircle(ctx, e.x+3*e.s, e.y+2*e.s, 3*e.s, Math.PI/4, Math.PI, false);
 		} else {
 			fillCircle(ctx, e.x+e.s, e.y+2*e.s, 3*e.s, 0, Math.PI*0.75, false);
+		}
+	},
+	drawEd: function(ctx, e){
+		const baseFill = e.takingDamage ? '#444' : '#000';
+		ctx.fillStyle = baseFill;
+		if (e.flipped){
+			fillCircle(ctx, e.x+2*e.s, e.y+2*e.s, 2*e.s, 0, Math.PI*1.25);
+			fillCircle(ctx, e.x+2*e.s, e.y+3*e.s, 2*e.s, Math.PI*1.5, Math.PI*2);
+		} else {
+			fillCircle(ctx, e.x+2*e.s, e.y+2*e.s, 2*e.s, Math.PI*-0.25, Math.PI);
+			fillCircle(ctx, e.x+2*e.s, e.y+3*e.s, 2*e.s, Math.PI, Math.PI*1.5);
+		}
+		ctx.fillStyle="#00F"; // TODO: Based on nautilus type
+		if (e.flipped){
+			fillArc(ctx, e.x+3*e.s, e.y+1.75*e.s, e.s/4, 0, 2*Math.PI);
+		} else {
+			fillArc(ctx, e.x+e.s, e.y+1.75*e.s, e.s/4, 0, 2*Math.PI);
 		}
 	},
 	drawEe: function(ctx, e){
