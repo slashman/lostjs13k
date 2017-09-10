@@ -150,26 +150,29 @@ const CLUES = {
 };
 
 const SECTOR_DATA = {
-	// Farmland
-	F: {cv: true, c:["#3B5323", "#526F35", "#636F57"], open: 20, ca: 0, rules: []},
-	// Cavern
-	C: {cv: true, open: 50, ca: 1, rules: RULES.TIGHT_CAVE},
-	// Gate
-	G: {cv: true, open: 30, ca: 2, rules: RULES.OPEN_CAVE, gate: true},
-	// Open Caverns
-	O: {cv: true, open: 20, ca: 2, rules: []},
-	// Temple (T and Q)
-	T: {s: 0, bg: "#1c0030", orb: {type: 2, x: 5*SECTOR_SIZE+20*W, y:SECTOR_SIZE+6*H, s: 'D'}},
-	Q: {s: 1, bg: "#1c0030"},
-	// City Ruins (R and P)
-	R: {s: 2, bg: "#001c33"},
-	P: {s: 3, bg: "#001c33"},
-	// Darkness abyss
-	D: {cv: true, c: ["#000"], open: 70, ca: 1, rules: RULES.OPEN_CAVE},
-	// Abyss of souls
-	S: {cv: true, open: 80, ca: 1, rules: RULES.TIGHT_CAVE, cu: true},
-	// Volcanic Rift
-	V: {cv: true, c:["#fdcf58", "#f27d0c", "#800909", "#f07f13"], open: 70, ca: 1, rules: RULES.OPEN_CAVE, bu: true},
+	// Farmland   Blob, Big Fish, Jelly 1, Jelly 2
+	F: {cv: true, c:["#3B5323", "#526F35", "#636F57"], open: 20, ca: 0, rules: [],
+	ec: "adfg"},
+	// Cavern   Spider, Nautilus, Glider
+	C: {cv: true, open: 50, ca: 1, rules: RULES.TIGHT_CAVE, ec: "bce"},
+	// Gate     Nautilus, Glider, Big Fish
+	G: {cv: true, open: 30, ca: 2, rules: RULES.OPEN_CAVE, gate: true, ec: "bcd"},
+	// Open Caverns    Nautilus, Ball, Big Fish
+	O: {cv: true, open: 20, ca: 2, rules: [], ec: "cdj"},
+	// Temple (T and Q)    Jelly 1, Big Fish, Glider
+	T: {s: 0, bg: "#1c0030", orb: {type: 2, x: 5*SECTOR_SIZE+20*W, y:SECTOR_SIZE+6*H, s: 'D'},
+		ec: "bdf"},
+	Q: {s: 1, bg: "#1c0030", ec: "bdf"},
+	// City Ruins (R and P)    Jelly 2, Ball, Nautilus
+	R: {s: 2, bg: "#001c33", ec: "cgj"},
+	P: {s: 3, bg: "#001c33", ec: "cgj"},
+	// Darkness abyss      Ball, Deep Fish, Blob, Spider
+	D: {cv: true, c: ["#000"], open: 70, ca: 1, rules: RULES.OPEN_CAVE, ec: "aehj"},
+	// Abyss of souls     Deep fish, Glider, Spider
+	S: {cv: true, open: 80, ca: 1, rules: RULES.TIGHT_CAVE, cu: true, ec: "beh"},
+	// Volcanic Rift      Glider, Jelly1, Nautilus
+	V: {cv: true, c:["#fdcf58", "#f27d0c", "#800909", "#f07f13"], open: 70, ca: 1, rules: RULES.OPEN_CAVE, bu: true,
+	ec:"bcf"},
 };
 
 function checkAndAddSite(site, toSite){
@@ -348,7 +351,7 @@ module.exports = {
 				});
 			}
 		}
-		return {
+		return { //TODO: Object.assign metadata
 			x:x,y:y,
 			gate: metadata.gate ? {x: x+w/2, y: y+h/2} : false,
 			orb: orb,
@@ -359,7 +362,8 @@ module.exports = {
 			bu: metadata.bu,
 			cu: metadata.cu,
 			bo: metadata.bo,
-			lv: LV[my]?LV[my].charAt(mx)!=""?parseInt(LV[my].charAt(mx)):0:0
+			lv: LV[my]?LV[my].charAt(mx)!=""?parseInt(LV[my].charAt(mx)):0:0,
+			ec: metadata.ec
 		};
 	},
 	fillBlocks: function(n,s,bx,by){

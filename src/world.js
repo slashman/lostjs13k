@@ -180,7 +180,7 @@ module.exports = {
       if (!sector){
         continue;
       }
-      let t = rand.pick(['f']); // TODO: rand.from(s.eco);
+      let t = rand.pickS(sector.ec);
       let e = new Entity(x, y, size, t, sector.lv);
       
       if (!this.entityCollides(sector, e.x, e.y, e)){

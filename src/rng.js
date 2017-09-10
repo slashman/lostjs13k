@@ -65,6 +65,9 @@ module.exports = function(seed) {
      */
     pick: function(source) {
       return source[rng.range(0, source.length)];
+    },
+    pickS: function(s) {
+      return s.charAt(rng.range(0, s.length));
     }
   };
 

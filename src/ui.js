@@ -213,7 +213,7 @@ module.exports = {
 		}
 	},
 	drawEi: function(ctx, e){
-		// Nautilus
+		// Big Nautilus
 		fillArc(ctx, e.x+2*e.s, e.y+2*e.s, 2*e.s, Math.PI,2*Math.PI, false);
 		if (e.flipped){
 			fillArc(ctx, e.x+3*e.s, e.y+2*e.s, e.s, 0, 2*Math.PI, false);
@@ -230,12 +230,14 @@ module.exports = {
 		}
 	},
 	drawEa: function(ctx, e){
+		// Four blobs
 		fillCircle(ctx, e.x+e.s, e.y+2*e.s, 2*e.s, 0,2*Math.PI);
 		fillCircle(ctx, e.x+3*e.s, e.y+2*e.s, 2*e.s, 0,2*Math.PI);
 		fillCircle(ctx, e.x+2*e.s, e.y+e.s, 2*e.s, 0,2*Math.PI);
 		fillCircle(ctx, e.x+2*e.s, e.y+3*e.s, 2*e.s, 0,2*Math.PI);
 	},
 	drawEb: function(ctx, e){
+		// Glider
 		fillCircle(ctx, e.x+2*e.s, e.y+2*e.s, 2*e.s, Math.PI, 2*Math.PI);
 		if (e.flipped)
 			fillCircle(ctx, e.x+e.s, e.y+2*e.s, e.s, 0,2*Math.PI);
@@ -252,6 +254,7 @@ module.exports = {
 		}
 	},
 	drawEd: function(ctx, e){
+		// Big Fish
 		if (e.flipped){
 			fillCircle(ctx, e.x+2*e.s, e.y+2*e.s, 2*e.s, 0, Math.PI*1.25);
 			fillCircle(ctx, e.x+2*e.s, e.y+3*e.s, 2*e.s, Math.PI*1.5, Math.PI*2);
@@ -304,14 +307,17 @@ module.exports = {
 		})
 	},
 	drawEf: function(ctx, e){
+		// Jelly 1
 		this.dcs(ctx, e, JELLY1);
 		this.dls(ctx, e, JELLY2);
 	},
 	drawEg: function(ctx, e){
+		// Jelly 2
 		this.dcs(ctx, e, JELLY3);
 		this.dls(ctx, e, JELLY4);
 	},
 	drawEh: function(ctx, e){
+		// Deep fish
 		ctx.fillStyle = 'rgba(255,255,255,0.5)';
 		this.dcs(ctx, e, FISH2);
 		ctx.fillStyle = '#000';
@@ -323,6 +329,7 @@ module.exports = {
 		this.dcs(ctx, e, FISH4);
 	},
 	drawEj: function(ctx, e){
+		// Ball
 		fillCircle(ctx, e.x+e.w/2, e.y+e.h/2, e.s/2, 0, 2*Math.PI, false);
 	},
 	drawPlayer: function(ctx){
