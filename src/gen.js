@@ -53,26 +53,26 @@ const CLUES = {
 	// Intro
 	A: [
 		"*You wake up to find yourself in an underwater cavern", 
-		"*How long has it been? The onscreen navigation controls are not working",
+		"*How long has it been? The onscreen nav is not working",
 		"*You are lost in the depths of the sea, but you can still move around",
 		"*You'll need to find an exit.",
 		"*(Press the arrow keys to move around).",
 	],
 	P: [
 		"*You hear a sweet voice in your head.", 
-		"Hello. I know you can hear me.", 
-		"I have been waiting for you for a long, long time",
-		"I am the princess Melkaia."
+		"Hello. I know you can hear me!", 
+		"I have been waiting for you for a long, long time...",
+		"I am the princess Melkaia of Asterion.",
+		"Don't despair, I can help you return to your world.",
 	],
 
 	O: [
-		"This is the gate of Atlantis, the only passage connecting this world with Earth.",
-		"The only way to open it is to find the four orbs, scattered around the city."
+		"This is the gate of Atlantis, the only passage to the surface.",
+		"It can be opened by using the four ancient orbs."
 	],
 	B: [
-		"You must want to go back to your home world. I can help you find the orbs!",
-		"But I need your help too... I'm trapped in these cold depths.",
-		"I want to return home too."
+		"I can help you find the orbs, but I need your help too...",
+		"I'm trapped in these cold depths... I want to return home too."
 	],
 	C: [
 		"The areas beyond are full of dangerous beasts.",
@@ -88,7 +88,7 @@ const CLUES = {
 	// Artifacts
 	D: [
 		"The orb of Verra Kera will let you emit deadly sonic booms",
-		"which will crush any creature underwater",
+		"they will crush any creature underwater",
 		"*(Press Z to shoot a sonic beam)"
 	],
 	E: [
@@ -96,31 +96,25 @@ const CLUES = {
 		"protecting it from harm.",
 		"The shell will regenerate when contacting certain plants",
 	],
-	F: "The orb of Cosiaca will allow you to withstand extreme temperatures",
+	F: "The orb of Cosiaca will let you withstand extreme temperatures",
 	G: [
-		"The orb of Athena will strengten you, allowing to move quicker",
-		"and against strong currents"
+		"The orb of Athena will strengten you, allowing to move",
+		"against strong currents."
 	],
 		
 	// Places
 	H: [
-		"Behold, the ruins of our great underwater city.",
-		"This area used to be dry, but the forces that contained the water",
-		"are long gone.",
+		"The ruins of our great underwater city.",
+		"The forces that contained the water are long gone.",
 	],
-	I: [
-		"Our great temple to Poseidon, the lord of the seas.",
-		"Herein we studied his ancient wisdom, which gave us",
-		"the domain of the forces of the water.",
-	],
+	I: "Our great temple to Poseidon, the lord of the seas.",
 	J: [
 		"These used to be the very fertile farmlands,",
-		"our people fed only with plants.",
-		"We despised animal suffering.",
+		"our people fed only with plants."
 	],
 	K: [
 		"The darkness abyss, this area was cursed with eternal darkness.",
-		"I was unjustly imprisoned in the area below, but you'll need",
+		"I am trapped in the area below, but you'll need",
 		"the power of Athena to make it through.",
 		"Please don't give up!",
 	],
@@ -132,21 +126,13 @@ const CLUES = {
 	// Ending
 	N: [
 		"A strong current blocks the entrance here...",
-		"You will need the Orb of Athena to make it through!"
+		"You will need the Orb of Athena to make it through,"
 	],
-	L: [
-		"I can feel you are close... I'm so eager to meet you!",
-		"I need to tell you something... my appearance... ",
-		"may not be what you expect.",
-	],
+	L: "I can feel you are close... I'm so eager to meet you!",
 	M: [
-		"Thank you for saving me! I hold the last orb.",
-		"Let me join you to the Atlantis gate, and bid you",
-		"farewell!"
+		"Thank you for bringing the orbs... you fool!",
+		"I shall use them to drown your world in darkness!"
 	],
-	
-
-	// N: "The Atlanteans, they were so fool... with the power of Poseidon, all our enemies would have perished, drowned in the sea",
 };
 
 const SECTOR_DATA = {
@@ -421,6 +407,16 @@ function getMetadata(mx, my){
 	};
 	for (let d in stories){
 		stories[d] = stories[d] == -1 ? false : CLUES[sectorInfo.charAt(stories[d]+1)];
+		// TEst
+		/*
+		stories[d] = [];
+		for (var k in CLUES){
+			if (typeof CLUES[k] === 'string'){
+				stories[d].push(CLUES[k]);
+			} else {
+				stories[d] = stories[d].concat(CLUES[k])
+			}
+		}*/
 	}
 	let orb = baseData.orb ? baseData.orb : /([0-9])/g.exec(sectorInfo)?{
 		type: /([0-9])/g.exec(sectorInfo)[0],
@@ -434,3 +430,5 @@ function getMetadata(mx, my){
 		  bo: sectorInfo.indexOf("*") != -1
 		});
 }
+
+//TODO: Unit test for all ecosystems
