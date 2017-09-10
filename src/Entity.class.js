@@ -81,7 +81,8 @@ Entity.prototype = {
 		this.dead = true;
 		if (this.bo){
 			for (var i = 0; i < 40; i++)
-				this.world.bubblePuff(this.x+rand.range(-150, 150), this.y+rand.range(-150, 150), 50);	
+				this.world.bubblePuff(this.x+rand.range(-150, 150), this.y+rand.range(-150, 150), 50);
+			this.world.won();
 		}
 		this.world.bubblePuff(this.x, this.y, 50);
 	}

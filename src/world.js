@@ -35,7 +35,7 @@ const sectors = {};
 let world = false;
 
 function update(elapsed){
-  if (player.dead){
+  if (player.dead || player.won){
     return;
   }
   bubbles.forEach(function (b, k){
@@ -328,5 +328,11 @@ module.exports = {
          return true; 
         }
       });
+  },
+  won: ()=>{
+    setTimeout(()=>{
+      player.won = true;
+      ui.won();
+    }, 3000);
   }
 };

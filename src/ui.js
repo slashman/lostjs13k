@@ -90,6 +90,20 @@ module.exports = {
 			ctx.fillText("Deep in the sea. You are forever lost.", 400,550);
 			return;
 		}
+		if (player.won){
+			ctx.fillStyle = "#FFF";
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
+			if (this.currentText){
+				if (this.currentTextStyle === "italic")
+					ctx.font = "italic 28px serif";
+				else
+					ctx.font = "24px sans-serif";
+				ctx.fillStyle = "black";
+				ctx.textAlign="center"; 
+				ctx.fillText(this.currentText, 400,550);
+			}
+			return;
+		}
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		for (var sector in w.sectors){
 			sector = w.sectors[sector];
@@ -374,8 +388,18 @@ module.exports = {
 			// TODO: Wrap text using ctx.measureText
 			setTimeout(()=>this.currentText=false, 4500);
 		}, when);
-	}
+	},
+  	won: function(){
+  		// TODO: Fade to White
+  		ctx.fillStyle = "#FFF";
+  		WM.forEach((m,k)=>{
+  			this.showText(m, (k+1)*5000)
+  		});
+  	}
 };
+
+// Winning messages
+const WM = ["Test 1", "Test 2"];
 
 const ORB_COLORS = [
   "255,255,0",
