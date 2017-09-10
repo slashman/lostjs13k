@@ -174,14 +174,15 @@ module.exports = {
         var x = player.x+rand.range(1000, 1200)*rand.sign();
         var y = player.y+rand.range(1000, 1200)*rand.sign();  
       }
-      let t = rand.pick(['f']); // TODO: rand.from(s.eco);
-      let e = new Entity(x, y, size, t, 0); //TODO: Level from sector data (range)
       const tmx = Math.floor(x / SECTOR_SIZE);
       const tmy = Math.floor(y / SECTOR_SIZE);
       let sector = sectors[tmx+":"+tmy];
       if (!sector){
         continue;
       }
+      let t = rand.pick(['f']); // TODO: rand.from(s.eco);
+      let e = new Entity(x, y, size, t, sector.lv);
+      
       if (!this.entityCollides(sector, e.x, e.y, e)){
         e.world = this;
         entities.push(e);

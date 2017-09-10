@@ -39,9 +39,15 @@ const SECTOR_INFO = [
 	[ "FdrcF3", "Fdl",  "Cdr", "ClcE1",  "CdCr",   "GlBcOr", "ClPcA" ],
 	[ "Fur",    "Fuld", "Cur", "Odlr",   "OudlQ",  "Td" ],
 	[ "",       "PuJr", "Rlr", "OudKlHr","OulrI",  "QudQl" ],
-	[ "CcMr*",  "SlcLr","ClNr","Dul",   "",          "Vud" ],
-	[ "",       "",     "",    "",    "",          "VucG4" ]
+	[ "CcMr*",  "SlcLr","ClNr","Dul",    "VrcG4",  "Vul" ]
 ];
+
+const LV = [
+	"4422000",
+	"442112",
+	"033112",
+	"666055"
+]
 
 const CLUES = {
 	// Intro
@@ -144,16 +150,25 @@ const CLUES = {
 };
 
 const SECTOR_DATA = {
+	// Farmland
 	F: {cv: true, c:["#3B5323", "#526F35", "#636F57"], open: 20, ca: 0, rules: []},
+	// Cavern
 	C: {cv: true, open: 50, ca: 1, rules: RULES.TIGHT_CAVE},
+	// Gate
 	G: {cv: true, open: 30, ca: 2, rules: RULES.OPEN_CAVE, gate: true},
+	// Open Caverns
 	O: {cv: true, open: 20, ca: 2, rules: []},
+	// Temple (T and Q)
 	T: {s: 0, bg: "#1c0030", orb: {type: 2, x: 5*SECTOR_SIZE+20*W, y:SECTOR_SIZE+6*H, s: 'D'}},
 	Q: {s: 1, bg: "#1c0030"},
+	// City Ruins (R and P)
 	R: {s: 2, bg: "#001c33"},
 	P: {s: 3, bg: "#001c33"},
+	// Darkness abyss
 	D: {cv: true, c: ["#000"], open: 70, ca: 1, rules: RULES.OPEN_CAVE},
+	// Abyss of souls
 	S: {cv: true, open: 80, ca: 1, rules: RULES.TIGHT_CAVE, cu: true},
+	// Volcanic Rift
 	V: {cv: true, c:["#fdcf58", "#f27d0c", "#800909", "#f07f13"], open: 70, ca: 1, rules: RULES.OPEN_CAVE, bu: true},
 };
 
@@ -343,7 +358,8 @@ module.exports = {
 			bg: metadata.bg,
 			bu: metadata.bu,
 			cu: metadata.cu,
-			bo: metadata.bo
+			bo: metadata.bo,
+			lv: LV[my]?LV[my].charAt(mx)!=""?parseInt(LV[my].charAt(mx)):0:0
 		};
 	},
 	fillBlocks: function(n,s,bx,by){
