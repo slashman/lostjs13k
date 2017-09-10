@@ -209,7 +209,10 @@ module.exports = {
 			else
 				ctx.font = "24px sans-serif";
 			ctx.textAlign="center"; 
-			ctx.fillText(this.currentText, 400,550);
+			if (player.won)
+				ctx.fillText(this.currentText, 400,250);
+			else
+				ctx.fillText(this.currentText, 400,550);
 		} else if (TEXT.length > 0){
 			let t = TEXT.shift();
 			let style = 'italic';
@@ -219,7 +222,7 @@ module.exports = {
 			}
 			this.currentText = t;
 			this.currentTextStyle = style;
-			setTimeout(()=>this.currentText = false, 4500);
+			setTimeout(()=>this.currentText = false, 8000);
 		}
 	},
 	drawEntity: function(ctx, e){
@@ -395,7 +398,18 @@ module.exports = {
 };
 
 // Winning messages
-const WM = ["Test 1", "Test 2"];
+const WM = [
+"You make the journey back to the Gate of Atlantis,", 
+"as Melkaia indicated, the orbs open it.",
+"A tremendous whirlpool covers all the cavern, ",
+"hurling your ship all around. You pass out.",
+"You wake up floating in the middle of the Ocean,",
+"The SOS beacon is activated, you'll be rescued soon.",
+"Noone will believe your tale of an underwater lost empire...",
+"but you'll never forget the time when you were almost Lost.",
+"Lost in the Deep Sea - A production of Santiago Zapata.",
+"The End.",
+];
 
 const ORB_COLORS = [
   "255,255,0",
