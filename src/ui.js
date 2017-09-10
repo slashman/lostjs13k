@@ -93,6 +93,9 @@ module.exports = {
 			return;
 		}
 		if (player.won){
+			ctx.fillStyle = "#FFF";
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
+			ctx.fillStyle = "#000";
 			this.showTexts();
 			return;
 		}
@@ -179,6 +182,7 @@ module.exports = {
 				ctx.fill();
 			}
 		}
+		ctx.fillStyle = "white";
 		this.showTexts();
 		if (DEBUG){
 			ctx.textAlign="left"; 
@@ -204,7 +208,6 @@ module.exports = {
 				ctx.font = "italic 28px serif";
 			else
 				ctx.font = "24px sans-serif";
-			ctx.fillStyle = "white"; // TODO: Black for ending
 			ctx.textAlign="center"; 
 			ctx.fillText(this.currentText, 400,550);
 		} else if (TEXT.length > 0){
@@ -384,6 +387,8 @@ module.exports = {
 		TEXT.push(t);
 	},
   	won: function(){
+  		this.currentText = false;
+  		TEXT.length = 0;
   		// TODO: Fade to White
   		WM.forEach(m=>TEXT.push(m));
   	}
