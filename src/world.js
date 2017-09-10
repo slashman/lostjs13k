@@ -221,7 +221,7 @@ module.exports = {
     if (typeof s.t === "string"){
       ui.showText(s.t);
     } else {
-      s.t.forEach((s,k)=>ui.showText(s, k*5000));
+      s.t.forEach(s=>ui.showText(s));
     }
   },
   updateEntity: function(e, elapsed){

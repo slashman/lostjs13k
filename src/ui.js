@@ -74,6 +74,8 @@ const JAW1 = [ // Shape
 	[1,1.5,-1,1.5,0,2,-1,2.5,1,2.5],
 ];
 
+const TEXT=[];
+
 module.exports = {
 	camera: camera,
 	init: function(w_){
@@ -91,17 +93,7 @@ module.exports = {
 			return;
 		}
 		if (player.won){
-			ctx.fillStyle = "#FFF";
-			ctx.fillRect(0, 0, canvas.width, canvas.height);
-			if (this.currentText){
-				if (this.currentTextStyle === "italic")
-					ctx.font = "italic 28px serif";
-				else
-					ctx.font = "24px sans-serif";
-				ctx.fillStyle = "black";
-				ctx.textAlign="center"; 
-				ctx.fillText(this.currentText, 400,550);
-			}
+			this.showTexts();
 			return;
 		}
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -187,15 +179,7 @@ module.exports = {
 				ctx.fill();
 			}
 		}
-		if (this.currentText){
-			if (this.currentTextStyle === "italic")
-				ctx.font = "italic 28px serif";
-			else
-				ctx.font = "24px sans-serif";
-			ctx.fillStyle = "white";
-			ctx.textAlign="center"; 
-			ctx.fillText(this.currentText, 400,550);
-		}
+		this.showTexts();
 		if (DEBUG){
 			ctx.textAlign="left"; 
 			// TODO: Remove from final dist, may be
@@ -212,6 +196,27 @@ module.exports = {
 			ctx.fillText("orbs: "+Object.keys(player.orbs),10,90);
 			ctx.fillText("entities: "+w.entities.length,10,100);
 			ctx.fillText("zoom: "+camera.zoom,10,130);
+		}
+	},
+	showTexts: function(){
+		if (this.currentText){
+			if (this.currentTextStyle === "italic")
+				ctx.font = "italic 28px serif";
+			else
+				ctx.font = "24px sans-serif";
+			ctx.fillStyle = "white"; // TODO: Black for ending
+			ctx.textAlign="center"; 
+			ctx.fillText(this.currentText, 400,550);
+		} else if (TEXT.length > 0){
+			let t = TEXT.shift();
+			let style = 'italic';
+			if (t.charAt(0) === "*"){
+				style = 'normal';
+				t = t.substr(1);	
+			}
+			this.currentText = t;
+			this.currentTextStyle = style;
+			setTimeout(()=>this.currentText = false, 4500);
 		}
 	},
 	drawEntity: function(ctx, e){
@@ -375,26 +380,12 @@ module.exports = {
 			strokeRect(ctx, player.x, player.y, player.w, player.h);
 		}
 	},
-	showText: function(t, when){
-		when = when || 0;
-		setTimeout(()=>{
-			let style = 'italic';
-			if (t.charAt(0) === "*"){
-				style = 'normal';
-				t = t.substr(1);	
-			}
-			this.currentTextStyle = style;
-			this.currentText = t;
-			// TODO: Wrap text using ctx.measureText
-			setTimeout(()=>this.currentText=false, 4500);
-		}, when);
+	showText: function(t){
+		TEXT.push(t);
 	},
   	won: function(){
   		// TODO: Fade to White
-  		ctx.fillStyle = "#FFF";
-  		WM.forEach((m,k)=>{
-  			this.showText(m, (k+1)*5000)
-  		});
+  		WM.forEach(m=>TEXT.push(m));
   	}
 };
 
