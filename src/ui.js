@@ -1,7 +1,7 @@
 /* jshint node: true, loopfunc: true */
 "use strict";
 
-const DEBUG = false;
+//const DEBUG = false;
 
 const geo = require('./geo');
 const rand = require('./rng')();
@@ -35,6 +35,27 @@ const JELLY1 = [ // Circles
 	[2, 2, 2],
 	[2, 4, 2, 1, 2]
 ];
+
+const FB = [[1,2,2],[3,2,2],[2,1,2][2,3,2]];
+
+const GLn = [
+	[2,2,2,1],
+	[3,2,1]
+]
+
+const GLf = [
+	[2,2,2,1],
+	[1,2,1]
+]
+
+var NAf = [[2,2,2],[3,2,3,0.25,1]];
+var NAn = [[2,2,2],[1,2,3,0,0.75]];
+var BFf = [[2,2,2,0,1.25],[2,3,2,1.5]];
+var BFn = [[2,2,2,-0.25,1],[2,3,2,1,1.5]];
+
+// TODO: Last one is meant to be fillCircle, not fillArc, check how it looks with arc
+var BOf = [[2,2,2,1],[3,2,1],[3,2,3,0.5,1]];
+var BOn = [[2,2,2,1],[1,2,1],[1,2,3,0,0.5]];
 
 const JELLY2 = [ // Lines
 	[1,4,1,6],
@@ -73,6 +94,8 @@ const JAW1 = [ // Shape
 	[3.8,1,3.8,2.5,2.5,1],
 	[1,1.5,-1,1.5,0,2,-1,2.5,1,2.5],
 ];
+
+var BA = [[2,2,2]];
 
 const TEXT=[];
 
@@ -125,33 +148,25 @@ module.exports = {
 				ctx.stroke();
 			});
 			if (sector.orb){
-				ctx.fillStyle="rgba("+ORB_COLORS[sector.orb.type-1]+",0.5)";
-				fillArc(ctx, sector.orb.x+10, sector.orb.y+10, 40, 0, 2*Math.PI, false);
-				ctx.fillStyle="rgb("+ORB_COLORS[sector.orb.type-1]+")";
-				fillArc(ctx, sector.orb.x+10, sector.orb.y+10, 5, 0, 2*Math.PI, false);
+				ctx.fillStyle="rgba("+OC[sector.orb.type-1]+",0.5)";
+				fillArc(ctx, sector.orb.x+10, sector.orb.y+10, 40);
+				ctx.fillStyle="rgb("+OC[sector.orb.type-1]+")";
+				fillArc(ctx, sector.orb.x+10, sector.orb.y+10, 5);
 			}
 			if (sector.gate){
 				ctx.fillStyle="#000";
-				fillArc(ctx, sector.gate.x, sector.gate.y, 50, 0, 2*Math.PI, false);
+				fillArc(ctx, sector.gate.x, sector.gate.y, 50);
 				fillRect(ctx, sector.gate.x - 70, sector.gate.y-15, 140, 30);
 				fillRect(ctx, sector.gate.x - 15, sector.gate.y-70, 30, 140);
-				ctx.fillStyle="rgb(100,100,0)";
-				fillArc(ctx, sector.gate.x+55, sector.gate.y, 5, 0, 2*Math.PI, false);
-				ctx.fillStyle="rgb(100,0,0)";
-				fillArc(ctx, sector.gate.x-55, sector.gate.y, 5, 0, 2*Math.PI, false);
-				ctx.fillStyle="rgb(0,100,0)";
-				fillArc(ctx, sector.gate.x, sector.gate.y+55, 5, 0, 2*Math.PI, false);
-				ctx.fillStyle="rgb(0,0,100)";
-				fillArc(ctx, sector.gate.x, sector.gate.y-55, 5, 0, 2*Math.PI, false);
 			}
 		}
+		ctx.strokeStyle = '#ccc';
 		w.bubbles.forEach(function (b){
-			ctx.strokeStyle = '#ccc';
-			strokeArc(ctx, b.x, b.y, 2, 0, 2*Math.PI, false);
+			strokeArc(ctx, b.x, b.y, 2);
 		});
+		ctx.strokeStyle = '#fcc';
 		w.booms.forEach(function (b){
-			ctx.strokeStyle = '#fcc';
-			strokeArc(ctx, b.x, b.y, 5+rand.range(0,5), 0, 2*Math.PI, false);
+			strokeArc(ctx, b.x, b.y, 5+rand.range(0,5));
 		});
 		this.drawPlayer(ctx);
 		w.entities.forEach(e => this.drawEntity(ctx, e));
@@ -178,9 +193,9 @@ module.exports = {
 			ctx.fillText(player.hull+"%", 700,40);
 			for (let i in player.orbs){
 				if (player.orbs[i]){
-					ctx.fillStyle="rgb("+ORB_COLORS[i-1]+")";
+					ctx.fillStyle="rgb("+OC[i-1]+")";
 					ctx.beginPath();
-					ctx.arc(i*30, 40, 10, 0, 2*Math.PI, false);  
+					ctx.arc(i*30, 40, 10, 0, 2*Math.PI);
 					ctx.fill();
 				}
 			}
@@ -196,6 +211,7 @@ module.exports = {
 		} else {
 			this.showTexts();
 		}
+		/*
 		if (DEBUG){
 			ctx.textAlign="left"; 
 			// TODO: Remove from final dist, may be
@@ -212,11 +228,11 @@ module.exports = {
 			ctx.fillText("orbs: "+Object.keys(player.orbs),10,90);
 			ctx.fillText("entities: "+w.entities.length,10,100);
 			ctx.fillText("zoom: "+camera.zoom,10,130);
-		}
+		}*/
 	},
 	showTexts: function(){
 		if (this.currentText){
-			if (this.currentTextStyle === "italic")
+			if (this.ita)
 				ctx.font = "italic 28px serif";
 			else
 				ctx.font = "24px sans-serif";
@@ -227,13 +243,8 @@ module.exports = {
 				ctx.fillText(this.currentText, 400,550);
 		} else if (TEXT.length > 0){
 			let t = TEXT.shift();
-			let style = 'italic';
-			if (t.charAt(0) === "*"){
-				style = 'normal';
-				t = t.substr(1);	
-			}
+			this.ita = t.charAt(0) !== "*";
 			this.currentText = t;
-			this.currentTextStyle = style;
 			setTimeout(()=>this.currentText = false, player.won ? 8000 : 5000);
 		}
 	},
@@ -244,130 +255,63 @@ module.exports = {
 		ctx.fillStyle = e.takingDamage ? '#444' : '#000';
 	    ctx.strokeStyle = ctx.fillStyle;
 	    this["drawE"+e.t](ctx, e);
-	    if (DEBUG){
+	    /*if (DEBUG){
 			ctx.strokeStyle="#FF0000";
 			strokeRect(ctx, e.x, e.y, e.w, e.h);
-		}
+		}*/
 	},
 	drawEi: function(ctx, e){
 		// Big Nautilus
-		fillArc(ctx, e.x+2*e.s, e.y+2*e.s, 2*e.s, Math.PI,2*Math.PI, false);
-		if (e.flipped){
-			fillArc(ctx, e.x+3*e.s, e.y+2*e.s, e.s, 0, 2*Math.PI, false);
-			fillCircle(ctx, e.x+3*e.s, e.y+2*e.s, 3*e.s, Math.PI/2, Math.PI, false);
-		} else {
-			fillArc(ctx, e.x+e.s, e.y+2*e.s, e.s, 0, 2*Math.PI, false);
-			fillCircle(ctx, e.x+e.s, e.y+2*e.s, 3*e.s, 0, Math.PI/2, false);
-		}
-		ctx.fillStyle="#00F"; // TODO: Based on nautilus type
-		if (e.flipped){
-			fillArc(ctx, e.x+3*e.s, e.y+3*e.s, e.s/2, 0, 2*Math.PI, false);
-		} else {
-			fillArc(ctx, e.x+e.s, e.y+3*e.s, e.s/2, 0, 2*Math.PI, false);
-		}
+		dcs(ctx,e, e.flipped?BOf:BOn);
+		ctx.fillStyle="#00F";
+		fillArc(ctx, e.x+(e.flipped?1:3)*e.s, e.y+3*e.s, e.s/2);
 	},
 	drawEa: function(ctx, e){
 		// Four blobs
-		fillCircle(ctx, e.x+e.s, e.y+2*e.s, 2*e.s, 0,2*Math.PI);
-		fillCircle(ctx, e.x+3*e.s, e.y+2*e.s, 2*e.s, 0,2*Math.PI);
-		fillCircle(ctx, e.x+2*e.s, e.y+e.s, 2*e.s, 0,2*Math.PI);
-		fillCircle(ctx, e.x+2*e.s, e.y+3*e.s, 2*e.s, 0,2*Math.PI);
+		dcs(ctx, e, FB)
 	},
 	drawEb: function(ctx, e){
 		// Glider
-		fillCircle(ctx, e.x+2*e.s, e.y+2*e.s, 2*e.s, Math.PI, 2*Math.PI);
-		if (e.flipped)
-			fillCircle(ctx, e.x+e.s, e.y+2*e.s, e.s, 0,2*Math.PI);
-		else
-			fillCircle(ctx, e.x+3*e.s, e.y+2*e.s, e.s, 0,2*Math.PI);
+		dcs(ctx,e, e.flipped?GLf:GLn);
 	},
 	drawEc: function(ctx, e){
 		// Nautilus
-		fillCircle(ctx, e.x+2*e.s, e.y+2*e.s, 2*e.s, 0, Math.PI*2, false);
-		if (e.flipped){
-			fillCircle(ctx, e.x+3*e.s, e.y+2*e.s, 3*e.s, Math.PI/4, Math.PI, false);
-		} else {
-			fillCircle(ctx, e.x+e.s, e.y+2*e.s, 3*e.s, 0, Math.PI*0.75, false);
-		}
+		dcs(ctx,e, e.flipped?NAf:NAn);
 	},
 	drawEd: function(ctx, e){
 		// Big Fish
-		if (e.flipped){
-			fillCircle(ctx, e.x+2*e.s, e.y+2*e.s, 2*e.s, 0, Math.PI*1.25);
-			fillCircle(ctx, e.x+2*e.s, e.y+3*e.s, 2*e.s, Math.PI*1.5, Math.PI*2);
-		} else {
-			fillCircle(ctx, e.x+2*e.s, e.y+2*e.s, 2*e.s, Math.PI*-0.25, Math.PI);
-			fillCircle(ctx, e.x+2*e.s, e.y+3*e.s, 2*e.s, Math.PI, Math.PI*1.5);
-		}
-		ctx.fillStyle="#00F"; // TODO: Based on nautilus type
-		if (e.flipped){
-			fillArc(ctx, e.x+3*e.s, e.y+1.75*e.s, e.s/4, 0, 2*Math.PI);
-		} else {
-			fillArc(ctx, e.x+e.s, e.y+1.75*e.s, e.s/4, 0, 2*Math.PI);
-		}
-	},
-	dls: (ctx, e, ls)=>{
-		ctx.beginPath();
-		ls.forEach(l=>{
-			moveTo(ctx, e.x+e.s*l[0], e.y+e.s*l[1]);
-			for (var i = 2; i < l.length; i+=2){
-				lineTo(ctx, e.x+e.s*l[i], e.y+e.s*l[i+1]);
-			}
-			ctx.stroke();	
-		})
-	},
-	dsh: (ctx, e, sh)=>{
-		sh.forEach(p=>{
-			ctx.beginPath();
-			moveTo(ctx, e.x+e.s*p[0], e.y+e.s*p[1]);
-			for (var i = 2; i < p.length; i+=2){
-				lineTo(ctx, e.x+e.s*p[i], e.y+e.s*p[i+1]);
-			}	
-			ctx.closePath();
-			ctx.fill();
-		})
+		dcs(ctx,e, e.flipped?BFf:BFn);
 	},
 	drawEe: function(ctx, e){
 		// Spider
 		fillRect(ctx, e.x + 1.8*e.s, e.y+e.s, e.s*0.4, 2*e.s);
-		this.dls(ctx, e, SPIDER);
-	},
-	dcs: (ctx, e, cs) => {
-		// Draw circles
-		cs.forEach(c=>{
-			fillArc(ctx, e.x+c[0]*e.s, 
-				e.y+c[1]*e.s, 
-				e.s*c[2],
-				Math.PI * (c[3] || 0),
-				Math.PI * (c[4] || 2)
-			);	
-		})
+		dls(ctx, e, SPIDER);
 	},
 	drawEf: function(ctx, e){
 		// Jelly 1
-		this.dcs(ctx, e, JELLY1);
-		this.dls(ctx, e, JELLY2);
+		dcs(ctx, e, JELLY1);
+		dls(ctx, e, JELLY2);
 	},
 	drawEg: function(ctx, e){
 		// Jelly 2
-		this.dcs(ctx, e, JELLY3);
-		this.dls(ctx, e, JELLY4);
+		dcs(ctx, e, JELLY3);
+		dls(ctx, e, JELLY4);
 	},
 	drawEh: function(ctx, e){
 		// Deep fish
 		ctx.fillStyle = 'rgba(255,255,255,0.5)';
-		this.dcs(ctx, e, FISH2);
+		dcs(ctx, e, FISH2);
 		ctx.fillStyle = '#000';
-		this.dcs(ctx, e, FISH);
-		this.dsh(ctx, e, JAW1);
+		dcs(ctx, e, FISH);
+		dsh(ctx, e, JAW1);
 		strokeArc(ctx, e.x+e.s*3.5, e.y, e.s*1.5, 1*Math.PI, 1.75*Math.PI);
-		this.dcs(ctx, e, FISH3);
+		dcs(ctx, e, FISH3);
 		ctx.fillStyle = '#F00';
-		this.dcs(ctx, e, FISH4);
+		dcs(ctx, e, FISH4);
 	},
 	drawEj: function(ctx, e){
 		// Ball
-		fillCircle(ctx, e.x+e.w/2, e.y+e.h/2, e.s*2, 0, 2*Math.PI, false);
+		dcs(ctx, e, BA);
 	},
 	drawPlayer: function(ctx){
 		if (player.lt){
@@ -386,19 +330,17 @@ module.exports = {
 			ctx.fill();
 		}
 		ctx.fillStyle=player.takingDamage ? '#444' : '#000';
-		fillArc(ctx, player.x+player.w/2, player.y+player.w/2, player.w, 0, 2*Math.PI, false);
+		fillArc(ctx, player.x+player.w/2, player.y+player.w/2, player.w);
 		if (player.flipped){
 			fillRect(ctx, player.x - 8, player.y-7, 14, 16);
 		} else {
 			fillRect(ctx, player.x + 8, player.y-7, 14, 16);
 		}
-		fillArc(ctx, player.x-3, player.y+16+3, 8, 0, 2*Math.PI, false);
-		fillArc(ctx, player.x+16+3, player.y+16+3, 8, 0, 2*Math.PI, false);
 		// Hitbox
-		if (DEBUG){
+		/*if (DEBUG){
 			ctx.strokeStyle="#FF0000";
 			strokeRect(ctx, player.x, player.y, player.w, player.h);
-		}
+		}*/
 	},
 	showText: function(t){
 		TEXT.push(t);
@@ -421,67 +363,104 @@ const WM = [
 "The SOS beacon is activated, you'll be rescued soon.",
 "Noone will believe your tale of an underwater lost empire...",
 "but you'll never forget the time when you were almost Lost.",
-"Lost in Asterion - A production of Santiago Zapata.",
-"The End.",
 ];
 
-const ORB_COLORS = [
+// ORB_COLORS
+const OC = [
   "255,255,0",
   "255,0,0",
   "0,255,0",
   "0,0,255",
 ];
 
-function transX(x){
+function tx(x){
   return (x - camera.x) * camera.zoom + canvas.width / 2 ;
 }
 
-function transY(y){
+function ty(y){
   return (y - camera.y) * camera.zoom + canvas.height / 2;
 }
 
-function transW(w){
+function ts(w){
   return w * camera.zoom;
 }
 
-function transH(h){
-  return h * camera.zoom;
+function moveTo(c, x, y){
+  c.moveTo(tx(x), ty(y));
 }
 
-function moveTo(ctx, x, y){
-  ctx.moveTo(transX(x), transY(y));
+function lineTo(c, x, y){
+  c.lineTo(tx(x), ty(y));
 }
 
-function lineTo(ctx, x, y){
-  ctx.lineTo(transX(x), transY(y));
+function fillRect(c, x, y, w, h){
+  c.fillRect(tx(x), ty(y), ts(w), ts(h));  
 }
 
-function fillRect(ctx, x, y, w, h){
-  ctx.fillRect(transX(x), transY(y), transW(w), transH(h));  
+function strokeRect(c, x, y, w, h){
+  c.strokeRect(tx(x), ty(y), ts(w), ts(h));  
 }
 
-function strokeRect(ctx, x, y, w, h){
-  ctx.strokeRect(transX(x), transY(y), transW(w), transH(h));  
-}
-
-function fillCircle(ctx, x, y, r, a, b, c){
-  ctx.save();
-  ctx.beginPath();
+// TODO: Remove this? Only used by big boss
+/*function fillCircle(c, x, y, r, a, b){
+  c.save();
+  c.beginPath();
   moveTo(ctx, x, y);
-  ctx.arc(transX(x), transY(y), transW(r), a, b, c);  
-  ctx.closePath();
-  ctx.fill();
-  ctx.restore();
+  c.arc(tx(x), ty(y), ts(r), a, b);  
+  c.closePath();
+  c.fill();
+  c.restore();
+}*/
+
+function fillArc(c, x, y, r, a, b){
+  a = a || 0;
+  b = b || 2*Math.PI;
+  c.beginPath();
+  c.arc(tx(x), ty(y), ts(r), a, b);
+  c.fill();
 }
 
-function fillArc(ctx, x, y, r, a, b, c){
-  ctx.beginPath();
-  ctx.arc(transX(x), transY(y), transW(r), a, b, c);  
-  ctx.fill();
+function strokeArc(c, x, y, r, a, b){
+  a = a || 0;
+  b = b || 2*Math.PI;
+  c.beginPath();
+  c.arc(tx(x), ty(y), ts(r), a, b);
+  c.stroke();
 }
 
-function strokeArc(ctx, x, y, r, a, b, c){
-  ctx.beginPath();
-  ctx.arc(transX(x), transY(y), transW(r), a, b, c);  
-  ctx.stroke();
-}
+// Draw circles
+function dcs(t, e, cs) {
+	cs.forEach(c=>{
+		fillArc(t, e.x+c[0]*e.s, 
+			e.y+c[1]*e.s, 
+			e.s*c[2],
+			Math.PI * (c[3] || 0),
+			Math.PI * (c[4] || 2)
+		);	
+	})
+};
+
+// Draw lines
+function dls(t, e, ls){
+	t.beginPath();
+	ls.forEach(l=>{
+		moveTo(t, e.x+e.s*l[0], e.y+e.s*l[1]);
+		for (var i = 2; i < l.length; i+=2){
+			lineTo(t, e.x+e.s*l[i], e.y+e.s*l[i+1]);
+		}
+		t.stroke();	
+	})
+};
+
+// Draw shapes
+function dsh(t, e, sh){
+	sh.forEach(p=>{
+		t.beginPath();
+		moveTo(t, e.x+e.s*p[0], e.y+e.s*p[1]);
+		for (var i = 2; i < p.length; i+=2){
+			lineTo(t, e.x+e.s*p[i], e.y+e.s*p[i+1]);
+		}	
+		t.closePath();
+		t.fill();
+	})
+};
