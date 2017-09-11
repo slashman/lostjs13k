@@ -264,12 +264,6 @@ module.exports = {
         player.orbs[sector.orb.type] = true;
         sector.orb = false;
       }
-      if (sector.gate && geo.mdist(sector.gate.x, sector.gate.y, player.x, player.y) < 20){
-        if (player.orbs[4] && player.orbs[1] && player.orbs[2] && player.orbs[3]){
-          //TODO: Win sequence
-          player.orbs = {};
-        }
-      }
     } else {
       if (!player.invul && geo.mdist(e.x, e.y, player.x, player.y) < e.w){
         player.takingDamage = true;
