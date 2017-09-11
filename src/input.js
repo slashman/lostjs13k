@@ -11,7 +11,7 @@ key.init();
 
 let player = false;
 let world = false;
-let active = false;
+let active = true;
 
 /*key.typed(90, function(){
   if (ui.camera.zoom >= 1)
@@ -96,7 +96,7 @@ module.exports = {
   keyboard: function (){
     if (!active) return;
     if (key.isDown(38)){ // Rise
-      sound.play();
+      sound.play(0);
       player.dy -= 10;
       if (player.dy < -120){
         player.dy = -120;
@@ -104,14 +104,14 @@ module.exports = {
       addBubbles("left");
       addBubbles("right");
     } else if (key.isDown(40)){ // Sink
-      sound.play();
+      sound.play(0);
       if (player.dy < 60){
         player.dy += 10;
       }
       addBubbles("top");
     } 
     if (key.isDown(37)){
-      sound.play();
+      sound.play(0);
       player.flipped = true;
       if (player.dx > -120){
         player.dx -= 15;
@@ -120,7 +120,7 @@ module.exports = {
       player.dy -= 5;
       addBubbles("right");
     } else if (key.isDown(39)){
-      sound.play();
+      sound.play(0);
       player.flipped = false;
       if (player.dx < 120){
         player.dx += 15;
@@ -130,3 +130,9 @@ module.exports = {
     }
   }
 };
+
+function beep(){
+  if (active) sound.play(1);
+  setTimeout(beep, 10000);
+}
+beep();

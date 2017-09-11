@@ -6,6 +6,7 @@ const gen = require('./gen');
 const ui = require('./ui');
 const rand = require('./rng')();
 const Entity = require('./Entity.class');
+const sound = require('./sound');
 
 const SECTOR_SIZE = 3000;
 
@@ -268,6 +269,7 @@ module.exports = {
       if (!player.invul && geo.mdist(e.x, e.y, player.x, player.y) < e.w){
         player.takingDamage = true;
         setTimeout(()=>player.takingDamage = false, 50);
+        sound.play(2);
         player.hull--; // TODO: Use enemy attack
         player.dx = e.dx * 2;
         player.dy = e.dy * 2;
