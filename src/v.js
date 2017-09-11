@@ -1551,69 +1551,12 @@ Voronoi.prototype.closeCells = function(bbox) {
                         // fall through
 
                     default:
-                        throw "Voronoi.closeCells() > this makes no sense!";
+                        throw "V";
                     }
                 }
             iLeft++;
             }
         cell.closeMe = false;
-        }
-    };
-
-// ---------------------------------------------------------------------------
-// Debugging helper
-/*
-Voronoi.prototype.dumpBeachline = function(y) {
-    console.log('Voronoi.dumpBeachline(%f) > Beachsections, from left to right:', y);
-    if ( !this.beachline ) {
-        console.log('  None');
-        }
-    else {
-        var bs = this.beachline.getFirst(this.beachline.root);
-        while ( bs ) {
-            console.log('  site %d: xl: %f, xr: %f', bs.site.voronoiId, this.leftBreakPoint(bs, y), this.rightBreakPoint(bs, y));
-            bs = bs.rbNext;
-            }
-        }
-    };
-*/
-
-// ---------------------------------------------------------------------------
-// Helper: Quantize sites
-
-// rhill 2013-10-12:
-// This is to solve https://github.com/gorhill/Javascript-Voronoi/issues/15
-// Since not all users will end up using the kind of coord values which would
-// cause the issue to arise, I chose to let the user decide whether or not
-// he should sanitize his coord values through this helper. This way, for
-// those users who uses coord values which are known to be fine, no overhead is
-// added.
-
-Voronoi.prototype.quantizeSites = function(sites) {
-    var ε = this.ε,
-        n = sites.length,
-        site;
-    while ( n-- ) {
-        site = sites[n];
-        site.x = Math.floor(site.x / ε) * ε;
-        site.y = Math.floor(site.y / ε) * ε;
-        }
-    };
-
-// ---------------------------------------------------------------------------
-// Helper: Recycle diagram: all vertex, edge and cell objects are
-// "surrendered" to the Voronoi object for reuse.
-// TODO: rhill-voronoi-core v2: more performance to be gained
-// when I change the semantic of what is returned.
-
-Voronoi.prototype.recycle = function(diagram) {
-    if ( diagram ) {
-        if ( diagram instanceof this.Diagram ) {
-            this.toRecycle = diagram;
-            }
-        else {
-            throw 'Voronoi.recycleDiagram() > Need a Diagram object.';
-            }
         }
     };
 
@@ -1626,9 +1569,6 @@ Voronoi.prototype.recycle = function(diagram) {
 //   *references* to sites are copied locally.
 
 Voronoi.prototype.compute = function(sites, bbox) {
-    // to measure execution time
-    var startTime = new Date();
-
     // init internal state
     this.reset();
 
@@ -1701,16 +1641,9 @@ Voronoi.prototype.compute = function(sites, bbox) {
     //   add missing edges in order to close opened cells
     this.closeCells(bbox);
 
-    // to measure execution time
-    var stopTime = new Date();
-
     // prepare return values
     var diagram = new this.Diagram();
     diagram.cells = this.cells;
-    diagram.edges = this.edges;
-    diagram.vertices = this.vertices;
-    diagram.execTime = stopTime.getTime()-startTime.getTime();
-
     // clean up
     this.reset();
 
