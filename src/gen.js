@@ -5,10 +5,11 @@
 const geo = require('./geo');
 const rng = require('./rng');
 const ca = require('./ca');
+var V = require('./v')
 
 var rand = rng();
 
-var voronoi = new Voronoi();
+var voronoi = new V();
 
 const SECTOR_SIZE = 3000;
 const W = SECTOR_SIZE / 24;
