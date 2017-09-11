@@ -130,7 +130,6 @@ module.exports = {
 				ctx.fillStyle=sector.bg;
 				ctx.strokeStyle=sector.bg;
 				fillRect(ctx, sector.x, sector.y, SECTOR_SIZE, SECTOR_SIZE);
-				strokeRect(ctx, sector.x, sector.y, SECTOR_SIZE, SECTOR_SIZE);
 			}
 
 			sector.bgStones.forEach(function(s){
@@ -395,10 +394,6 @@ function lineTo(c, x, y){
 
 function fillRect(c, x, y, w, h){
   c.fillRect(tx(x), ty(y), ts(w), ts(h));  
-}
-
-function strokeRect(c, x, y, w, h){
-  c.strokeRect(tx(x), ty(y), ts(w), ts(h));  
 }
 
 // TODO: Remove this? Only used by big boss
