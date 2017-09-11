@@ -18,7 +18,7 @@ const camera = {
 };
 
 let w = false; // World
-let player = false; // World
+let player = false;
 
 const SPIDER = [
 	[1.8,1.7,1.25,1,1.75,0],
@@ -81,6 +81,7 @@ module.exports = {
 	init: function(w_){
 		w = w_;
 		player = w.player;
+		this.title = true;
 	},
 	draw: function (){
 		if (player.dead){
@@ -171,19 +172,30 @@ module.exports = {
 				ctx.stroke();
 			});
 		}
-		ctx.font = "bold 20px sans-serif";
-		ctx.fillStyle = "white";
-		ctx.fillText(player.hull+"%", 700,40);
-		for (let i in player.orbs){
-			if (player.orbs[i]){
-				ctx.fillStyle="rgb("+ORB_COLORS[i-1]+")";
-				ctx.beginPath();
-				ctx.arc(i*30, 40, 10, 0, 2*Math.PI, false);  
-				ctx.fill();
+		if (!this.title){
+			ctx.font = "bold 20px sans-serif";
+			ctx.fillStyle = "white";
+			ctx.fillText(player.hull+"%", 700,40);
+			for (let i in player.orbs){
+				if (player.orbs[i]){
+					ctx.fillStyle="rgb("+ORB_COLORS[i-1]+")";
+					ctx.beginPath();
+					ctx.arc(i*30, 40, 10, 0, 2*Math.PI, false);  
+					ctx.fill();
+				}
 			}
 		}
 		ctx.fillStyle = "white";
-		this.showTexts();
+		if (this.title){
+			ctx.font = "italic 36px serif";
+			ctx.textAlign="center"; 
+			ctx.fillText("Lost in Asterion", 400,100);
+			ctx.font = "italic 24px serif";
+			ctx.fillText("A js13k game by Santiago Zapata", 400,150);
+			ctx.fillText("Press Enter", 400,450);
+		} else {
+			this.showTexts();
+		}
 		if (DEBUG){
 			ctx.textAlign="left"; 
 			// TODO: Remove from final dist, may be
@@ -358,19 +370,21 @@ module.exports = {
 		fillCircle(ctx, e.x+e.w/2, e.y+e.h/2, e.s*2, 0, 2*Math.PI, false);
 	},
 	drawPlayer: function(ctx){
-		ctx.fillStyle = 'rgba(255,255,255,0.5)';
-		ctx.beginPath();
-		if (player.flipped){
-			moveTo(ctx, player.x, player.y - 3);
-			lineTo(ctx, player.x - 500, player.y - 200);
-			lineTo(ctx, player.x - 500, player.y + 200);
-		} else {
-			moveTo(ctx, player.x + 15, player.y - 3);
-			lineTo(ctx, player.x + 500, player.y - 200);
-			lineTo(ctx, player.x + 500, player.y + 200);
+		if (player.lt){
+			ctx.fillStyle = 'rgba(255,255,255,0.5)';
+			ctx.beginPath();
+			if (player.flipped){
+				moveTo(ctx, player.x, player.y - 3);
+				lineTo(ctx, player.x - 500, player.y - 200);
+				lineTo(ctx, player.x - 500, player.y + 200);
+			} else {
+				moveTo(ctx, player.x + 15, player.y - 3);
+				lineTo(ctx, player.x + 500, player.y - 200);
+				lineTo(ctx, player.x + 500, player.y + 200);
+			}
+			ctx.closePath();
+			ctx.fill();
 		}
-		ctx.closePath();
-		ctx.fill();
 		ctx.fillStyle=player.takingDamage ? '#444' : '#000';
 		fillArc(ctx, player.x+player.w/2, player.y+player.w/2, player.w, 0, 2*Math.PI, false);
 		if (player.flipped){
@@ -407,7 +421,7 @@ const WM = [
 "The SOS beacon is activated, you'll be rescued soon.",
 "Noone will believe your tale of an underwater lost empire...",
 "but you'll never forget the time when you were almost Lost.",
-"Lost in the Deep Sea - A production of Santiago Zapata.",
+"Lost in Asterion - A production of Santiago Zapata.",
 "The End.",
 ];
 

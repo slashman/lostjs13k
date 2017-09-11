@@ -11,6 +11,7 @@ key.init();
 
 let player = false;
 let world = false;
+let active = false;
 
 /*key.typed(90, function(){
   if (ui.camera.zoom >= 1)
@@ -30,6 +31,14 @@ key.typed(90, function(){
   if (player.orbs[2]){
     world.sonicBoom(player.flipped ? - 1 : 1);
   }
+});
+
+key.typed(13, ()=>{
+  if (ui.title){
+    ui.title = false;
+    setTimeout(()=>player.lt = true, 5000);
+    setTimeout(()=>active = true, 15000);
+  } 
 });
 
 const baseVar = {
@@ -85,6 +94,7 @@ module.exports = {
     player = w.player;
   },
   keyboard: function (){
+    if (!active) return;
     if (key.isDown(38)){ // Rise
       sound.play();
       player.dy -= 10;

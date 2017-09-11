@@ -22,8 +22,8 @@ const player = {
   invul: false,
   sonic: true, // Powerup
   hull: 100,
-  orbs: {"1": true, "2": true, "4": true},
-  //orbs: {}
+  //orbs: {"1": true, "2": true, "4": true},
+  orbs: {}
 };
 
 const bubbles = [];
@@ -33,7 +33,6 @@ const entities = [];
 const sectors = {};
 
 let world = false;
-
 function update(elapsed){
   if (player.dead || player.won){
     return;

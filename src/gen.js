@@ -54,8 +54,8 @@ const CLUES = {
 	A: [
 		"*You wake up to find yourself in an underwater cavern", 
 		"*How long has it been? The onscreen nav is not working",
-		"*You are lost in the depths of the sea, but you can still move around",
-		"*(Press the arrow keys to move around).",
+		"*You are lost in the depths of the sea, but you can still move.",
+		"*(Press the arrow keys).",
 	],
 	P: [
 		"*You hear a sweet voice in your head.", 
