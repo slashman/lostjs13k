@@ -20,7 +20,7 @@ module.exports = {
 				cell.nextType = cell.type;
 				return;
 			}
-			const surroundingCount = this.getSurroundingCellsCount(cell, rule.sType);
+			var surroundingCount = this.getSurroundingCellsCount(cell, rule.sType);
 			if (rule.op === '>'){
 				if (surroundingCount > rule.q){
 					cell.nextType = rule.nType;

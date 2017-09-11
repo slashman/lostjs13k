@@ -2,21 +2,21 @@
 /* globals Voronoi */
 'use strict';
 
-const geo = require('./geo');
-const rng = require('./rng');
-const ca = require('./ca');
+var geo = require('./geo');
+var rng = require('./rng');
+var ca = require('./ca');
 var V = require('./v')
 
 var rand = rng();
 
 var voronoi = new V();
 
-const SECTOR_SIZE = 3000;
-const W = SECTOR_SIZE / 24;
-const H = SECTOR_SIZE / 18;
+var SECTOR_SIZE = 3000;
+var W = SECTOR_SIZE / 24;
+var H = SECTOR_SIZE / 18;
 
 
-const RULES = {
+var RULES = {
 	TIGHT_CAVE: [
 		{ type: 0, op: '>', q: 1, sType: 1, nType: 1, chance: 60},
 		{ type: 1, op: '<', q: 1, sType: 1, nType: 0, chance: 90},
@@ -27,30 +27,28 @@ const RULES = {
 	]
 };
 
-const MAPS = [
+var MAPS = [
 "FFFFFF03F8E101C0C001D8C001D8C0031CC07FFFC041FFE151C3FF5380FFDF8383D90F80DB83830B80DFE3C3DFF9FFDFFF0FC0FFEFFF",
 "FFEFFF398FC1018781011C800185C1458DEFFFFDEFFF8187FFE184000084000080FF0184FF0184FF01ECFF03EEFFFF87FF0780FF87FF",
 "FFFFFFE1FF8FE1FF8FE11F8061308C7B708F40518DC05BFD00000000000040E7FB40C3C177C3C121E6C121C2EFE1C3C1E1E7C1FFFFFF",
 "FFC1FFFFE383E1F783E1F783E1F783F9F7EBE1F701E18001030000030000E18001E1F701E1FFABFBFF81E1FAAB01C0FF63F5FFFFFFFF"
 ];
 
-const STANDARD_COLORS = ["#001c33", "#002a4d", "#0e3f66"];
-
-const SECTOR_INFO = [
+var SECTOR_INFO = [
 	[ "FdrcF3", "Fdl",  "Cdr", "ClcE1",  "CdCr",   "GlBcOr", "ClPcA" ],
 	[ "Fur",    "Fuld", "Cur", "Odlr",   "OudlR",  "Td" ],
 	[ "",       "PuJr", "Rlr", "OudKlHr","OulrI",  "QudQl" ],
 	[ "CcMr*",  "SlcLr","ClNr","Dul",    "VrcG4",  "Vul" ]
 ];
 
-const LV = [
+var LV = [
 	"4422000",
 	"442112",
 	"033112",
 	"666055"
 ]
 
-const CLUES = {
+var CLUES = {
 	// Intro
 	A: [
 		"*You wake up to find yourself in an underwater cavern", 
@@ -134,7 +132,7 @@ const CLUES = {
 	],
 };
 
-const SECTOR_DATA = {
+var SECTOR_DATA = {
 	// Farmland   Blob, Big Fish, Jelly 1, Jelly 2
 	F: {cv: true, c:["#3B5323", "#526F35", "#636F57"], open: 20, ca: 0, rules: [],
 	ec: "adfg"},
@@ -160,13 +158,13 @@ const SECTOR_DATA = {
 	ec:"bcf"},
 };
 
-function checkAndAddSite(site, toSite){
-	if (site === null || site.voronoiId === toSite.voronoiId)
+function cas(s, t){
+	if (s === null || s.voronoiId === t.voronoiId)
 		return;
-	if (!toSite.surroundingCells.find(function(cell){
-		return cell.voronoiId === site.voronoiId;
+	if (!t.surroundingCells.find(function(cell){
+		return cell.voronoiId === s.voronoiId;
 	})){
-		toSite.surroundingCells.push(site);
+		t.surroundingCells.push(s);
 	}
 }
 
@@ -175,18 +173,18 @@ function checkAndAddSite(site, toSite){
  * - vs: Array of vertices forming the polygon for the site
  * - surroundingCells: Array of adjacent cells
  */
-function completeDiagram(diagram, includeSurrounding){
-	diagram.cells.forEach(function(cell){
-		const site = cell.site;
+function completeDiagram(d, su){
+	d.cells.forEach(function(cell){
+		var site = cell.site;
 		site.vs = [];
-		if (includeSurrounding){
+		if (su){
 	  		site.surroundingCells = [];
 	  	}
 		cell.halfedges.forEach(function (halfedge){
 	    	site.vs.push([halfedge.getStartpoint().x, halfedge.getStartpoint().y]);
-	    	if (includeSurrounding){
-		    	checkAndAddSite(halfedge.edge.lSite, site);
-		    	checkAndAddSite(halfedge.edge.rSite, site);
+	    	if (su){
+		    	cas(halfedge.edge.lSite, site);
+		    	cas(halfedge.edge.rSite, site);
 		    }
 	    });
 	});
@@ -200,11 +198,11 @@ module.exports = {
 		let h = SECTOR_SIZE;
 		let x = mx * w;
 		let y = my * h;
-		const bbox = {xl: x, xr: x+w, yt: y, yb: y+h};
-		const metadata = getMetadata(mx, my);
+		var bbox = {xl: x, xr: x+w, yt: y, yb: y+h};
+		var metadata = getMetadata(mx, my);
 
-		const colors = metadata.c || STANDARD_COLORS;
-		const sites = [];
+		var colors = metadata.c || ["#001c33", "#002a4d", "#0e3f66"];
+		var sites = [];
 		for (let i = 0; i < 1000; i++){
 		  sites.push({
 		    x: rand.range(bbox.xl+20, bbox.xr-20),
@@ -261,9 +259,9 @@ module.exports = {
 		});
 		ca.run(metadata.rules, metadata.ca+1, stones, rand);
 		stones = stones.filter(s => s.type === 1 || s.type === 4);
-		const bgStones = [];
+		var bgStones = [];
 		if (metadata.cv){
-			const bgSites = [];
+			var bgSites = [];
 			for (var i = 0; i < 1450; i++){
 			  bgSites.push({
 			    x: rand.range(bbox.xl, bbox.xr),
@@ -273,7 +271,7 @@ module.exports = {
 			diagram = voronoi.compute(bgSites, bbox);
 			completeDiagram(diagram, false);
 			diagram.cells.forEach(cell => {
-				const site = cell.site;
+				var site = cell.site;
 			    site.type = rand.range(0,colors.length);
 			    bgStones.push(cell.site);
 			});
@@ -284,7 +282,7 @@ module.exports = {
 			this.fillBlocks(metadata.s, stones, mx, my);
 		}
 		let orb = false;
-		const stories = [];
+		var stories = [];
 		if (metadata.orb && !player.orbs[metadata.orb.type]){
 			orb = {
 				type: metadata.orb.type,
@@ -354,12 +352,12 @@ module.exports = {
 	fillBlocks: function(n,s,bx,by){
 		bx *= SECTOR_SIZE;
 		by *= SECTOR_SIZE;
-		const map = MAPS[n];
+		var map = MAPS[n];
 		let index = 0;
 		let chunk = map.substr(index, 2);
-		const mask = [];
+		var mask = [];
 		while (chunk != ""){
-			const n = parseInt(chunk , 16)
+			var n = parseInt(chunk , 16)
 			mask.push([n&1,n&2,n&4,n&8,n&16,n&32,n&64,n&128]);
 			index++;
 			chunk = map.substr(index*2, 2);

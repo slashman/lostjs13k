@@ -1,16 +1,16 @@
 /* jshint node: true, loopfunc: true */
 "use strict";
 
-const geo = require('./geo');
-const gen = require('./gen');
-const ui = require('./ui');
-const rand = require('./rng')();
-const Entity = require('./Entity.class');
-const sound = require('./sound');
+var geo = require('./geo');
+var gen = require('./gen');
+var ui = require('./ui');
+var rand = require('./rng')();
+var Entity = require('./Entity.class');
+var sound = require('./sound');
 
-const SECTOR_SIZE = 3000;
+var SECTOR_SIZE = 3000;
 
-const player = {
+var player = {
   x: 6.5 * SECTOR_SIZE,
   y: 0.5 * SECTOR_SIZE,
   h: 16,
@@ -27,11 +27,11 @@ const player = {
   orbs: {}
 };
 
-const bubbles = [];
-const booms = [];
-const entities = [];
+var bubbles = [];
+var booms = [];
+var entities = [];
 
-const sectors = {};
+var sectors = {};
 
 let world = false;
 function update(elapsed){
@@ -95,10 +95,10 @@ function createAndDeleteSectorAt(w, cx, cy, dx, dy) {
 }
 
 function checkLoadFragment(w){
-  const leftZone = player.x < player.mx * SECTOR_SIZE + SECTOR_SIZE / 2;
-  const rightZone = player.x > player.mx * SECTOR_SIZE + SECTOR_SIZE / 2;
-  const downZone = player.y > player.my * SECTOR_SIZE + SECTOR_SIZE / 2;
-  const upZone = player.y < player.my * SECTOR_SIZE + SECTOR_SIZE / 2;
+  var leftZone = player.x < player.mx * SECTOR_SIZE + SECTOR_SIZE / 2;
+  var rightZone = player.x > player.mx * SECTOR_SIZE + SECTOR_SIZE / 2;
+  var downZone = player.y > player.my * SECTOR_SIZE + SECTOR_SIZE / 2;
+  var upZone = player.y < player.my * SECTOR_SIZE + SECTOR_SIZE / 2;
   if (rightZone){
     createAndDeleteSectorAt(w, 1, 0, -1, 0);
     createAndDeleteSectorAt(w, 0, 0, -1, 1);
@@ -174,8 +174,8 @@ module.exports = {
         var x = player.x+rand.range(1000, 1200)*rand.sign();
         var y = player.y+rand.range(1000, 1200)*rand.sign();  
       }
-      const tmx = Math.floor(x / SECTOR_SIZE);
-      const tmy = Math.floor(y / SECTOR_SIZE);
+      var tmx = Math.floor(x / SECTOR_SIZE);
+      var tmy = Math.floor(y / SECTOR_SIZE);
       let sector = sectors[tmx+":"+tmy];
       if (!sector){
         continue;
@@ -226,7 +226,7 @@ module.exports = {
     }
   },
   updateEntity: function(e, elapsed){
-    const tx = e.x + e.dx * elapsed;
+    var tx = e.x + e.dx * elapsed;
     var ty = e.y + e.dy * elapsed;
     let tmx;
     if (e.dx > 0){
@@ -234,7 +234,7 @@ module.exports = {
     } else {
       tmx = Math.floor(tx / SECTOR_SIZE);
     }
-    const tmy = Math.floor((ty+e.h) / SECTOR_SIZE);
+    var tmy = Math.floor((ty+e.h) / SECTOR_SIZE);
     let collision = false;
     let sector = sectors[tmx+":"+tmy];
     if (sector){

@@ -1,8 +1,8 @@
 /* jshint node: true */
 "use strict";
 
-const pressed = {};
-const typedCallbacks = {};
+var pressed = {};
+var typedCallbacks = {};
 
 function keyPress(e){
 	if (typedCallbacks[e.which]){

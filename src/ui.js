@@ -1,17 +1,17 @@
 /* jshint node: true, loopfunc: true */
 "use strict";
 
-//const DEBUG = false;
+//var DEBUG = false;
 
-const geo = require('./geo');
-const rand = require('./rng')();
+var geo = require('./geo');
+var rand = require('./rng')();
 
 var canvas = document.querySelector('#game');
 var ctx = canvas.getContext('2d');
 
-const SECTOR_SIZE = 3000;
+var SECTOR_SIZE = 3000;
 
-const camera = {
+var camera = {
   x: 20,
   y: 20,
   zoom: 1
@@ -20,7 +20,7 @@ const camera = {
 let w = false; // World
 let player = false;
 
-const SPIDER = [
+var SPIDER = [
 	[1.8,1.7,1.25,1,1.75,0],
 	[1.8,2,1,1.8],
 	[1.8,2.3,1,2.8],
@@ -31,19 +31,19 @@ const SPIDER = [
 	[2.2,2.9,2.5,3.5,2.2,4]
 ];
 
-const JELLY1 = [ // Circles
+var JELLY1 = [ // Circles
 	[2, 2, 2],
 	[2, 4, 2, 1, 2]
 ];
 
-const FB = [[1,2,2],[3,2,2],[2,1,2][2,3,2]];
+var FB = [[1,2,2],[3,2,2],[2,1,2][2,3,2]];
 
-const GLn = [
+var GLn = [
 	[2,2,2,1],
 	[3,2,1]
 ]
 
-const GLf = [
+var GLf = [
 	[2,2,2,1],
 	[1,2,1]
 ]
@@ -57,39 +57,39 @@ var BFn = [[2,2,2,-0.25,1],[2,3,2,1,1.5]];
 var BOf = [[2,2,2,1],[3,2,1],[3,2,3,0.5,1]];
 var BOn = [[2,2,2,1],[1,2,1],[1,2,3,0,0.5]];
 
-const JELLY2 = [ // Lines
+var JELLY2 = [ // Lines
 	[1,4,1,6],
 	[2,4,2,7],
 	[3,4,3,6]
 ];
 
-const JELLY3 = [ // Circles
+var JELLY3 = [ // Circles
 	[2, 2, 2, 0.75, 2.25]
 ];
 
-const JELLY4 = [ // Lines
+var JELLY4 = [ // Lines
 	[1,2,1,5],
 	[2,2,2,7],
 	[3,2,3,5]
 ];
 
-const FISH = [
+var FISH = [
 	[2,2,2,0.7,1.9]
 ]
 
-const FISH2 = [
+var FISH2 = [
 	[4.5,-0.5,1]
 ]
 
-const FISH3 = [
+var FISH3 = [
 	[4.5,-0.5,0.5]
 ]
 
-const FISH4 = [
+var FISH4 = [
 	[3,1,0.3]
 ]
 
-const JAW1 = [ // Shape
+var JAW1 = [ // Shape
 	[1,3.5,4,3.5,4,2.2,3.6,3,1,3],
 	[3.8,1,3.8,2.5,2.5,1],
 	[1,1.5,-1,1.5,0,2,-1,2.5,1,2.5],
@@ -97,7 +97,7 @@ const JAW1 = [ // Shape
 
 var BA = [[2,2,2]];
 
-const TEXT=[];
+var TEXT=[];
 
 module.exports = {
 	camera: camera,
@@ -354,7 +354,7 @@ module.exports = {
 };
 
 // Winning messages
-const WM = [
+var WM = [
 "You make the journey back to the Gate of Atlantis,", 
 "as Melkaia indicated, the orbs open it.",
 "A tremendous whirlpool covers all the cavern, ",
@@ -366,7 +366,7 @@ const WM = [
 ];
 
 // ORB_COLORS
-const OC = [
+var OC = [
   "255,255,0",
   "255,0,0",
   "0,255,0",

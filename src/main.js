@@ -1,10 +1,10 @@
 /* jshint node: true, loopfunc: true */
 "use strict";
 
-const raf = require('./raf');
-const ui = require('./ui');
-const world = require('./world');
-const input = require('./input');
+var raf = require('./raf');
+var ui = require('./ui');
+var world = require('./world');
+var input = require('./input');
 
 ui.init(world);
 input.init(world);

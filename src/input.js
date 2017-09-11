@@ -2,10 +2,10 @@
 "use strict";
 
 
-const key = require('./key');
-const ui = require('./ui');
-const rand = require('./rng')();
-const sound = require('./sound');
+var key = require('./key');
+var ui = require('./ui');
+var rand = require('./rng')();
+var sound = require('./sound');
 
 key.init();
 
@@ -40,7 +40,7 @@ key.typed(13, ()=>{
   } 
 });
 
-const baseVar = {
+var baseVar = {
   left: function(){
     return {
       x: player.x-11,
@@ -71,7 +71,7 @@ function addBubbles(place, q){
   if (q === 0){
     return;
   }
-  const basePosition = baseVar[place]();
+  var basePosition = baseVar[place]();
   for (var i = 0; i < 1; i++){
     world.bubbles.push({
       x: rand.range(basePosition.x-5, basePosition.x+5),
