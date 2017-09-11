@@ -283,6 +283,7 @@ module.exports = {
       booms.forEach(function (b, k){
         if (geo.mdist(e.x, e.y, b.x, b.y) < e.w){
           e.takeDamage();
+          e.dx = b.dx * 2;
           sound.play(2);
           booms.splice(k, 1);
         }
