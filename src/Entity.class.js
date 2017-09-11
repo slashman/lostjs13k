@@ -81,6 +81,12 @@ Entity.prototype = {
 				this.world.bubblePuff(this.x+rand.range(-150, 150), this.y+rand.range(-150, 150), 50);
 			this.world.won();
 		}
+		let p = this.world.player;
+		if (p.orbs[1]){
+			if (p.hull < 100){
+				p.hull++;
+			}
+		}
 		this.world.bubblePuff(this.x, this.y, 50);
 	}
 };
