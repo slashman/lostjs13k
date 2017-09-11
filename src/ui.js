@@ -153,8 +153,8 @@ module.exports = {
 			ctx.strokeStyle = '#fcc';
 			strokeArc(ctx, b.x, b.y, 5+rand.range(0,5), 0, 2*Math.PI, false);
 		});
-		w.entities.forEach(e => this.drawEntity(ctx, e));
 		this.drawPlayer(ctx);
+		w.entities.forEach(e => this.drawEntity(ctx, e));
 		for (sector in w.sectors){
 			sector = w.sectors[sector];
 			sector.stones.forEach(function(s){
