@@ -6,21 +6,18 @@ const geo = require('./geo');
 
 // Base stats
 const BS = {
-	a: [400, 70, 150, 10],
-	b: [400, 70, 150, 10],
-	c: [400, 70, 150, 10],
-	d: [400, 70, 150, 10],
-	e: [400, 70, 150, 10],
-	f: [400, 70, 150, 10],
-	g: [400, 70, 150, 10],
-	h: [400, 70, 150, 10],
-	i: [500, 70, 200, 1000],
-	j: [400, 70, 150, 10],
+	a: [400, 100, 100, 10], // Blobs
+	b: [400, 150, 70, 10], // Glider
+	c: [600, 70, 150, 20], // Nautilus
+	d: [400, 100, 100, 40], // Big Fish
+	e: [400, 150, 150, 10], // Spider
+	f: [600, 50, 200, 15], // Jelly 1
+	g: [800, 50, 150, 15], // Jelly 2
+	h: [900, 150, 150, 30], // Deep Fish
+	i: [900, 100, 200, 1000], // Big Nautilus
+	j: [400, 50, 50, 10], // Ball
 }
-/*
- n: Nautilus
- e: Boss
- */
+
 function Entity(x, y, s, t, l){
 	this.x = x;
 	this.y = y;
@@ -54,8 +51,8 @@ Entity.prototype = {
 		} else {
 			let dx = target.x - this.x;
 			let dy = target.y - this.y;
-			this.dx = Math.sign(dx) * rand.range(this.spda, this.spdb);
-			this.dy = Math.sign(dy) * rand.range(this.spda, this.spdb);
+			this.dx = Math.sign(dx) * rand.range(this.spda-20, this.spda+20);
+			this.dy = Math.sign(dy) * rand.range(this.spdb-20, this.spdb+20);
 			this.flipped = dx < 0;
 			setTimeout(this.act.bind(this), rand.range(100, 500));
 		}
