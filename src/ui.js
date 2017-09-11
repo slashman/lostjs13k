@@ -222,7 +222,7 @@ module.exports = {
 			}
 			this.currentText = t;
 			this.currentTextStyle = style;
-			setTimeout(()=>this.currentText = false, 8000);
+			setTimeout(()=>this.currentText = false, player.won ? 8000 : 5000);
 		}
 	},
 	drawEntity: function(ctx, e){
@@ -355,7 +355,7 @@ module.exports = {
 	},
 	drawEj: function(ctx, e){
 		// Ball
-		fillCircle(ctx, e.x+e.w/2, e.y+e.h/2, e.s/2, 0, 2*Math.PI, false);
+		fillCircle(ctx, e.x+e.w/2, e.y+e.h/2, e.s*2, 0, 2*Math.PI, false);
 	},
 	drawPlayer: function(ctx){
 		ctx.fillStyle = 'rgba(255,255,255,0.5)';
