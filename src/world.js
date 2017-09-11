@@ -198,11 +198,12 @@ module.exports = {
       return;
     }
     this.booms.push({
-      x: rand.range(player.x-5, player.x+5),
-      y: rand.range(player.y-5, player.y+5),
+      x: player.x+8,
+      y: rand.range(player.y+3, player.y+13),
       dx: rand.range(250, 280) * dx,
       dy: rand.range(-10, 10),
-      life:  rand.range(80, 100),
+      s: player.orbs[2] ? 5: 1,
+      life: player.orbs[2] ? rand.range(80, 100) : 8,
     });
     setTimeout(()=> this.sonicBoom(dx, q-1), 100);
   },
@@ -282,6 +283,7 @@ module.exports = {
       booms.forEach(function (b, k){
         if (geo.mdist(e.x, e.y, b.x, b.y) < e.w){
           e.takeDamage();
+          sound.play(2);
           booms.splice(k, 1);
         }
       });

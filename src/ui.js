@@ -166,7 +166,7 @@ module.exports = {
 		});
 		ctx.strokeStyle = '#fcc';
 		w.booms.forEach(function (b){
-			strokeArc(ctx, b.x, b.y, 5+rand.range(0,5));
+			strokeArc(ctx, b.x, b.y, b.s+rand.range(0,5));
 		});
 		this.drawPlayer(ctx);
 		w.entities.forEach(e => this.drawEntity(ctx, e));
@@ -244,7 +244,7 @@ module.exports = {
 		} else if (TEXT.length > 0){
 			let t = TEXT.shift();
 			this.ita = t.charAt(0) !== "*";
-			this.currentText = t;
+			this.currentText =this.ita ? t : t.substr(1);
 			setTimeout(()=>this.currentText = false, player.won ? 8000 : 5000);
 		}
 	},

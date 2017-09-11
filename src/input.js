@@ -28,9 +28,8 @@ key.typed(122, function(){
 });*/
 
 key.typed(90, function(){
-  if (player.orbs[2]){
-    world.sonicBoom(player.flipped ? - 1 : 1);
-  }
+  sound.play(3);
+  world.sonicBoom(player.flipped ? - 1 : 1);
 });
 
 key.typed(13, ()=>{
