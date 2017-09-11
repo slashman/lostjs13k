@@ -55,13 +55,11 @@ const CLUES = {
 		"*You wake up to find yourself in an underwater cavern", 
 		"*How long has it been? The onscreen nav is not working",
 		"*You are lost in the depths of the sea, but you can still move around",
-		"*You'll need to find an exit.",
 		"*(Press the arrow keys to move around).",
 	],
 	P: [
 		"*You hear a sweet voice in your head.", 
 		"Hello. I know you can hear me!", 
-		"I have been waiting for you for a long, long time...",
 		"I am the princess Melkaia of Asterion.",
 		"Don't despair, I can help you return to your world.",
 	],
