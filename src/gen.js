@@ -37,7 +37,7 @@ const STANDARD_COLORS = ["#001c33", "#002a4d", "#0e3f66"];
 
 const SECTOR_INFO = [
 	[ "FdrcF3", "Fdl",  "Cdr", "ClcE1",  "CdCr",   "GlBcOr", "ClPcA" ],
-	[ "Fur",    "Fuld", "Cur", "Odlr",   "OudlQ",  "Td" ],
+	[ "Fur",    "Fuld", "Cur", "Odlr",   "OudlR",  "Td" ],
 	[ "",       "PuJr", "Rlr", "OudKlHr","OulrI",  "QudQl" ],
 	[ "CcMr*",  "SlcLr","ClNr","Dul",    "VrcG4",  "Vul" ]
 ];
@@ -53,9 +53,10 @@ const CLUES = {
 	// Intro
 	A: [
 		"*You wake up to find yourself in an underwater cavern", 
-		"*How long has it been? The onscreen nav is not working",
-		"*You are lost in the depths of the sea, but you can still move.",
-		"*(Press the arrow keys).",
+		"*Where the heck are you? You need to find a way out.", 
+		"*The uplink is broken, but the exploration light works",
+		"*the engines and the drill are working as well.",
+		"*(Press the arrow keys and Z to drill).",
 	],
 	P: [
 		"*You hear a sweet voice in your head.", 
@@ -78,7 +79,7 @@ const CLUES = {
 		"There are two orbs nearby: one is at the Temple of Poseidon.",
 		"To find it dive deeper and travel east.",
 	],
-	Q: [
+	R: [
 		"If you continue west you'll find the entrance to a cave",
 		"Another orb was hidden there."
 	],
@@ -90,9 +91,8 @@ const CLUES = {
 		"*(Press Z to shoot a sonic beam)"
 	],
 	E: [
-		"The orb of Hortencia will cover your vessel,",
-		"protecting it from harm.",
-		"The shell will regenerate when contacting certain plants",
+		"The orb of Gabrielle will repair your vessel,",
+		"absorbing oxygen from dead lifeforms."
 	],
 	F: "The orb of Cosiaca will let you withstand extreme temperatures",
 	G: [

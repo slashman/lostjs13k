@@ -36,7 +36,7 @@ key.typed(90, function(){
 key.typed(13, ()=>{
   if (ui.title){
     ui.title = false;
-    setTimeout(()=>player.lt = true, 5000);
+    setTimeout(()=>player.lt = true, 10000);
     setTimeout(()=>active = true, 15000);
   } 
 });
