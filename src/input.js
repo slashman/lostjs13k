@@ -27,7 +27,7 @@ key.typed(122, function(){
     ui.camera.zoom += 0.1;
 });*/
 
-key.typed(90, function(){
+key.typed(122, function(){
   sound.play(3);
   world.sonicBoom(player.flipped ? - 1 : 1);
 });

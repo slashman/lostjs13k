@@ -5,15 +5,15 @@ const pressed = {};
 const typedCallbacks = {};
 
 function keyPress(e){
-	if (typedCallbacks[e.keyCode]){
-		typedCallbacks[e.keyCode]();
+	if (typedCallbacks[e.which]){
+		typedCallbacks[e.which]();
 	}
 }
 
 module.exports = {
 	init: function(){
-		window.onkeydown = e => pressed[e.keyCode] = true;
-		window.onkeyup = e => pressed[e.keyCode] = false;
+		window.onkeydown = e => pressed[e.which] = true;
+		window.onkeyup = e => pressed[e.which] = false;
 		window.addEventListener("keypress", keyPress);
 	},
 	isDown: function(keyCode){
