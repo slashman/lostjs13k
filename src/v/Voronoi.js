@@ -94,15 +94,15 @@ const RBTree = require('./RBTree');
 const Vertex = require('./Vertex');
 
 function Voronoi() {
-    this.vertices = null;
-    this.edges = null;
-    this.cells = null;
-    this.toRecycle = null;
-    this.beachsectionJunkyard = [];
-    this.circleEventJunkyard = [];
-    this.vertexJunkyard = [];
-    this.edgeJunkyard = [];
-    this.cellJunkyard = [];
+    this._vertices = null;
+    this._edges = null;
+    this._cells = null;
+    this._toRecycle = null;
+    this._beachsectionJunkyard = [];
+    this._circleEventJunkyard = [];
+    this._vertexJunkyard = [];
+    this._edgeJunkyard = [];
+    this._cellJunkyard = [];
 }
 
 Voronoi.ε = 1e-9;
@@ -113,45 +113,45 @@ Voronoi.invε = 1.0 / Voronoi.ε
 Voronoi.prototype = {
 
 reset: function() {
-    if (!this.beachline) {
-        this.beachline = new RBTree();
+    if (!this._beachline) {
+        this._beachline = new RBTree();
         }
     // Move leftover beachsections to the beachsection junkyard.
-    if (this.beachline.root) {
-        var beachsection = this.beachline.getFirst(this.beachline.root);
+    if (this._beachline.root) {
+        var beachsection = this._beachline.getFirst(this._beachline.root);
         while (beachsection) {
-            this.beachsectionJunkyard.push(beachsection); // mark for reuse
+            this._beachsectionJunkyard.push(beachsection); // mark for reuse
             beachsection = beachsection.rbNext;
             }
         }
-    this.beachline.root = null;
-    if (!this.circleEvents) {
-        this.circleEvents = new RBTree();
+    this._beachline.root = null;
+    if (!this._circleEvents) {
+        this._circleEvents = new RBTree();
         }
-    this.circleEvents.root = this.firstCircleEvent = null;
-    this.vertices = [];
-    this.edges = [];
-    this.cells = [];
+    this._circleEvents.root = this._firstCircleEvent = null;
+    this._vertices = [];
+    this._edges = [];
+    this._cells = [];
 },
 sqrt: Math.sqrt,
 abs: Math.abs,
 ε: 1e-9,
 invε: Voronoi.invε,
-equalWithEpsilon: function(a,b){return this.abs(a-b)<1e-9;},
-greaterThanWithEpsilon: function(a,b){return a-b>1e-9;},
-lessThanWithEpsilon: function(a,b){return b-a>1e-9;},
-createCell: function(site) {
-    var cell = this.cellJunkyard.pop();
+_equalWithEpsilon: function(a,b){return this.abs(a-b)<1e-9;},
+_greaterThanWithEpsilon: function(a,b){return a-b>1e-9;},
+_lessThanWithEpsilon: function(a,b){return b-a>1e-9;},
+_createCell: function(site) {
+    var cell = this._cellJunkyard.pop();
     if ( cell ) {
         return cell.init(site);
         }
     return new Cell(site);
 },
-createHalfedge: function(edge, lSite, rSite) {
+_createHalfedge: function(edge, lSite, rSite) {
     return new Halfedge(edge, lSite, rSite);
 },
-createVertex: function(x, y) {
-    var v = this.vertexJunkyard.pop();
+_createVertex: function(x, y) {
+    var v = this._vertexJunkyard.pop();
     if ( !v ) {
         v = new Vertex(x, y);
         }
@@ -159,14 +159,14 @@ createVertex: function(x, y) {
         v.x = x;
         v.y = y;
         }
-    this.vertices.push(v);
+    this._vertices.push(v);
     return v;
 },
 // this create and add an edge to internal collection, and also create
 // two halfedges which are added to each site's counterclockwise array
 // of halfedges.
-createEdge: function(lSite, rSite, va, vb) {
-    var edge = this.edgeJunkyard.pop();
+_createEdge: function(lSite, rSite, va, vb) {
+    var edge = this._edgeJunkyard.pop();
     if ( !edge ) {
         edge = new Edge(lSite, rSite);
         }
@@ -176,19 +176,19 @@ createEdge: function(lSite, rSite, va, vb) {
         edge.va = edge.vb = null;
         }
 
-    this.edges.push(edge);
+    this._edges.push(edge);
     if (va) {
-        this.setEdgeStartpoint(edge, lSite, rSite, va);
+        this._setEdgeStartpoint(edge, lSite, rSite, va);
         }
     if (vb) {
-        this.setEdgeEndpoint(edge, lSite, rSite, vb);
+        this._setEdgeEndpoint(edge, lSite, rSite, vb);
         }
-    this.cells[lSite.voronoiId].halfedges.push(this.createHalfedge(edge, lSite, rSite));
-    this.cells[rSite.voronoiId].halfedges.push(this.createHalfedge(edge, rSite, lSite));
+    this._cells[lSite.voronoiId].halfedges.push(this._createHalfedge(edge, lSite, rSite));
+    this._cells[rSite.voronoiId].halfedges.push(this._createHalfedge(edge, rSite, lSite));
     return edge;
 },
-createBorderEdge: function(lSite, va, vb) {
-    var edge = this.edgeJunkyard.pop();
+_createBorderEdge: function(lSite, va, vb) {
+    var edge = this._edgeJunkyard.pop();
     if ( !edge ) {
         edge = new Edge(lSite, null);
         }
@@ -198,10 +198,10 @@ createBorderEdge: function(lSite, va, vb) {
         }
     edge.va = va;
     edge.vb = vb;
-    this.edges.push(edge);
+    this._edges.push(edge);
     return edge;
 },
-setEdgeStartpoint: function(edge, lSite, rSite, vertex) {
+_setEdgeStartpoint: function(edge, lSite, rSite, vertex) {
     if (!edge.va && !edge.vb) {
         edge.va = vertex;
         edge.lSite = lSite;
@@ -214,11 +214,11 @@ setEdgeStartpoint: function(edge, lSite, rSite, vertex) {
         edge.va = vertex;
         }
 },
-setEdgeEndpoint: function(edge, lSite, rSite, vertex) {
-    this.setEdgeStartpoint(edge, rSite, lSite, vertex);
+_setEdgeEndpoint: function(edge, lSite, rSite, vertex) {
+    this._setEdgeStartpoint(edge, rSite, lSite, vertex);
 },
-createBeachsection: function(site) {
-    var beachsection = this.beachsectionJunkyard.pop();
+_createBeachsection: function(site) {
+    var beachsection = this._beachsectionJunkyard.pop();
     if (!beachsection) {
         beachsection = new Beachsection();
         }
@@ -227,7 +227,7 @@ createBeachsection: function(site) {
 },
 // calculate the left break point of a particular beach section,
 // given a particular sweep line
-leftBreakPoint: function(arc, directrix) {
+_leftBreakPoint: function(arc, directrix) {
     // http://en.wikipedia.org/wiki/Parabola
     // http://en.wikipedia.org/wiki/Quadratic_equation
     // h1 = x1,
@@ -294,33 +294,33 @@ leftBreakPoint: function(arc, directrix) {
 
 // calculate the right break point of a particular beach section,
 // given a particular directrix
-rightBreakPoint: function(arc, directrix) {
+_rightBreakPoint: function(arc, directrix) {
     var rArc = arc.rbNext;
     if (rArc) {
-        return this.leftBreakPoint(rArc, directrix);
+        return this._leftBreakPoint(rArc, directrix);
         }
     var site = arc.site;
     return site.y === directrix ? site.x : Infinity;
 },
 
-detachBeachsection: function(beachsection) {
-    this.detachCircleEvent(beachsection); // detach potentially attached circle event
-    this.beachline.rbRemoveNode(beachsection); // remove from RB-tree
-    this.beachsectionJunkyard.push(beachsection); // mark for reuse
+_detachBeachsection: function(beachsection) {
+    this._detachCircleEvent(beachsection); // detach potentially attached circle event
+    this._beachline.rbRemoveNode(beachsection); // remove from RB-tree
+    this._beachsectionJunkyard.push(beachsection); // mark for reuse
 },
 
-removeBeachsection: function(beachsection) {
+_removeBeachsection: function(beachsection) {
     var circle = beachsection.circleEvent,
         x = circle.x,
         y = circle.ycenter,
-        vertex = this.createVertex(x, y),
+        vertex = this._createVertex(x, y),
         previous = beachsection.rbPrevious,
         next = beachsection.rbNext,
         disappearingTransitions = [beachsection],
         abs_fn = Math.abs;
 
     // remove collapsed beachsection from beachline
-    this.detachBeachsection(beachsection);
+    this._detachBeachsection(beachsection);
 
     // there could be more than one empty arc at the deletion point, this
     // happens when more than two edges are linked by the same vertex,
@@ -336,7 +336,7 @@ removeBeachsection: function(beachsection) {
     while (lArc.circleEvent && abs_fn(x-lArc.circleEvent.x)<1e-9 && abs_fn(y-lArc.circleEvent.ycenter)<1e-9) {
         previous = lArc.rbPrevious;
         disappearingTransitions.unshift(lArc);
-        this.detachBeachsection(lArc); // mark for reuse
+        this._detachBeachsection(lArc); // mark for reuse
         lArc = previous;
         }
     // even though it is not disappearing, I will also add the beach section
@@ -344,21 +344,21 @@ removeBeachsection: function(beachsection) {
     // convenience, since we need to refer to it later as this beach section
     // is the 'left' site of an edge for which a start point is set.
     disappearingTransitions.unshift(lArc);
-    this.detachCircleEvent(lArc);
+    this._detachCircleEvent(lArc);
 
     // look right
     var rArc = next;
     while (rArc.circleEvent && abs_fn(x-rArc.circleEvent.x)<1e-9 && abs_fn(y-rArc.circleEvent.ycenter)<1e-9) {
         next = rArc.rbNext;
         disappearingTransitions.push(rArc);
-        this.detachBeachsection(rArc); // mark for reuse
+        this._detachBeachsection(rArc); // mark for reuse
         rArc = next;
         }
     // we also have to add the beach section immediately to the right of the
     // right-most collapsed beach section, since there is also a disappearing
     // transition representing an edge's start point on its left.
     disappearingTransitions.push(rArc);
-    this.detachCircleEvent(rArc);
+    this._detachCircleEvent(rArc);
 
     // walk through all the disappearing transitions between beach sections and
     // set the start point of their (implied) edge.
@@ -367,7 +367,7 @@ removeBeachsection: function(beachsection) {
     for (iArc=1; iArc<nArcs; iArc++) {
         rArc = disappearingTransitions[iArc];
         lArc = disappearingTransitions[iArc-1];
-        this.setEdgeStartpoint(rArc.edge, lArc.site, rArc.site, vertex);
+        this._setEdgeStartpoint(rArc.edge, lArc.site, rArc.site, vertex);
         }
 
     // create a new edge as we have now a new transition between
@@ -377,15 +377,15 @@ removeBeachsection: function(beachsection) {
     // on the left)
     lArc = disappearingTransitions[0];
     rArc = disappearingTransitions[nArcs-1];
-    rArc.edge = this.createEdge(lArc.site, rArc.site, undefined, vertex);
+    rArc.edge = this._createEdge(lArc.site, rArc.site, undefined, vertex);
 
     // create circle events if any for beach sections left in the beachline
     // adjacent to collapsed sections
-    this.attachCircleEvent(lArc);
-    this.attachCircleEvent(rArc);
+    this._attachCircleEvent(lArc);
+    this._attachCircleEvent(rArc);
 },
 
-addBeachsection: function(site) {
+_addBeachsection: function(site) {
     var x = site.x,
         directrix = site.y;
 
@@ -395,10 +395,10 @@ addBeachsection: function(site) {
     // hence we expand in-place the comparison-against-epsilon calls.
     var lArc, rArc,
         dxl, dxr,
-        node = this.beachline.root;
+        node = this._beachline.root;
 
     while (node) {
-        dxl = this.leftBreakPoint(node,directrix)-x;
+        dxl = this._leftBreakPoint(node,directrix)-x;
         // x lessThanWithEpsilon xl => falls somewhere before the left edge of the beachsection
         if (dxl > 1e-9) {
             // this case should never happen
@@ -409,7 +409,7 @@ addBeachsection: function(site) {
             node = node.rbLeft;
             }
         else {
-            dxr = x-this.rightBreakPoint(node,directrix);
+            dxr = x-this._rightBreakPoint(node,directrix);
             // x greaterThanWithEpsilon xr => falls somewhere after the right edge of the beachsection
             if (dxr > 1e-9) {
                 if (!node.rbRight) {
@@ -441,8 +441,8 @@ addBeachsection: function(site) {
     // undefined or null.
 
     // create a new beach section object for the site and add it to RB-tree
-    var newArc = this.createBeachsection(site);
-    this.beachline.rbInsertSuccessor(lArc, newArc);
+    var newArc = this._createBeachsection(site);
+    this._beachline.rbInsertSuccessor(lArc, newArc);
 
     // cases:
     //
@@ -467,21 +467,21 @@ addBeachsection: function(site) {
     //   two new nodes added to the RB-tree
     if (lArc === rArc) {
         // invalidate circle event of split beach section
-        this.detachCircleEvent(lArc);
+        this._detachCircleEvent(lArc);
 
         // split the beach section into two separate beach sections
-        rArc = this.createBeachsection(lArc.site);
-        this.beachline.rbInsertSuccessor(newArc, rArc);
+        rArc = this._createBeachsection(lArc.site);
+        this._beachline.rbInsertSuccessor(newArc, rArc);
 
         // since we have a new transition between two beach sections,
         // a new edge is born
-        newArc.edge = rArc.edge = this.createEdge(lArc.site, newArc.site);
+        newArc.edge = rArc.edge = this._createEdge(lArc.site, newArc.site);
 
         // check whether the left and right beach sections are collapsing
         // and if so create circle events, to be notified when the point of
         // collapse is reached.
-        this.attachCircleEvent(lArc);
-        this.attachCircleEvent(rArc);
+        this._attachCircleEvent(lArc);
+        this._attachCircleEvent(rArc);
         return;
         }
 
@@ -495,7 +495,7 @@ addBeachsection: function(site) {
     //   no collapsing beach section as a result
     //   new beach section become right-most node of the RB-tree
     if (lArc && !rArc) {
-        newArc.edge = this.createEdge(lArc.site,newArc.site);
+        newArc.edge = this._createEdge(lArc.site,newArc.site);
         return;
         }
 
@@ -519,8 +519,8 @@ addBeachsection: function(site) {
     //   only one new node added to the RB-tree
     if (lArc !== rArc) {
         // invalidate circle events of left and right sites
-        this.detachCircleEvent(lArc);
-        this.detachCircleEvent(rArc);
+        this._detachCircleEvent(lArc);
+        this._detachCircleEvent(rArc);
 
         // an existing transition disappears, meaning a vertex is defined at
         // the disappearance point.
@@ -541,24 +541,24 @@ addBeachsection: function(site) {
             d=2*(bx*cy-by*cx),
             hb=bx*bx+by*by,
             hc=cx*cx+cy*cy,
-            vertex = this.createVertex((cy*hb-by*hc)/d+ax, (bx*hc-cx*hb)/d+ay);
+            vertex = this._createVertex((cy*hb-by*hc)/d+ax, (bx*hc-cx*hb)/d+ay);
 
         // one transition disappear
-        this.setEdgeStartpoint(rArc.edge, lSite, rSite, vertex);
+        this._setEdgeStartpoint(rArc.edge, lSite, rSite, vertex);
 
         // two new transitions appear at the new vertex location
-        newArc.edge = this.createEdge(lSite, site, undefined, vertex);
-        rArc.edge = this.createEdge(site, rSite, undefined, vertex);
+        newArc.edge = this._createEdge(lSite, site, undefined, vertex);
+        rArc.edge = this._createEdge(site, rSite, undefined, vertex);
 
         // check whether the left and right beach sections are collapsing
         // and if so create circle events, to handle the point of collapse.
-        this.attachCircleEvent(lArc);
-        this.attachCircleEvent(rArc);
+        this._attachCircleEvent(lArc);
+        this._attachCircleEvent(rArc);
         return;
         }
 },
 
-attachCircleEvent: function(arc) {
+_attachCircleEvent: function(arc) {
     var lArc = arc.rbPrevious,
         rArc = arc.rbNext;
     if (!lArc || !rArc) {return;} // does that ever happen?
@@ -606,7 +606,7 @@ attachCircleEvent: function(arc) {
     // to waste CPU cycles by checking
 
     // recycle circle event object if possible
-    var circleEvent = this.circleEventJunkyard.pop();
+    var circleEvent = this._circleEventJunkyard.pop();
     if (!circleEvent) {
         circleEvent = new CircleEvent();
         }
@@ -620,7 +620,7 @@ attachCircleEvent: function(arc) {
     // find insertion point in RB-tree: circle events are ordered from
     // smallest to largest
     var predecessor = null,
-        node = this.circleEvents.root;
+        node = this._circleEvents.root;
     while (node) {
         if (circleEvent.y < node.y || (circleEvent.y === node.y && circleEvent.x <= node.x)) {
             if (node.rbLeft) {
@@ -641,20 +641,20 @@ attachCircleEvent: function(arc) {
                 }
             }
         }
-    this.circleEvents.rbInsertSuccessor(predecessor, circleEvent);
+    this._circleEvents.rbInsertSuccessor(predecessor, circleEvent);
     if (!predecessor) {
-        this.firstCircleEvent = circleEvent;
+        this._firstCircleEvent = circleEvent;
         }
 },
 
-detachCircleEvent: function(arc) {
+_detachCircleEvent: function(arc) {
     var circleEvent = arc.circleEvent;
     if (circleEvent) {
         if (!circleEvent.rbPrevious) {
-            this.firstCircleEvent = circleEvent.rbNext;
+            this._firstCircleEvent = circleEvent.rbNext;
             }
-        this.circleEvents.rbRemoveNode(circleEvent); // remove from RB-tree
-        this.circleEventJunkyard.push(circleEvent);
+        this._circleEvents.rbRemoveNode(circleEvent); // remove from RB-tree
+        this._circleEventJunkyard.push(circleEvent);
         arc.circleEvent = null;
         }
 },
@@ -668,7 +668,7 @@ detachCircleEvent: function(arc) {
 // return value:
 //   false: the dangling endpoint couldn't be connected
 //   true: the dangling endpoint could be connected
-connectEdge: function(edge, bbox) {
+_connectEdge: function(edge, bbox) {
     // skip if end point already connected
     var vb = edge.vb;
     if (!!vb) {return true;}
@@ -692,8 +692,8 @@ connectEdge: function(edge, bbox) {
     // if we reach here, this means cells which use this edge will need
     // to be closed, whether because the edge was removed, or because it
     // was connected to the bounding box.
-    this.cells[lSite.voronoiId].closeMe = true;
-    this.cells[rSite.voronoiId].closeMe = true;
+    this._cells[lSite.voronoiId].closeMe = true;
+    this._cells[rSite.voronoiId].closeMe = true;
 
     // get the line equation of the bisector if line is not vertical
     if (ry !== ly) {
@@ -729,22 +729,22 @@ connectEdge: function(edge, bbox) {
         // downward
         if (lx > rx) {
             if (!va || va.y < yt) {
-                va = this.createVertex(fx, yt);
+                va = this._createVertex(fx, yt);
                 }
             else if (va.y >= yb) {
                 return false;
                 }
-            vb = this.createVertex(fx, yb);
+            vb = this._createVertex(fx, yb);
             }
         // upward
         else {
             if (!va || va.y > yb) {
-                va = this.createVertex(fx, yb);
+                va = this._createVertex(fx, yb);
                 }
             else if (va.y < yt) {
                 return false;
                 }
-            vb = this.createVertex(fx, yt);
+            vb = this._createVertex(fx, yt);
             }
         }
     // closer to vertical than horizontal, connect start point to the
@@ -753,22 +753,22 @@ connectEdge: function(edge, bbox) {
         // downward
         if (lx > rx) {
             if (!va || va.y < yt) {
-                va = this.createVertex((yt-fb)/fm, yt);
+                va = this._createVertex((yt-fb)/fm, yt);
                 }
             else if (va.y >= yb) {
                 return false;
                 }
-            vb = this.createVertex((yb-fb)/fm, yb);
+            vb = this._createVertex((yb-fb)/fm, yb);
             }
         // upward
         else {
             if (!va || va.y > yb) {
-                va = this.createVertex((yb-fb)/fm, yb);
+                va = this._createVertex((yb-fb)/fm, yb);
                 }
             else if (va.y < yt) {
                 return false;
                 }
-            vb = this.createVertex((yt-fb)/fm, yt);
+            vb = this._createVertex((yt-fb)/fm, yt);
             }
         }
     // closer to horizontal than vertical, connect start point to the
@@ -777,22 +777,22 @@ connectEdge: function(edge, bbox) {
         // rightward
         if (ly < ry) {
             if (!va || va.x < xl) {
-                va = this.createVertex(xl, fm*xl+fb);
+                va = this._createVertex(xl, fm*xl+fb);
                 }
             else if (va.x >= xr) {
                 return false;
                 }
-            vb = this.createVertex(xr, fm*xr+fb);
+            vb = this._createVertex(xr, fm*xr+fb);
             }
         // leftward
         else {
             if (!va || va.x > xr) {
-                va = this.createVertex(xr, fm*xr+fb);
+                va = this._createVertex(xr, fm*xr+fb);
                 }
             else if (va.x < xl) {
                 return false;
                 }
-            vb = this.createVertex(xl, fm*xl+fb);
+            vb = this._createVertex(xl, fm*xl+fb);
             }
         }
     edge.va = va;
@@ -806,7 +806,7 @@ connectEdge: function(edge, bbox) {
 //   http://www.skytopia.com/project/articles/compsci/clipping.html
 // Thanks!
 // A bit modified to minimize code paths
-clipEdge: function(edge, bbox) {
+_clipEdge: function(edge, bbox) {
     var ax = edge.va.x,
         ay = edge.va.y,
         bx = edge.vb.x,
@@ -871,7 +871,7 @@ clipEdge: function(edge, bbox) {
     // than modifying the existing one, since the existing
     // one is likely shared with at least another edge
     if (t0 > 0) {
-        edge.va = this.createVertex(ax+t0*dx, ay+t0*dy);
+        edge.va = this._createVertex(ax+t0*dx, ay+t0*dy);
         }
 
     // if t1 < 1, vb needs to change
@@ -879,24 +879,24 @@ clipEdge: function(edge, bbox) {
     // than modifying the existing one, since the existing
     // one is likely shared with at least another edge
     if (t1 < 1) {
-        edge.vb = this.createVertex(ax+t1*dx, ay+t1*dy);
+        edge.vb = this._createVertex(ax+t1*dx, ay+t1*dy);
         }
 
     // va and/or vb were clipped, thus we will need to close
     // cells which use this edge.
     if ( t0 > 0 || t1 < 1 ) {
-        this.cells[edge.lSite.voronoiId].closeMe = true;
-        this.cells[edge.rSite.voronoiId].closeMe = true;
+        this._cells[edge.lSite.voronoiId].closeMe = true;
+        this._cells[edge.rSite.voronoiId].closeMe = true;
     }
 
     return true;
 },
 
 // Connect/cut edges at bounding box
-clipEdges: function(bbox) {
+_clipEdges: function(bbox) {
     // connect all dangling edges to bounding box
     // or get rid of them if it can't be done
-    var edges = this.edges,
+    var edges = this._edges,
         iEdge = edges.length,
         edge,
         abs_fn = Math.abs;
@@ -907,8 +907,8 @@ clipEdges: function(bbox) {
         // edge is removed if:
         //   it is wholly outside the bounding box
         //   it is looking more like a point than a line
-        if (!this.connectEdge(edge, bbox) ||
-            !this.clipEdge(edge, bbox) ||
+        if (!this._connectEdge(edge, bbox) ||
+            !this._clipEdge(edge, bbox) ||
             (abs_fn(edge.va.x-edge.vb.x)<1e-9 && abs_fn(edge.va.y-edge.vb.y)<1e-9)) {
             edge.va = edge.vb = null;
             edges.splice(iEdge,1);
@@ -920,12 +920,12 @@ clipEdges: function(bbox) {
 // The cells are bound by the supplied bounding box.
 // Each cell refers to its associated site, and a list
 // of halfedges ordered counterclockwise.
-closeCells: function(bbox) {
+_closeCells: function(bbox) {
     var xl = bbox.xl,
         xr = bbox.xr,
         yt = bbox.yt,
         yb = bbox.yb,
-        cells = this.cells,
+        cells = this._cells,
         iCell = cells.length,
         cell,
         iLeft,
@@ -970,81 +970,81 @@ closeCells: function(bbox) {
                 switch (true) {
 
                     // walk downward along left side
-                    case this.equalWithEpsilon(va.x,xl) && this.lessThanWithEpsilon(va.y,yb):
-                        lastBorderSegment = this.equalWithEpsilon(vz.x,xl);
-                        vb = this.createVertex(xl, lastBorderSegment ? vz.y : yb);
-                        edge = this.createBorderEdge(cell.site, va, vb);
+                    case this._equalWithEpsilon(va.x,xl) && this._lessThanWithEpsilon(va.y,yb):
+                        lastBorderSegment = this._equalWithEpsilon(vz.x,xl);
+                        vb = this._createVertex(xl, lastBorderSegment ? vz.y : yb);
+                        edge = this._createBorderEdge(cell.site, va, vb);
                         iLeft++;
-                        halfedges.splice(iLeft, 0, this.createHalfedge(edge, cell.site, null));
+                        halfedges.splice(iLeft, 0, this._createHalfedge(edge, cell.site, null));
                         nHalfedges++;
                         if ( lastBorderSegment ) { break; }
                         va = vb;
                         // fall through
 
                     // walk rightward along bottom side
-                    case this.equalWithEpsilon(va.y,yb) && this.lessThanWithEpsilon(va.x,xr):
-                        lastBorderSegment = this.equalWithEpsilon(vz.y,yb);
-                        vb = this.createVertex(lastBorderSegment ? vz.x : xr, yb);
-                        edge = this.createBorderEdge(cell.site, va, vb);
+                    case this._equalWithEpsilon(va.y,yb) && this._lessThanWithEpsilon(va.x,xr):
+                        lastBorderSegment = this._equalWithEpsilon(vz.y,yb);
+                        vb = this._createVertex(lastBorderSegment ? vz.x : xr, yb);
+                        edge = this._createBorderEdge(cell.site, va, vb);
                         iLeft++;
-                        halfedges.splice(iLeft, 0, this.createHalfedge(edge, cell.site, null));
+                        halfedges.splice(iLeft, 0, this._createHalfedge(edge, cell.site, null));
                         nHalfedges++;
                         if ( lastBorderSegment ) { break; }
                         va = vb;
                         // fall through
 
                     // walk upward along right side
-                    case this.equalWithEpsilon(va.x,xr) && this.greaterThanWithEpsilon(va.y,yt):
-                        lastBorderSegment = this.equalWithEpsilon(vz.x,xr);
-                        vb = this.createVertex(xr, lastBorderSegment ? vz.y : yt);
-                        edge = this.createBorderEdge(cell.site, va, vb);
+                    case this._equalWithEpsilon(va.x,xr) && this._greaterThanWithEpsilon(va.y,yt):
+                        lastBorderSegment = this._equalWithEpsilon(vz.x,xr);
+                        vb = this._createVertex(xr, lastBorderSegment ? vz.y : yt);
+                        edge = this._createBorderEdge(cell.site, va, vb);
                         iLeft++;
-                        halfedges.splice(iLeft, 0, this.createHalfedge(edge, cell.site, null));
+                        halfedges.splice(iLeft, 0, this._createHalfedge(edge, cell.site, null));
                         nHalfedges++;
                         if ( lastBorderSegment ) { break; }
                         va = vb;
                         // fall through
 
                     // walk leftward along top side
-                    case this.equalWithEpsilon(va.y,yt) && this.greaterThanWithEpsilon(va.x,xl):
-                        lastBorderSegment = this.equalWithEpsilon(vz.y,yt);
-                        vb = this.createVertex(lastBorderSegment ? vz.x : xl, yt);
-                        edge = this.createBorderEdge(cell.site, va, vb);
+                    case this._equalWithEpsilon(va.y,yt) && this._greaterThanWithEpsilon(va.x,xl):
+                        lastBorderSegment = this._equalWithEpsilon(vz.y,yt);
+                        vb = this._createVertex(lastBorderSegment ? vz.x : xl, yt);
+                        edge = this._createBorderEdge(cell.site, va, vb);
                         iLeft++;
-                        halfedges.splice(iLeft, 0, this.createHalfedge(edge, cell.site, null));
+                        halfedges.splice(iLeft, 0, this._createHalfedge(edge, cell.site, null));
                         nHalfedges++;
                         if ( lastBorderSegment ) { break; }
                         va = vb;
                         // fall through
 
                         // walk downward along left side
-                        lastBorderSegment = this.equalWithEpsilon(vz.x,xl);
-                        vb = this.createVertex(xl, lastBorderSegment ? vz.y : yb);
-                        edge = this.createBorderEdge(cell.site, va, vb);
+                        lastBorderSegment = this._equalWithEpsilon(vz.x,xl);
+                        vb = this._createVertex(xl, lastBorderSegment ? vz.y : yb);
+                        edge = this._createBorderEdge(cell.site, va, vb);
                         iLeft++;
-                        halfedges.splice(iLeft, 0, this.createHalfedge(edge, cell.site, null));
+                        halfedges.splice(iLeft, 0, this._createHalfedge(edge, cell.site, null));
                         nHalfedges++;
                         if ( lastBorderSegment ) { break; }
                         va = vb;
                         // fall through
 
                         // walk rightward along bottom side
-                        lastBorderSegment = this.equalWithEpsilon(vz.y,yb);
-                        vb = this.createVertex(lastBorderSegment ? vz.x : xr, yb);
-                        edge = this.createBorderEdge(cell.site, va, vb);
+                        lastBorderSegment = this._equalWithEpsilon(vz.y,yb);
+                        vb = this._createVertex(lastBorderSegment ? vz.x : xr, yb);
+                        edge = this._createBorderEdge(cell.site, va, vb);
                         iLeft++;
-                        halfedges.splice(iLeft, 0, this.createHalfedge(edge, cell.site, null));
+                        halfedges.splice(iLeft, 0, this._createHalfedge(edge, cell.site, null));
                         nHalfedges++;
                         if ( lastBorderSegment ) { break; }
                         va = vb;
                         // fall through
 
                         // walk upward along right side
-                        lastBorderSegment = this.equalWithEpsilon(vz.x,xr);
-                        vb = this.createVertex(xr, lastBorderSegment ? vz.y : yt);
-                        edge = this.createBorderEdge(cell.site, va, vb);
+                        lastBorderSegment = this._equalWithEpsilon(vz.x,xr);
+                        vb = this._createVertex(xr, lastBorderSegment ? vz.y : yt);
+                        edge = this._createBorderEdge(cell.site, va, vb);
                         iLeft++;
-                        halfedges.splice(iLeft, 0, this.createHalfedge(edge, cell.site, null));
+                        halfedges.splice(iLeft, 0, this._createHalfedge(edge, cell.site, null));
                         nHalfedges++;
                         if ( lastBorderSegment ) { break; }
                         // fall through
@@ -1064,11 +1064,11 @@ closeCells: function(bbox) {
 /*
 Voronoi.prototype.dumpBeachline = function(y) {
     console.log('Voronoi.dumpBeachline(%f) > Beachsections, from left to right:', y);
-    if ( !this.beachline ) {
+    if ( !this._beachline ) {
         console.log('  None');
         }
     else {
-        var bs = this.beachline.getFirst(this.beachline.root);
+        var bs = this._beachline.getFirst(this._beachline.root);
         while ( bs ) {
             console.log('  site %d: xl: %f, xr: %f', bs.site.voronoiId, this.leftBreakPoint(bs, y), this.rightBreakPoint(bs, y));
             bs = bs.rbNext;
@@ -1087,7 +1087,7 @@ Voronoi.prototype.dumpBeachline = function(y) {
 // he should sanitize his coord values through this helper. This way, for
 // those users who uses coord values which are known to be fine, no overhead is
 // added.
-
+/*
 quantizeSites: function(sites) {
     var ε = this.ε,
         n = sites.length,
@@ -1098,24 +1098,25 @@ quantizeSites: function(sites) {
         site.y = Math.floor(site.y / ε) * ε;
         }
 },
+*/
 
 // ---------------------------------------------------------------------------
 // Helper: Recycle diagram: all vertex, edge and cell objects are
 // "surrendered" to the Voronoi object for reuse.
 // TODO: rhill-voronoi-core v2: more performance to be gained
 // when I change the semantic of what is returned.
-
+/*
 recycle: function(diagram) {
     if ( diagram ) {
         if ( diagram instanceof this.Diagram ) {
-            this.toRecycle = diagram;
+            this._toRecycle = diagram;
             }
         else {
             throw 'Voronoi.recycleDiagram() > Need a Diagram object.';
             }
         }
 },
-
+*/
 // ---------------------------------------------------------------------------
 // Top-level Fortune loop
 
@@ -1133,11 +1134,11 @@ compute: function(sites, bbox) {
 
     // any diagram data available for recycling?
     // I do that here so that this is included in execution time
-    if ( this.toRecycle ) {
-        this.vertexJunkyard = this.vertexJunkyard.concat(this.toRecycle.vertices);
-        this.edgeJunkyard = this.edgeJunkyard.concat(this.toRecycle.edges);
-        this.cellJunkyard = this.cellJunkyard.concat(this.toRecycle.cells);
-        this.toRecycle = null;
+    if ( this._toRecycle ) {
+        this._vertexJunkyard = this._vertexJunkyard.concat(this._toRecycle.vertices);
+        this._edgeJunkyard = this._edgeJunkyard.concat(this._toRecycle.edges);
+        this._cellJunkyard = this._cellJunkyard.concat(this._toRecycle.cells);
+        this._toRecycle = null;
         }
 
     // Initialize site event queue
@@ -1153,7 +1154,7 @@ compute: function(sites, bbox) {
         siteid = 0,
         xsitex, // to avoid duplicate sites
         xsitey,
-        cells = this.cells,
+        cells = this._cells,
         circle;
 
     // main loop
@@ -1161,17 +1162,17 @@ compute: function(sites, bbox) {
         // we need to figure whether we handle a site or circle event
         // for this we find out if there is a site event and it is
         // 'earlier' than the circle event
-        circle = this.firstCircleEvent;
+        circle = this._firstCircleEvent;
 
         // add beach section
         if (site && (!circle || site.y < circle.y || (site.y === circle.y && site.x < circle.x))) {
             // only if site is not a duplicate
             if (site.x !== xsitex || site.y !== xsitey) {
                 // first create cell for new site
-                cells[siteid] = this.createCell(site);
+                cells[siteid] = this._createCell(site);
                 site.voronoiId = siteid++;
                 // then create a beachsection for that site
-                this.addBeachsection(site);
+                this._addBeachsection(site);
                 // remember last site coords to detect duplicate
                 xsitey = site.y;
                 xsitex = site.x;
@@ -1181,7 +1182,7 @@ compute: function(sites, bbox) {
 
         // remove beach section
         else if (circle) {
-            this.removeBeachsection(circle.arc);
+            this._removeBeachsection(circle.arc);
             }
 
         // all done, quit
@@ -1195,19 +1196,19 @@ compute: function(sites, bbox) {
     //   cut edges as per bounding box
     //   discard edges completely outside bounding box
     //   discard edges which are point-like
-    this.clipEdges(bbox);
+    this._clipEdges(bbox);
 
     //   add missing edges in order to close opened cells
-    this.closeCells(bbox);
+    this._closeCells(bbox);
 
     // to measure execution time
     var stopTime = new Date();
 
     // prepare return values
     var diagram = new Diagram();
-    diagram.cells = this.cells;
-    diagram.edges = this.edges;
-    diagram.vertices = this.vertices;
+    diagram.cells = this._cells;
+    diagram.edges = this._edges;
+    diagram.vertices = this._vertices;
     diagram.execTime = stopTime.getTime()-startTime.getTime();
 
     // clean up
