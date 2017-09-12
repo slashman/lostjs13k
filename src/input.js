@@ -11,7 +11,7 @@ key.init();
 
 let player = false;
 let world = false;
-let active = true;
+let active = false;
 
 /*key.typed(90, function(){
   if (ui.camera.zoom >= 1)
@@ -29,6 +29,7 @@ key.typed(122, function(){
 
 key.typed(122, function(){
   //sound.play(3);
+  sound.play(0);
   world.sonicBoom(player.flipped ? - 1 : 1);
 });
 
