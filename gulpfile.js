@@ -48,7 +48,7 @@ gulp.task('build_source', function() {
   return bundler
     .bundle()
     .on('error', browserifyError)
-    .pipe(source('build.js'))
+    .pipe(source('b.js'))
     .pipe(buffer())
     .pipe(gulpif(prod, uglify()))
     .on('error', browserifyError)
