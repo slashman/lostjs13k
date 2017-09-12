@@ -48,9 +48,9 @@ gulp.task('build_source', function() {
   return bundler
     .bundle()
     .on('error', browserifyError)
-    .pipe(source('b.js'))
+    .pipe(source('b.js')).on('error', browserifyError)
     .pipe(buffer())
-    .pipe(gulpif(prod, uglify()))
+    .pipe(gulpif(prod, uglify({mangle: {properties:{regex:/^_/}}})))
     .on('error', browserifyError)
     .pipe(gulp.dest('build'));
 });
@@ -84,11 +84,11 @@ gulp.task('dist', ['build'], function() {
     gutil.log(gutil.colors.yellow('WARNING'), gutil.colors.gray('You should generate production assets to lower the archive size'));
   }
 
-  return gulp.src('build/*')
-    .pipe(zip('archive.zip'))
-    .pipe(size())
-    .pipe(micro({limit: 13 * 1024}))
-    .pipe(gulp.dest('dist'));
+  return gulp.src('build/*').on('error', browserifyError)
+    .pipe(zip('archive.zip')).on('error', browserifyError)
+    .pipe(size()).on('error', browserifyError).on('error', browserifyError)
+    .pipe(micro({limit: 13 * 1024})).on('error', browserifyError)
+    .pipe(gulp.dest('dist')).on('error', browserifyError);
 });
 
 gulp.task('watch', function() {
