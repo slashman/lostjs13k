@@ -1,6 +1,6 @@
 /* jshint node: true */
 /* globals Voronoi */
-'use strict';
+//'use strict';
 
 var geo = require('./geo');
 var rng = require('./rng');
@@ -51,83 +51,67 @@ var LV = [
 var CLUES = {
 	// Intro
 	A: [
-		"*You wake up to find yourself in an underwater cavern", 
-		"*Where the heck are you? You need to find a way out.", 
-		"*The uplink is broken, but the exploration light works",
-		"*the engines and the drill are working as well.",
-		"*(Press the arrow keys and Z to drill).",
+		"*You wake up in an underwater cavern", 
+		"*Where are you?", 
+		"*At least the exploration lights work,",
+		"*the engines and the drill are working as well",
+		"*(Press the arrow keys and Z to drill)",
 	],
 	P: [
-		"*You hear a sweet voice in your head.", 
+		"*You hear a sweet voice in your head", 
 		"Hello. I know you can hear me!", 
-		"I am the princess Melkaia of Asterion.",
-		"Don't despair, I can help you return to your world.",
+		"I am the princess Melkaia of Asterion",
+		"I can help you return to your world",
 	],
 
 	O: [
-		"This is the gate of Atlantis, the only passage to the surface.",
-		"It can be opened by using the four ancient orbs."
+		"This is the gate of Atlantis, the only passage to the surface",
+		"It can be opened by using the four ancient orbs"
 	],
 	B: [
-		"I can help you find the orbs, but I need your help too...",
-		"I'm trapped in these cold depths... I want to return home too."
+		"I can help you find the orbs, but I need your help too",
+		"I'm trapped in these cold depths"
 	],
 	C: [
-		"The areas beyond are full of dangerous beasts.",
-		"Finding the orbs will grant you special powers to survive.",
-		"There are two orbs nearby: one is at the Temple of Poseidon.",
-		"To find it dive deeper and travel east.",
+		"Finding the orbs will grant you special powers to survive",
+		"One is at the Temple of Poseidon",
+		"To find it dive deeper and travel east",
 	],
-	R: [
-		"If you continue west you'll find the entrance to a cave",
-		"Another orb was hidden there."
-	],
+	R: "Another orb was hidden there on a cave to the west",
 	
 	// Artifacts
-	D: [
-		"The orb of Verra Kera will let you emit deadly sonic booms",
-		"they will crush any creature underwater",
-		"*(Press Z to shoot a sonic beam)"
-	],
-	E: [
-		"The orb of Gabrielle will repair your vessel,",
-		"absorbing oxygen from dead lifeforms."
-	],
-	F: "The orb of Cosiaca will let you withstand extreme temperatures",
-	G: [
-		"The orb of Athena will strengten you, allowing to move",
-		"against strong currents."
-	],
+	D: "The orb of Verra Kera emits sonic booms",
+	E: "The orb of Gabrielle will repair your vessel",
+	F: "The orb of Cosiaca lets you withstand extreme heat",
+	G: "The orb of Athena lets you cross strong currents",
 		
 	// Places
 	H: [
-		"The ruins of our great underwater city.",
-		"The forces that contained the water are long gone.",
+		"The ruins of our great underwater city",
+		"The forces that contained the water are long gone",
 	],
-	I: "Our great temple to Poseidon, the lord of the seas.",
+	I: "Our great temple to Poseidon, the lord of the seas",
 	J: [
 		"These used to be the very fertile farmlands,",
-		"our people fed only with plants."
+		"our people fed only with plants"
 	],
 	K: [
-		"The darkness abyss, this area was cursed with eternal darkness.",
-		"I am trapped in the area below, but you'll need",
-		"the power of Athena to make it through.",
-		"Please don't give up!",
+		"The darkness abyss, this area was cursed with eternal darkness",
+		"I am trapped in the area below. Please don't give up!",
 	],
 	Q: [
-		"Below is the volcanic rift, a place full of geothermal energy.",
-		"Only the power of the Orb of Cosiaca will let you go in safely!"
+		"Below is the volcanic rift, a place full of geothermal energy",
+		"Only the power of Cosiaca will let you go in"
 	],
 
 	// Ending
 	N: [
-		"A strong current blocks the entrance here...",
-		"You will need the Orb of Athena to make it through,"
+		"A strong current blocks the entrance here",
+		"You will need the Orb of Athena to make it through"
 	],
 	L: "I can feel you are close... I'm so eager to meet you!",
 	M: [
-		"Thank you for bringing the orbs... you fool!",
+		"Thank you for bringing the orbs... YOU FOOL!",
 		"I shall use them to drown your world in darkness!"
 	],
 };
