@@ -5,7 +5,7 @@
 var geo = require('./geo');
 var rng = require('./rng');
 var ca = require('./ca');
-var V = require('./v')
+var V = require('./v/Voronoi')
 
 var rand = rng();
 
