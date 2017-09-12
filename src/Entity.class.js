@@ -1,5 +1,5 @@
 /* jshint node: true */
-"use strict";
+//"use strict";
 
 const rand = require('./rng')();
 const geo = require('./geo');

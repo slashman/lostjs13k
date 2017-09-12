@@ -1,5 +1,5 @@
 /* jshint node: true, loopfunc: true */
-"use strict";
+//"use strict";
 
 //var DEBUG = false;
 
@@ -9,7 +9,7 @@ var rand = require('./rng')();
 var canvas = document.querySelector('#game');
 var ctx = canvas.getContext('2d');
 
-var SECTOR_SIZE = 3000;
+var SZ = 3000;
 
 var camera = {
   x: 20,
@@ -129,7 +129,7 @@ module.exports = {
 			if (sector.bg){
 				ctx.fillStyle=sector.bg;
 				ctx.strokeStyle=sector.bg;
-				fillRect(ctx, sector.x, sector.y, SECTOR_SIZE, SECTOR_SIZE);
+				fillRect(ctx, sector.x, sector.y, SZ, SZ);
 			}
 
 			sector.bgStones.forEach(function(s){

@@ -1,5 +1,5 @@
 /* jshint node: true, loopfunc: true */
-'use strict';
+//'use strict';
 
 let rng = null;
 

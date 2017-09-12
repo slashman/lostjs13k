@@ -1,6 +1,6 @@
 /* jshint node: true, loopfunc: true */
 
-"use strict";
+//"use strict";
 
 function inside(point, vs) {
     // ray-casting algorithm based on

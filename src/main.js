@@ -1,5 +1,5 @@
 /* jshint node: true, loopfunc: true */
-"use strict";
+//"use strict";
 
 var raf = require('./raf');
 var ui = require('./ui');

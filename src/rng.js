@@ -1,5 +1,5 @@
 /* jshint node: true */
-"use strict";
+//"use strict";
 
 module.exports = function(seed) {
   /*function random() {
@@ -27,9 +27,9 @@ module.exports = function(seed) {
      * @return {float}
      * @api public
      */
-    float: function() {
+    /*float: function() {
       return random();
-    },
+    },*/
     /**
      * Return a boolean.
      *

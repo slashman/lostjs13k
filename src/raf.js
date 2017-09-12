@@ -1,9 +1,9 @@
 /* jshint node: true */
-"use strict";
+//"use strict";
 
 
 // Holds last iteration timestamp.
-var time = 0;
+var t = 0;
 
 /**
  * Calls `fn` on next frame.
@@ -14,17 +14,17 @@ var time = 0;
  */
 function raf(fn) {
   return window.requestAnimationFrame(function() {
-    var now = Date.now();
-    var elapsed = now - time;
+    var n = Date.now();
+    var e = n - t;
 
-    if (elapsed > 999) {
-      elapsed = 1 / 60;
+    if (e > 999) {
+      e = 1 / 60;
     } else {
-      elapsed /= 1000;
+      e /= 1000;
     }
 
-    time = now;
-    fn(elapsed);
+    t = n;
+    fn(e);
   });
 }
 
@@ -38,8 +38,8 @@ module.exports = {
    * @api public
    */
   start: function(fn) {
-    return raf(function tick(elapsed) {
-      fn(elapsed);
+    return raf(function tick(e) {
+      fn(e);
       raf(tick);
     });
   },
@@ -49,7 +49,7 @@ module.exports = {
    * @param {int} id The request ID
    * @api public
    */
-  stop: function(id) {
+  /*stop: function(id) {
     window.cancelAnimationFrame(id);
-  }
+  }*/
 };

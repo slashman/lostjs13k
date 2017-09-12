@@ -1,5 +1,5 @@
 /* jshint node: true */
-"use strict";
+//"use strict";
 
 
 var key = require('./key');
@@ -28,7 +28,7 @@ key.typed(122, function(){
 });*/
 
 key.typed(122, function(){
-  sound.play(3);
+  //sound.play(3);
   world.sonicBoom(player.flipped ? - 1 : 1);
 });
 

@@ -1,5 +1,5 @@
 /* jshint node: true, loopfunc: true */
-"use strict";
+//"use strict";
 
 var geo = require('./geo');
 var gen = require('./gen');
@@ -8,11 +8,11 @@ var rand = require('./rng')();
 var Entity = require('./Entity.class');
 var sound = require('./sound');
 
-var SECTOR_SIZE = 3000;
+var SZ = 3000;
 
 var player = {
-  x: 6.5 * SECTOR_SIZE,
-  y: 0.5 * SECTOR_SIZE,
+  x: 6.5 * SZ,
+  y: 0.5 * SZ,
   h: 16,
   w: 16,
   dx: 0,
@@ -77,8 +77,8 @@ function update(elapsed){
 
   // Should we load another fragment?
   checkLoadFragment(this);
-  player.mx = Math.floor(player.x / SECTOR_SIZE);
-  player.my = Math.floor(player.y / SECTOR_SIZE);
+  player.mx = Math.floor(player.x / SZ);
+  player.my = Math.floor(player.y / SZ);
   ui.camera.x = player.x;
   ui.camera.y = player.y;
 }
@@ -95,10 +95,10 @@ function createAndDeleteSectorAt(w, cx, cy, dx, dy) {
 }
 
 function checkLoadFragment(w){
-  var leftZone = player.x < player.mx * SECTOR_SIZE + SECTOR_SIZE / 2;
-  var rightZone = player.x > player.mx * SECTOR_SIZE + SECTOR_SIZE / 2;
-  var downZone = player.y > player.my * SECTOR_SIZE + SECTOR_SIZE / 2;
-  var upZone = player.y < player.my * SECTOR_SIZE + SECTOR_SIZE / 2;
+  var leftZone = player.x < player.mx * SZ + SZ / 2;
+  var rightZone = player.x > player.mx * SZ + SZ / 2;
+  var downZone = player.y > player.my * SZ + SZ / 2;
+  var upZone = player.y < player.my * SZ + SZ / 2;
   if (rightZone){
     createAndDeleteSectorAt(w, 1, 0, -1, 0);
     createAndDeleteSectorAt(w, 0, 0, -1, 1);
@@ -137,7 +137,7 @@ function generateSector(w, dx, dy){
   sectors[(player.mx+dx)+":"+(player.my+dy)] = s;
   if (s.bo && !player.bo){
     player.bo = true;
-    let e = new Entity((player.mx+dx+0.5) * SECTOR_SIZE, (player.my+dy+0.5) * SECTOR_SIZE, 80, 'i', 0);
+    let e = new Entity((player.mx+dx+0.5) * SZ, (player.my+dy+0.5) * SZ, 80, 'i', 0);
     e.world = w;
     e.bo = true;
     entities.push(e);
@@ -174,8 +174,8 @@ module.exports = {
         var x = player.x+rand.range(1000, 1200)*rand.sign();
         var y = player.y+rand.range(1000, 1200)*rand.sign();  
       }
-      var tmx = Math.floor(x / SECTOR_SIZE);
-      var tmy = Math.floor(y / SECTOR_SIZE);
+      var tmx = Math.floor(x / SZ);
+      var tmy = Math.floor(y / SZ);
       let sector = sectors[tmx+":"+tmy];
       if (!sector){
         continue;
@@ -230,11 +230,11 @@ module.exports = {
     var ty = e.y + e.dy * elapsed;
     let tmx;
     if (e.dx > 0){
-      tmx = Math.floor((tx+e.w) / SECTOR_SIZE);
+      tmx = Math.floor((tx+e.w) / SZ);
     } else {
-      tmx = Math.floor(tx / SECTOR_SIZE);
+      tmx = Math.floor(tx / SZ);
     }
-    var tmy = Math.floor((ty+e.h) / SECTOR_SIZE);
+    var tmy = Math.floor((ty+e.h) / SZ);
     let collision = false;
     let sector = sectors[tmx+":"+tmy];
     if (sector){
