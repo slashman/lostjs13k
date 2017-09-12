@@ -263,7 +263,7 @@ module.exports = {
 			bgStones.forEach(stone => stone.color = colors[stone.type]);
 		}
 		if (metadata.s != undefined){
-			this.fillBlocks(metadata.s, stones, mx, my);
+			fillBlocks(metadata.s, stones, mx, my);
 		}
 		let orb = false;
 		var stories = [];
@@ -333,41 +333,43 @@ module.exports = {
 			ec: metadata.ec
 		};
 	},
-	fillBlocks: function(n,s,bx,by){
-		bx *= SECTOR_SIZE;
-		by *= SECTOR_SIZE;
-		var map = MAPS[n];
-		let index = 0;
-		let chunk = map.substr(index, 2);
-		var mask = [];
-		while (chunk != ""){
-			var n = parseInt(chunk , 16)
-			mask.push([n&1,n&2,n&4,n&8,n&16,n&32,n&64,n&128]);
-			index++;
-			chunk = map.substr(index*2, 2);
-		}
-		mask.forEach((a,k)=>this.fillBlock(a,k,s,bx,by));
-	},
-	fillBlock: function(a,k,s,bx,by){
-		let x = ((k % 3) * 8)*W;
-		let y = Math.floor(k/3) * H;
-		a.forEach((v,k)=>{
-			if (!v)
-				return;
-			s.push({
-				x: bx+x+k*W,
-				y: by+y,
-				vs: [
-					[bx+x+k*W,by+y],
-					[bx+x+(k+1)*W,by+y],
-					[bx+x+(k+1)*W,by+y+H],
-					[bx+x+k*W,by+y+H]
-				]
-			});
-		});
-	}
 };
 
+function fillBlocks (n,s,bx,by){
+	bx *= SECTOR_SIZE;
+	by *= SECTOR_SIZE;
+	var map = MAPS[n];
+	let index = 0;
+	let chunk = map.substr(index, 2);
+	var mask = [];
+	while (chunk != ""){
+		var n = parseInt(chunk , 16)
+		mask.push([n&1,n&2,n&4,n&8,n&16,n&32,n&64,n&128]);
+		index++;
+		chunk = map.substr(index*2, 2);
+	}
+	mask.forEach((a,k)=>fillBlock(a,k,s,bx,by));
+};
+
+
+function fillBlock(a,k,s,bx,by){
+	let x = ((k % 3) * 8)*W;
+	let y = Math.floor(k/3) * H;
+	a.forEach((v,k)=>{
+		if (!v)
+			return;
+		s.push({
+			x: bx+x+k*W,
+			y: by+y,
+			vs: [
+				[bx+x+k*W,by+y],
+				[bx+x+(k+1)*W,by+y],
+				[bx+x+(k+1)*W,by+y+H],
+				[bx+x+k*W,by+y+H]
+			]
+		});
+	});
+}
 
 
 function getMetadata(mx, my){

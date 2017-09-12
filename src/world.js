@@ -33,7 +33,6 @@ var entities = [];
 
 var sectors = {};
 
-let world = false;
 function update(elapsed){
   if (player.dead || player.won){
     return;
@@ -65,14 +64,14 @@ function update(elapsed){
       sector.stories.splice(k,1);
     }
   });
-  this.updateEntity(player, elapsed);
+  updateEntity(player, elapsed);
   entities.forEach((e, k)=>{
     if (e.dead || geo.mdist(e.x, e.y, player.x, player.y) > 3000){
       entities.splice(k, 1);
       // This probably causes one entity to miss his turn.
       return;
     }
-    this.updateEntity(e, elapsed);
+    updateEntity(e, elapsed);
   });
 
   // Should we load another fragment?
@@ -87,7 +86,7 @@ function createAndDeleteSectorAt(w, cx, cy, dx, dy) {
   if (sectors[(player.mx+cx)+":"+(player.my+cy)]){
     
   } else {
-    generateSector(w, cx, cy);
+    generateSector(cx, cy);
   }
   if (sectors[(player.mx+dx)+":"+(player.my+dy)]){
     delete sectors[(player.mx+dx)+":"+(player.my+dy)];
@@ -99,6 +98,7 @@ function checkLoadFragment(w){
   var rightZone = player.x > player.mx * SZ + SZ / 2;
   var downZone = player.y > player.my * SZ + SZ / 2;
   var upZone = player.y < player.my * SZ + SZ / 2;
+  // TODO: Optimize source
   if (rightZone){
     createAndDeleteSectorAt(w, 1, 0, -1, 0);
     createAndDeleteSectorAt(w, 0, 0, -1, 1);
@@ -132,32 +132,22 @@ function checkLoadFragment(w){
   }
 }
 
-function generateSector(w, dx, dy){
+function generateSector(dx, dy){
   var s = gen.generateSegment(player.mx+dx, player.my+dy, player)
   sectors[(player.mx+dx)+":"+(player.my+dy)] = s;
   if (s.bo && !player.bo){
     player.bo = true;
     let e = new Entity((player.mx+dx+0.5) * SZ, (player.my+dy+0.5) * SZ, 80, 'i', 0);
-    e.world = w;
+    e.world = world;
     e.bo = true;
     entities.push(e);
     e.act();
   }
 }
 
-module.exports = {
-  update: update,
-  player: player,
-  sectors: sectors,
-  bubbles: bubbles,
-  booms: booms,
-  start: function(){
-    generateSector(this, 0,0,player);
-    this.addEnemiesNearby();
-  },
-  addEnemiesNearby: function(){
+function addEnemiesNearby(){
     if (entities.length > 20){
-      setTimeout(()=> this.addEnemiesNearby(), 5000);
+      setTimeout(()=> addEnemiesNearby(), 5000);
       return;
     }
     for (var i = 0; i < 5; i++){ //TODO: quantity based on depth
@@ -183,49 +173,54 @@ module.exports = {
       let t = rand.pickS(sector.ec);
       let e = new Entity(x, y, size, t, sector.lv);
       
-      if (!this.entityCollides(sector, e.x, e.y, e)){
-        e.world = this;
+      if (!entityCollides(sector, e.x, e.y, e)){
+        e.world = world;
         entities.push(e);
         e.act();
       }
     }
-    setTimeout(()=> this.addEnemiesNearby(), 5000);
-  },
-  sonicBoom: function(dx, q){
-    if (q === undefined)
-      q = 5;
-    if (q === 0){
-      return;
-    }
-    this.booms.push({
-      x: player.x+8,
-      y: rand.range(player.y+3, player.y+13),
-      dx: rand.range(250, 280) * dx,
-      dy: rand.range(-10, 10),
-      s: player.orbs[2] ? 5: 1,
-      life: player.orbs[2] ? rand.range(80, 100) : 8,
-    });
-    setTimeout(()=> this.sonicBoom(dx, q-1), 100);
-  },
-  bubblePuff: function(x,y,size){
-    for (var i = 0; i < size; i++){
-      this.bubbles.push({
-        x: rand.range(x-5, x+5),
-        y: rand.range(y-5, y+5),
-        dx: rand.range(-40, 40),
-        dy: rand.range(-200, 0),
-        life:  rand.range(15, 100),
+    setTimeout(()=> addEnemiesNearby(), 5000);
+  }
+
+function entityCollides(sector,tx,ty,e){
+    return sector.stones.find(function(s){
+      if (geo.mdist(tx, ty, s.x, s.y) > 300)
+        return false;
+      // TODO: Optimize source code
+      if (
+        geo.polygonIntersects({
+          a: {x: tx, y: ty},
+          b: {x: tx+e.w, y: ty}},
+          s.vs
+        ) || 
+        geo.polygonIntersects({
+          a: {x: tx, y: ty},
+          b: {x: tx, y: ty+e.h}},
+          s.vs
+        ) || 
+        geo.polygonIntersects({
+          a: {x: tx+e.w, y: ty},
+          b: {x: tx+e.w, y: ty+e.h}},
+          s.vs
+        ) || 
+        geo.polygonIntersects({
+          a: {x: tx, y: ty+e.h},
+          b: {x: tx+e.w, y: ty+e.h}},
+          s.vs
+        ) || 
+        geo.polygonIntersects({
+          a: {x: e.x+e.w/2, y: e.y+e.h},
+          b: {x: tx+e.w/2, y: ty+e.h}},
+          s.vs
+        )
+
+        ){
+         return true; 
+        }
       });
-    }
-  },
-  showStory: function(s){
-    if (typeof s.t === "string"){
-      ui.showText(s.t);
-    } else {
-      s.t.forEach(s=>ui.showText(s));
-    }
-  },
-  updateEntity: function(e, elapsed){
+  };
+
+function updateEntity(e, elapsed){
     var tx = e.x + e.dx * elapsed;
     var ty = e.y + e.dy * elapsed;
     let tmx;
@@ -238,7 +233,7 @@ module.exports = {
     let collision = false;
     let sector = sectors[tmx+":"+tmy];
     if (sector){
-      collision = this.entityCollides(sector,tx,ty,e)
+      collision = entityCollides(sector,tx,ty,e)
     } else {
       collision = true;
     }
@@ -289,44 +284,54 @@ module.exports = {
         }
       });
     }
+  };
+
+var world = {
+  update: update,
+  player: player,
+  sectors: sectors,
+  bubbles: bubbles,
+  booms: booms,
+  start: function(){
+    generateSector(0,0,player);
+    addEnemiesNearby();
+  },
+  sonicBoom: function(dx, q){
+    if (q === undefined)
+      q = 5;
+    if (q === 0){
+      return;
+    }
+    booms.push({
+      x: player.x+8,
+      y: rand.range(player.y+3, player.y+13),
+      dx: rand.range(250, 280) * dx,
+      dy: rand.range(-10, 10),
+      s: player.orbs[2] ? 5: 1,
+      life: player.orbs[2] ? rand.range(80, 100) : 8,
+    });
+    setTimeout(()=> this.sonicBoom(dx, q-1), 100);
+  },
+  bubblePuff: function(x,y,size){
+    for (var i = 0; i < size; i++){
+      bubbles.push({
+        x: rand.range(x-5, x+5),
+        y: rand.range(y-5, y+5),
+        dx: rand.range(-40, 40),
+        dy: rand.range(-200, 0),
+        life:  rand.range(15, 100),
+      });
+    }
+  },
+  showStory: function(s){
+    if (typeof s.t === "string"){
+      ui.showText(s.t);
+    } else {
+      s.t.forEach(s=>ui.showText(s));
+    }
   },
   entities: entities,
-  entityCollides: function(sector,tx,ty,e){
-    return sector.stones.find(function(s){
-      if (geo.mdist(tx, ty, s.x, s.y) > 300)
-        return false;
-      if (
-        geo.polygonIntersects({
-          a: {x: tx, y: ty},
-          b: {x: tx+e.w, y: ty}},
-          s.vs
-        ) || 
-        geo.polygonIntersects({
-          a: {x: tx, y: ty},
-          b: {x: tx, y: ty+e.h}},
-          s.vs
-        ) || 
-        geo.polygonIntersects({
-          a: {x: tx+e.w, y: ty},
-          b: {x: tx+e.w, y: ty+e.h}},
-          s.vs
-        ) || 
-        geo.polygonIntersects({
-          a: {x: tx, y: ty+e.h},
-          b: {x: tx+e.w, y: ty+e.h}},
-          s.vs
-        ) || 
-        geo.polygonIntersects({
-          a: {x: e.x+e.w/2, y: e.y+e.h},
-          b: {x: tx+e.w/2, y: ty+e.h}},
-          s.vs
-        )
-
-        ){
-         return true; 
-        }
-      });
-  },
+  
   won: ()=>{
     setTimeout(()=>{
       player.won = true;
@@ -334,3 +339,5 @@ module.exports = {
     }, 3000);
   }
 };
+
+module.exports = world;
