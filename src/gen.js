@@ -98,17 +98,17 @@ var CLUES = {
 	// Intro
 	A: [
 		"*You wake up in an underwater cavern", 
-		"*Where are you? Got to find a way out", 
+		"*Where are you? You got to find a way out", 
 		"*Use the arrows, Z to drill"
 	],
 	P: [
 		"*You hear a sweet voice in your head", 
-		"I know you can hear me!", 
+		"I know you can hear me", 
 		"I am princess Melkaia of Asterion"
 	],
 
 	O: [
-		"The gate of Atlantis, a passage to the surface",
+		"This is the gate of Atlantis, a passage to the surface",
 		"It can be opened by using the orbs"
 	],
 	B: [
@@ -129,10 +129,7 @@ var CLUES = {
 	G: O+"Athena",
 		
 	// Places
-	H: [
-		"The ruins of our great underwater city",
-		"The forces that contained the water are long gone",
-	],
+	H: "The ruins of our great underwater city",
 	I: "Our great temple to Poseidon, the lord of the seas",
 	J: "These used to be the very fertile farmlands",
 	K: "The abyss, cursed with eternal darkness",
@@ -211,7 +208,7 @@ function completeDiagram(d, su){
 
 
 module.exports = {
-	generateSegment: function(mx,my,player){
+	g: function(mx,my,player){
 		let w = SECTOR_SIZE;
 		let h = SECTOR_SIZE;
 		let x = mx * w;

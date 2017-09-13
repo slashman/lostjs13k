@@ -133,7 +133,7 @@ function checkLoadFragment(w){
 }
 
 function generateSector(dx, dy){
-  var s = gen.generateSegment(player.mx+dx, player.my+dy, player)
+  var s = gen.g(player.mx+dx, player.my+dy, player)
   sectors[(player.mx+dx)+":"+(player.my+dy)] = s;
   if (s.bo && !player.bo){
     player.bo = true;
