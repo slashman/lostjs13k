@@ -61,7 +61,7 @@ var JELLY2 = [ // Lines
 	[2,4,2,7],
 	[3,4,3,6]
 ];
-
+/*
 var JELLY3 = [ // Circles
 	[2, 2, 2, 0.75, 2.25]
 ];
@@ -71,7 +71,7 @@ var JELLY4 = [ // Lines
 	[2,2,2,7],
 	[3,2,3,5]
 ];
-
+*/
 var FISH = [
 	[2,2,2,0.7,1.9]
 ]
@@ -93,8 +93,6 @@ var JAW1 = [ // Shape
 	[3.8,1,3.8,2.5,2.5,1],
 	[1,1.5,-1,1.5,0,2,-1,2.5,1,2.5],
 ];
-
-var BA = [[2,2,2]];
 
 var TEXT=[];
 var currentText = false;
@@ -409,11 +407,11 @@ var E = {
 		dcs(e, JELLY1);
 		dls(e, JELLY2);
 	},
-	// Jelly 2
-	g: e => {
+	// Jelly 2/*
+	/*g: e => {
 		dcs(e, JELLY3);
 		dls(e, JELLY4);
-	},
+	},*/
 	h: e => {
 		// Deep fish
 		ctx.fillStyle = 'rgba(255,255,255,0.5)';
@@ -425,8 +423,7 @@ var E = {
 		dcs(e, FISH3);
 		ctx.fillStyle = '#F00';
 		dcs(e, FISH4);
-	},
-	j: e =>dcs(e, BA)
+	}
 }
 
 function showTexts() {

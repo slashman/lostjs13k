@@ -150,22 +150,22 @@ var CLUES = {
 var SECTOR_DATA = {
 	// Farmland   Blob, Big Fish, Jelly 1, Jelly 2
 	F: {cv: true, c:["#3B5323", "#526F35", "#636F57"], open: 20, ca: 0, rules: [],
-	ec: "adfg"},
+	ec: "adf"},
 	// Cavern   Spider, Nautilus, Glider
 	C: {cv: true, open: 50, ca: 1, rules: RULES.T, ec: "bce"},
 	// Gate     Nautilus, Glider, Big Fish
 	G: {cv: true, open: 30, ca: 2, rules: RULES.O, gate: true, ec: "bcd"},
 	// Open Caverns    Nautilus, Ball, Big Fish
-	O: {cv: true, open: 20, ca: 2, rules: [], ec: "cdj"},
+	O: {cv: true, open: 20, ca: 2, rules: [], ec: "cd"},
 	// Temple (T and Q)    Jelly 1, Big Fish, Glider
 	T: {s: 0, bg: "#1c0030", orb: {type: 2, x: 5*SECTOR_SIZE+20*W, y:SECTOR_SIZE+6*H, s: 'D'},
 		ec: "bdf"},
 	Q: {s: 1, bg: "#1c0030", ec: "bdf"},
 	// City Ruins (R and P)    Jelly 2, Ball, Nautilus
-	R: {s: 2, bg: "#001c33", ec: "cgj"},
-	P: {s: 3, bg: "#001c33", ec: "cgj"},
+	R: {s: 2, bg: "#001c33", ec: "cf"},
+	P: {s: 3, bg: "#001c33", ec: "cf"},
 	// Darkness abyss      Ball, Deep Fish, Blob, Spider
-	D: {cv: true, c: ["#000"], open: 70, ca: 1, rules: RULES.O, ec: "aehj"},
+	D: {cv: true, c: ["#000"], open: 70, ca: 1, rules: RULES.O, ec: "aeh"},
 	// Abyss of souls     Deep fish, Glider, Spider
 	S: {cv: true, open: 80, ca: 1, rules: RULES.T, cu: true, ec: "beh"},
 	// Volcanic Rift      Glider, Jelly1, Nautilus
