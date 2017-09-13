@@ -44,7 +44,7 @@ function Entity(x, y, s, t, l){
 
 Entity.prototype = {
 	act: function(){
-		let target = this.getTarget();
+		let target = this._getTarget();
 		if (!target){
 			this.dy -= rand.range(50, 120);
 			setTimeout(this.act.bind(this), rand.range(1000, 4000));
@@ -57,7 +57,7 @@ Entity.prototype = {
 			setTimeout(this.act.bind(this), rand.range(100, 500));
 		}
 	},
-	getTarget: function(){
+	_getTarget: function(){
 		if (!this.world.player || geo.mdist(this.world.player.x, this.world.player.y, this.x, this.y) > this.sight)
 			return false;
 		else
@@ -69,12 +69,12 @@ Entity.prototype = {
 		}
 		this.life -= d;
 		if (this.life <= 0){
-			this.die();
+			this._die();
 		}
 		this.takingDamage = true;
 		setTimeout(()=>this.takingDamage = false, 50);
 	},
-	die: function(){
+	_die: function(){
 		this.dead = true;
 		if (this.bo){
 			for (var i = 0; i < 40; i++)
