@@ -1,13 +1,36 @@
 /* jshint node: true */
 //"use strict";
 
+var pressed = {};
+var typedCallbacks = {};
 
-var key = require('./key');
+function keyPress(e){
+  if (typedCallbacks[e.which]){
+    typedCallbacks[e.which]();
+  }
+}
+
+function init(){
+    window.onkeydown = e => pressed[e.which] = true;
+    window.onkeyup = e => pressed[e.which] = false;
+    window.addEventListener("keypress", keyPress);
+  };
+
+function isDown(keyCode){
+    return pressed[keyCode];
+};
+
+function typed(keyCode, callback){
+    typedCallbacks[keyCode] = callback;   
+}
+
+
+
 var ui = require('./ui');
 var rand = require('./rng')();
 var sound = require('./sound');
 
-key.init();
+init();
 
 let player = false;
 let world = false;
@@ -20,20 +43,20 @@ let active = false;
     ui.camera.zoom += 0.1;
 });
 
-key.typed(122, function(){
+typed(122, function(){
   if (ui.camera.zoom >= 1)
     ui.camera.zoom = 0.3;
   else
     ui.camera.zoom += 0.1;
 });*/
 
-key.typed(122, function(){
+typed(122, function(){
   //sound.play(3);
   sound.play(0);
   world.sonicBoom(player.flipped ? - 1 : 1);
 });
 
-key.typed(13, ()=>{
+typed(13, ()=>{
   if (ui.t){
     ui.t = false;
     setTimeout(()=>player.lt = true, 10000);
@@ -95,7 +118,7 @@ module.exports = {
   },
   keyboard: function (){
     if (!active) return;
-    if (key.isDown(38)){ // Rise
+    if (isDown(38)){ // Rise
       sound.play(0);
       player.dy -= 10;
       if (player.dy < -120){
@@ -103,14 +126,14 @@ module.exports = {
       }
       addBubbles("left");
       addBubbles("right");
-    } else if (key.isDown(40)){ // Sink
+    } else if (isDown(40)){ // Sink
       sound.play(0);
       if (player.dy < 60){
         player.dy += 10;
       }
       addBubbles("top");
     } 
-    if (key.isDown(37)){
+    if (isDown(37)){
       sound.play(0);
       player.flipped = true;
       if (player.dx > -120){
@@ -119,7 +142,7 @@ module.exports = {
       // Generate some lift
       player.dy -= 5;
       addBubbles("right");
-    } else if (key.isDown(39)){
+    } else if (isDown(39)){
       sound.play(0);
       player.flipped = false;
       if (player.dx < 120){
