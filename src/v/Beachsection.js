@@ -3,7 +3,8 @@
 
 // rhill 2011-06-07: For some reasons, performance suffers significantly
 // when instanciating a literal object instead of an empty ctor
-module.exports = function() {};
+var Beachsection =  function() {};
+module.exports = Beachsection;
 // TODO: This class doesn't make much sense
 
 // rhill 2011-06-02: A lot of Beachsection instanciations

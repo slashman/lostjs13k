@@ -1,6 +1,8 @@
 // ---------------------------------------------------------------------------
 // Diagram methods
 
-module.exports = function(site) {
+var Diagram = function(site) {
     this.site = site;
 };
+
+module.exports = Diagram;

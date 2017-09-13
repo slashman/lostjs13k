@@ -3,7 +3,7 @@
 
 // rhill 2011-06-07: For some reasons, performance suffers significantly
 // when instanciating a literal object instead of an empty ctor
-module.exports = function() {
+var CircleEvent = function() {
     // rhill 2013-10-12: it helps to state exactly what we are at ctor time.
     this.arc = null;
     this.rbLeft = null;
@@ -15,3 +15,5 @@ module.exports = function() {
     this.site = null;
     this.x = this.y = this.ycenter = 0;
 };
+
+module.exports = CircleEvent;
