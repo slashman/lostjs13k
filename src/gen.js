@@ -48,42 +48,41 @@ var LV = [
 	"666055"
 ]
 
+var O = "The Orb of";
+
 var CLUES = {
 	// Intro
 	A: [
 		"*You wake up in an underwater cavern", 
-		"*Where are you?", 
-		"*At least the exploration lights work,",
-		"*the engines and the drill are working as well",
-		"*(Press the arrow keys and Z to drill)",
+		"*Where are you? Got to find a way out", 
+		"*Use the arrows, Z to drill"
 	],
 	P: [
 		"*You hear a sweet voice in your head", 
-		"Hello. I know you can hear me!", 
-		"I am the princess Melkaia of Asterion",
-		"I can help you return to your world",
+		"I know you can hear me!", 
+		"I am princess Melkaia of Asterion"
 	],
 
 	O: [
-		"This is the gate of Atlantis, the only passage to the surface",
-		"It can be opened by using the four ancient orbs"
+		"The gate of Atlantis, a passage to the surface",
+		"It can be opened by using the orbs"
 	],
 	B: [
-		"I can help you find the orbs, but I need your help too",
-		"I'm trapped in these cold depths"
+		"I can help you find the orbs, but I need your help",
+		"I'm trapped in these cold depths!"
 	],
 	C: [
-		"Finding the orbs will grant you special powers to survive",
+		"The orbs will give you powers to survive",
 		"One is at the Temple of Poseidon",
-		"To find it dive deeper and travel east",
+		"Dive deeper and travel east",
 	],
-	R: "Another orb was hidden there on a cave to the west",
+	R: "A orb was hidden on a cave to the west",
 	
 	// Artifacts
-	D: "The orb of Verra Kera emits sonic booms",
-	E: "The orb of Gabrielle will repair your vessel",
-	F: "The orb of Cosiaca lets you withstand extreme heat",
-	G: "The orb of Athena lets you cross strong currents",
+	D: O+"Verra Kera",
+	E: O+"Gabrielle",
+	F: O+"Cosiaca",
+	G: O+"Athena",
 		
 	// Places
 	H: [
@@ -91,29 +90,20 @@ var CLUES = {
 		"The forces that contained the water are long gone",
 	],
 	I: "Our great temple to Poseidon, the lord of the seas",
-	J: [
-		"These used to be the very fertile farmlands,",
-		"our people fed only with plants"
-	],
-	K: [
-		"The darkness abyss, this area was cursed with eternal darkness",
-		"I am trapped in the area below. Please don't give up!",
-	],
+	J: "These used to be the very fertile farmlands",
+	K: "The abyss, cursed with eternal darkness",
 	Q: [
-		"Below is the volcanic rift, a place full of geothermal energy",
-		"Only the power of Cosiaca will let you go in"
+		"The rift, a place full of energy",
+		"The power of Cosiaca will let you in"
 	],
 
 	// Ending
-	N: [
-		"A strong current blocks the entrance here",
-		"You will need the Orb of Athena to make it through"
-	],
+	N: "A strong current blocks the entrance here",
 	L: "I can feel you are close... I'm so eager to meet you!",
 	M: [
 		"Thank you for bringing the orbs... YOU FOOL!",
 		"I shall use them to drown your world in darkness!"
-	],
+	]
 };
 
 var SECTOR_DATA = {
