@@ -207,7 +207,7 @@ module.exports = {
 			}
 			
 			// Bore hole in the middle
-			if (geo.mdist(s.x, s.y, x+w/2, y+h/2) < 300){
+			if (geo.d(s.x, s.y, x+w/2, y+h/2) < 300){
 				s.type = 3; // Irreplaceable emptiness
 			}
 			if (metadata.u){

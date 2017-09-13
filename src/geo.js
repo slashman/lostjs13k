@@ -2,25 +2,7 @@
 
 //"use strict";
 
-function inside(point, vs) {
-    // ray-casting algorithm based on
-    // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
-
-    var x = point[0], y = point[1];
-
-    var inside = false;
-    for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
-        var xi = vs[i][0], yi = vs[i][1];
-        var xj = vs[j][0], yj = vs[j][1];
-
-        var intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-        if (intersect) inside = !inside;
-    }
-
-    return inside;
-}
-
-function polygonIntersects(line, vs) {
+function p(line, vs) {
     for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
         var xi = vs[i][0], yi = vs[i][1];
         var xj = vs[j][0], yj = vs[j][1];
@@ -42,13 +24,11 @@ function intersects(a,b,c,d,p,q,r,s) {
   }
 }
 
-function mdist(xa,ya,xb,yb){
+function d(xa,ya,xb,yb){
   return Math.abs(xa-xb)+Math.abs(ya-yb);
 }
 
 module.exports = {
-  inside: inside,
-  polygonIntersects: polygonIntersects,
-  intersects: intersects,
-  mdist: mdist
+  p: p,
+  d: d
 };

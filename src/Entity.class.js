@@ -58,7 +58,7 @@ Entity.prototype = {
 		}
 	},
 	_getTarget: function(){
-		if (!this.world.player || geo.mdist(this.world.player.x, this.world.player.y, this.x, this.y) > this.sight)
+		if (!this.world.player || geo.d(this.world.player.x, this.world.player.y, this.x, this.y) > this.sight)
 			return false;
 		else
 			return this.world.player;

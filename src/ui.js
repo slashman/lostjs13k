@@ -53,7 +53,6 @@ var NAn = [[2,2,2],[1,2,3,0,0.75]];
 var BFf = [[2,2,2,0,1.25],[2,3,2,1.5]];
 var BFn = [[2,2,2,-0.25,1],[2,3,2,1,1.5]];
 
-// TODO: Last one is meant to be fillCircle, not fillArc, check how it looks with arc
 var BOf = [[2,2,2,1],[3,2,1],[3,2,3,0.5,1]];
 var BOn = [[2,2,2,1],[1,2,1],[1,2,3,0,0.5]];
 
@@ -135,7 +134,7 @@ module.exports = {
 			}
 
 			sector.bgStones.forEach(function(s){
-				if (geo.mdist(s.x, s.y, player.x, player.y) > 1000)
+				if (geo.d(s.x, s.y, player.x, player.y) > 1000)
 					return;
 				ctx.fillStyle = s.color;
 				ctx.strokeStyle = s.color;
@@ -174,7 +173,7 @@ module.exports = {
 		for (sector in w.sectors){
 			sector = w.sectors[sector];
 			sector.stones.forEach(function(s){
-				if (geo.mdist(s.x, s.y, player.x, player.y) > 1000)
+				if (geo.d(s.x, s.y, player.x, player.y) > 1000)
 					return;
 				ctx.fillStyle = '#000';
 				ctx.strokeStyle = '#000';
@@ -380,7 +379,7 @@ function drawPlayer(ctx){
 };
 
 function drawEntity(ctx, e){
-	if (geo.mdist(e.x, e.y, player.x, player.y) > 1000){
+	if (geo.d(e.x, e.y, player.x, player.y) > 1000){
       return;
     }
 	ctx.fillStyle = e.takingDamage ? '#444' : '#000';

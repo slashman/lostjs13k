@@ -59,14 +59,14 @@ function update(elapsed){
     return;
   }
   sector.stories.forEach((s, k)=>{
-    if (geo.mdist(s.x, s.y, player.x, player.y) < 300){
+    if (geo.d(s.x, s.y, player.x, player.y) < 300){
       this.showStory(s);
       sector.stories.splice(k,1);
     }
   });
   updateEntity(player, elapsed);
   entities.forEach((e, k)=>{
-    if (e.dead || geo.mdist(e.x, e.y, player.x, player.y) > 3000){
+    if (e.dead || geo.d(e.x, e.y, player.x, player.y) > 3000){
       entities.splice(k, 1);
       // This probably causes one entity to miss his turn.
       return;
@@ -184,31 +184,31 @@ function addEnemiesNearby(){
 
 function entityCollides(sector,tx,ty,e){
     return sector.stones.find(function(s){
-      if (geo.mdist(tx, ty, s.x, s.y) > 300)
+      if (geo.d(tx, ty, s.x, s.y) > 300)
         return false;
       // TODO: Optimize source code
       if (
-        geo.polygonIntersects({
+        geo.p({
           a: {x: tx, y: ty},
           b: {x: tx+e.w, y: ty}},
           s.vs
         ) || 
-        geo.polygonIntersects({
+        geo.p({
           a: {x: tx, y: ty},
           b: {x: tx, y: ty+e.h}},
           s.vs
         ) || 
-        geo.polygonIntersects({
+        geo.p({
           a: {x: tx+e.w, y: ty},
           b: {x: tx+e.w, y: ty+e.h}},
           s.vs
         ) || 
-        geo.polygonIntersects({
+        geo.p({
           a: {x: tx, y: ty+e.h},
           b: {x: tx+e.w, y: ty+e.h}},
           s.vs
         ) || 
-        geo.polygonIntersects({
+        geo.p({
           a: {x: e.x+e.w/2, y: e.y+e.h},
           b: {x: tx+e.w/2, y: ty+e.h}},
           s.vs
@@ -257,12 +257,12 @@ function updateEntity(e, elapsed){
       if (sector.cu && !player.orbs[4]){
         e.dx = 400;
       }
-      if (sector.orb && geo.mdist(sector.orb.x, sector.orb.y, player.x, player.y) < 10){
+      if (sector.orb && geo.d(sector.orb.x, sector.orb.y, player.x, player.y) < 10){
         player.orbs[sector.orb.type] = true;
         sector.orb = false;
       }
     } else {
-      if (!player.invul && geo.mdist(e.x, e.y, player.x, player.y) < e.w){
+      if (!player.invul && geo.d(e.x, e.y, player.x, player.y) < e.w){
         player.takingDamage = true;
         setTimeout(()=>player.takingDamage = false, 50);
         sound.play(2);
@@ -276,7 +276,7 @@ function updateEntity(e, elapsed){
         setTimeout(()=>player.invul = false, 500);
       }
       booms.forEach(function (b, k){
-        if (geo.mdist(e.x, e.y, b.x, b.y) < e.w){
+        if (geo.d(e.x, e.y, b.x, b.y) < e.w){
           e.takeDamage();
           e.dx = b.dx * 2;
           sound.play(2);
