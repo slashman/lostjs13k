@@ -98,13 +98,15 @@ var JAW1 = [ // Shape
 var BA = [[2,2,2]];
 
 var TEXT=[];
+var currentText = false;
+var ita = false;
 
 module.exports = {
 	camera: camera,
 	init: function(w_){
 		w = w_;
 		player = w.player;
-		this.title = true;
+		this.t = true;
 	},
 	draw: function (){
 		if (player.dead){
@@ -120,7 +122,7 @@ module.exports = {
 			ctx.fillStyle = "#FFF";
 			ctx.fillRect(0, 0, canvas.width, canvas.height);
 			ctx.fillStyle = "#000";
-			this.showTexts();
+			showTexts();
 			return;
 		}
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -167,8 +169,8 @@ module.exports = {
 		w.booms.forEach(function (b){
 			strokeArc(ctx, b.x, b.y, b.s+rand.range(0,5));
 		});
-		this.drawPlayer(ctx);
-		w.entities.forEach(e => this.drawEntity(ctx, e));
+		drawPlayer(ctx);
+		w.entities.forEach(e => drawEntity(ctx, e));
 		for (sector in w.sectors){
 			sector = w.sectors[sector];
 			sector.stones.forEach(function(s){
@@ -186,7 +188,7 @@ module.exports = {
 				ctx.stroke();
 			});
 		}
-		if (!this.title){
+		if (!this.t){
 			ctx.font = "bold 20px sans-serif";
 			ctx.fillStyle = "white";
 			ctx.fillText(player.hull+"%", 700,40);
@@ -200,7 +202,7 @@ module.exports = {
 			}
 		}
 		ctx.fillStyle = "white";
-		if (this.title){
+		if (this.t){
 			ctx.font = "italic 36px serif";
 			ctx.textAlign="center"; 
 			ctx.fillText("Lost in Asterion", 400,100);
@@ -208,7 +210,7 @@ module.exports = {
 			ctx.fillText("A js13k game by Santiago Zapata", 400,150);
 			ctx.fillText("Press Enter", 400,450);
 		} else {
-			this.showTexts();
+			showTexts();
 		}
 		/*
 		if (DEBUG){
@@ -229,123 +231,11 @@ module.exports = {
 			ctx.fillText("zoom: "+camera.zoom,10,130);
 		}*/
 	},
-	showTexts: function(){
-		if (this.currentText){
-			if (this.ita)
-				ctx.font = "italic 28px serif";
-			else
-				ctx.font = "24px sans-serif";
-			ctx.textAlign="center"; 
-			if (player.won)
-				ctx.fillText(this.currentText, 400,250);
-			else
-				ctx.fillText(this.currentText, 400,550);
-		} else if (TEXT.length > 0){
-			let t = TEXT.shift();
-			this.ita = t.charAt(0) !== "*";
-			this.currentText =this.ita ? t : t.substr(1);
-			setTimeout(()=>this.currentText = false, player.won ? 8000 : 5000);
-		}
-	},
-	drawEntity: function(ctx, e){
-		if (geo.mdist(e.x, e.y, player.x, player.y) > 1000){
-	      return;
-	    }
-		ctx.fillStyle = e.takingDamage ? '#444' : '#000';
-	    ctx.strokeStyle = ctx.fillStyle;
-	    this["drawE"+e.t](ctx, e);
-	    /*if (DEBUG){
-			ctx.strokeStyle="#FF0000";
-			strokeRect(ctx, e.x, e.y, e.w, e.h);
-		}*/
-	},
-	drawEi: function(ctx, e){
-		// Big Nautilus
-		dcs(ctx,e, e.flipped?BOf:BOn);
-		ctx.fillStyle="#00F";
-		fillArc(ctx, e.x+(e.flipped?1:3)*e.s, e.y+3*e.s, e.s/2);
-	},
-	drawEa: function(ctx, e){
-		// Four blobs
-		dcs(ctx, e, FB)
-	},
-	drawEb: function(ctx, e){
-		// Glider
-		dcs(ctx,e, e.flipped?GLf:GLn);
-	},
-	drawEc: function(ctx, e){
-		// Nautilus
-		dcs(ctx,e, e.flipped?NAf:NAn);
-	},
-	drawEd: function(ctx, e){
-		// Big Fish
-		dcs(ctx,e, e.flipped?BFf:BFn);
-	},
-	drawEe: function(ctx, e){
-		// Spider
-		fillRect(ctx, e.x + 1.8*e.s, e.y+e.s, e.s*0.4, 2*e.s);
-		dls(ctx, e, SPIDER);
-	},
-	drawEf: function(ctx, e){
-		// Jelly 1
-		dcs(ctx, e, JELLY1);
-		dls(ctx, e, JELLY2);
-	},
-	drawEg: function(ctx, e){
-		// Jelly 2
-		dcs(ctx, e, JELLY3);
-		dls(ctx, e, JELLY4);
-	},
-	drawEh: function(ctx, e){
-		// Deep fish
-		ctx.fillStyle = 'rgba(255,255,255,0.5)';
-		dcs(ctx, e, FISH2);
-		ctx.fillStyle = '#000';
-		dcs(ctx, e, FISH);
-		dsh(ctx, e, JAW1);
-		strokeArc(ctx, e.x+e.s*3.5, e.y, e.s*1.5, 1*Math.PI, 1.75*Math.PI);
-		dcs(ctx, e, FISH3);
-		ctx.fillStyle = '#F00';
-		dcs(ctx, e, FISH4);
-	},
-	drawEj: function(ctx, e){
-		// Ball
-		dcs(ctx, e, BA);
-	},
-	drawPlayer: function(ctx){
-		if (player.lt){
-			ctx.fillStyle = 'rgba(255,255,255,0.5)';
-			ctx.beginPath();
-			if (player.flipped){
-				moveTo(ctx, player.x, player.y - 3);
-				lineTo(ctx, player.x - 500, player.y - 200);
-				lineTo(ctx, player.x - 500, player.y + 200);
-			} else {
-				moveTo(ctx, player.x + 15, player.y - 3);
-				lineTo(ctx, player.x + 500, player.y - 200);
-				lineTo(ctx, player.x + 500, player.y + 200);
-			}
-			ctx.closePath();
-			ctx.fill();
-		}
-		ctx.fillStyle=player.takingDamage ? '#444' : '#000';
-		fillArc(ctx, player.x+player.w/2, player.y+player.w/2, player.w);
-		if (player.flipped){
-			fillRect(ctx, player.x - 8, player.y-7, 14, 16);
-		} else {
-			fillRect(ctx, player.x + 8, player.y-7, 14, 16);
-		}
-		// Hitbox
-		/*if (DEBUG){
-			ctx.strokeStyle="#FF0000";
-			strokeRect(ctx, player.x, player.y, player.w, player.h);
-		}*/
-	},
 	showText: function(t){
 		TEXT.push(t);
 	},
   	won: function(){
-  		this.currentText = false;
+  		currentText = false;
   		TEXT.length = 0;
   		// TODO: Fade to White
   		WM.forEach(m=>TEXT.push(m));
@@ -457,4 +347,114 @@ function dsh(t, e, sh){
 		t.closePath();
 		t.fill();
 	})
+};
+
+function drawPlayer(ctx){
+	if (player.lt){
+		ctx.fillStyle = 'rgba(255,255,255,0.5)';
+		ctx.beginPath();
+		if (player.flipped){
+			moveTo(ctx, player.x, player.y - 3);
+			lineTo(ctx, player.x - 500, player.y - 200);
+			lineTo(ctx, player.x - 500, player.y + 200);
+		} else {
+			moveTo(ctx, player.x + 15, player.y - 3);
+			lineTo(ctx, player.x + 500, player.y - 200);
+			lineTo(ctx, player.x + 500, player.y + 200);
+		}
+		ctx.closePath();
+		ctx.fill();
+	}
+	ctx.fillStyle=player.takingDamage ? '#444' : '#000';
+	fillArc(ctx, player.x+player.w/2, player.y+player.w/2, player.w);
+	if (player.flipped){
+		fillRect(ctx, player.x - 8, player.y-7, 14, 16);
+	} else {
+		fillRect(ctx, player.x + 8, player.y-7, 14, 16);
+	}
+	// Hitbox
+	/*if (DEBUG){
+		ctx.strokeStyle="#FF0000";
+		strokeRect(ctx, player.x, player.y, player.w, player.h);
+	}*/
+};
+
+function drawEntity(ctx, e){
+	if (geo.mdist(e.x, e.y, player.x, player.y) > 1000){
+      return;
+    }
+	ctx.fillStyle = e.takingDamage ? '#444' : '#000';
+    ctx.strokeStyle = ctx.fillStyle;
+    E[e.t](ctx, e);
+    /*if (DEBUG){
+		ctx.strokeStyle="#FF0000";
+		strokeRect(ctx, e.x, e.y, e.w, e.h);
+	}*/
+};
+
+var E = {
+	// Big Nautilus
+	i: (ctx, e) => {
+		dcs(ctx,e, e.flipped?BOf:BOn);
+		ctx.fillStyle="#00F";
+		fillArc(ctx, e.x+(e.flipped?1:3)*e.s, e.y+3*e.s, e.s/2);
+	},
+	// Four blobs
+	a: (ctx, e) => dcs(ctx, e, FB),
+	// Glider
+	b: (ctx, e) => dcs(ctx,e, e.flipped?GLf:GLn),
+	// Nautilus
+	c: (ctx, e) => dcs(ctx,e, e.flipped?NAf:NAn),
+	// Big Fish
+	d: (ctx, e) => dcs(ctx,e, e.flipped?BFf:BFn),
+	// Spider
+	e: (ctx, e) => {
+		fillRect(ctx, e.x + 1.8*e.s, e.y+e.s, e.s*0.4, 2*e.s);
+		dls(ctx, e, SPIDER);
+	},
+	// Jelly 1
+	f: (ctx, e) => {
+		dcs(ctx, e, JELLY1);
+		dls(ctx, e, JELLY2);
+	},
+	// Jelly 2
+	g: (ctx, e) => {
+		dcs(ctx, e, JELLY3);
+		dls(ctx, e, JELLY4);
+	},
+	h: (ctx, e) => {
+		// Deep fish
+		ctx.fillStyle = 'rgba(255,255,255,0.5)';
+		dcs(ctx, e, FISH2);
+		ctx.fillStyle = '#000';
+		dcs(ctx, e, FISH);
+		dsh(ctx, e, JAW1);
+		strokeArc(ctx, e.x+e.s*3.5, e.y, e.s*1.5, 1*Math.PI, 1.75*Math.PI);
+		dcs(ctx, e, FISH3);
+		ctx.fillStyle = '#F00';
+		dcs(ctx, e, FISH4);
+	},
+	j: (ctx, e) =>{
+		// Ball
+		dcs(ctx, e, BA);
+	}
+}
+
+function showTexts() {
+	if (currentText){
+		if (ita)
+			ctx.font = "italic 28px serif";
+		else
+			ctx.font = "24px sans-serif";
+		ctx.textAlign="center"; 
+		if (player.won)
+			ctx.fillText(currentText, 400,250);
+		else
+			ctx.fillText(currentText, 400,550);
+	} else if (TEXT.length > 0){
+		let t = TEXT.shift();
+		ita = t.charAt(0) !== "*";
+		currentText =ita ? t : t.substr(1);
+		setTimeout(()=>currentText = false, player.won ? 8000 : 5000);
+	}
 };

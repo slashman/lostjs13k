@@ -34,8 +34,8 @@ key.typed(122, function(){
 });
 
 key.typed(13, ()=>{
-  if (ui.title){
-    ui.title = false;
+  if (ui.t){
+    ui.t = false;
     setTimeout(()=>player.lt = true, 10000);
     setTimeout(()=>active = true, 15000);
   } 
