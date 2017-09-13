@@ -22,14 +22,14 @@ function applyRule(rule, cells){
 			cell.nextType = cell.type;
 			return;
 		}
-		var surroundingCount = getSurroundingCellsCount(cell, rule.sType);
+		var co = surr(cell);
 		if (rule.op === '>'){
-			if (surroundingCount > rule.q){
+			if (co > rule.q){
 				cell.nextType = rule.nType;
 				return;
 			}
 		} else if (rule.op === '<'){
-			if (surroundingCount < rule.q){
+			if (co < rule.q){
 				cell.nextType = rule.nType;
 				return;	
 			}
@@ -39,9 +39,9 @@ function applyRule(rule, cells){
 	cells.forEach(cell => cell.type = cell.nextType);
 }
 
-function getSurroundingCellsCount(cell, type){
-	return cell.surroundingCells.reduce((sum, cell) => {
-		if (cell.type === type){
+function surr(cell){
+	return cell.sur.reduce((sum, cell) => {
+		if (cell.type === 1){
 			return sum + 1;
 		} else {
 			return sum;
@@ -61,13 +61,13 @@ var H = SECTOR_SIZE / 18;
 
 
 var RULES = {
-	TIGHT_CAVE: [
-		{ type: 0, op: '>', q: 1, sType: 1, nType: 1, chance: 60},
-		{ type: 1, op: '<', q: 1, sType: 1, nType: 0, chance: 90},
+	T: [
+		{ type: 0, op: '>', q: 1, nType: 1, chance: 60},
+		{ type: 1, op: '<', q: 1, nType: 0, chance: 90},
 	],
-	OPEN_CAVE: [
-		{ type: 0, op: '>', q: 1, sType: 1, nType: 1, chance: 30},
-		{ type: 1, op: '<', q: 2, sType: 1, nType: 0, chance: 90},
+	O: [
+		{ type: 0, op: '>', q: 1, nType: 1, chance: 30},
+		{ type: 1, op: '<', q: 2, nType: 0, chance: 90},
 	]
 };
 
@@ -155,9 +155,9 @@ var SECTOR_DATA = {
 	F: {cv: true, c:["#3B5323", "#526F35", "#636F57"], open: 20, ca: 0, rules: [],
 	ec: "adfg"},
 	// Cavern   Spider, Nautilus, Glider
-	C: {cv: true, open: 50, ca: 1, rules: RULES.TIGHT_CAVE, ec: "bce"},
+	C: {cv: true, open: 50, ca: 1, rules: RULES.T, ec: "bce"},
 	// Gate     Nautilus, Glider, Big Fish
-	G: {cv: true, open: 30, ca: 2, rules: RULES.OPEN_CAVE, gate: true, ec: "bcd"},
+	G: {cv: true, open: 30, ca: 2, rules: RULES.O, gate: true, ec: "bcd"},
 	// Open Caverns    Nautilus, Ball, Big Fish
 	O: {cv: true, open: 20, ca: 2, rules: [], ec: "cdj"},
 	// Temple (T and Q)    Jelly 1, Big Fish, Glider
@@ -168,21 +168,21 @@ var SECTOR_DATA = {
 	R: {s: 2, bg: "#001c33", ec: "cgj"},
 	P: {s: 3, bg: "#001c33", ec: "cgj"},
 	// Darkness abyss      Ball, Deep Fish, Blob, Spider
-	D: {cv: true, c: ["#000"], open: 70, ca: 1, rules: RULES.OPEN_CAVE, ec: "aehj"},
+	D: {cv: true, c: ["#000"], open: 70, ca: 1, rules: RULES.O, ec: "aehj"},
 	// Abyss of souls     Deep fish, Glider, Spider
-	S: {cv: true, open: 80, ca: 1, rules: RULES.TIGHT_CAVE, cu: true, ec: "beh"},
+	S: {cv: true, open: 80, ca: 1, rules: RULES.T, cu: true, ec: "beh"},
 	// Volcanic Rift      Glider, Jelly1, Nautilus
-	V: {cv: true, c:["#fdcf58", "#f27d0c", "#800909", "#f07f13"], open: 70, ca: 1, rules: RULES.OPEN_CAVE, bu: true,
+	V: {cv: true, c:["#fdcf58", "#f27d0c", "#800909", "#f07f13"], open: 70, ca: 1, rules: RULES.O, bu: true,
 	ec:"bcf"},
 };
 
 function cas(s, t){
 	if (s === null || s.voronoiId === t.voronoiId)
 		return;
-	if (!t.surroundingCells.find(function(cell){
+	if (!t.sur.find(function(cell){
 		return cell.voronoiId === s.voronoiId;
 	})){
-		t.surroundingCells.push(s);
+		t.sur.push(s);
 	}
 }
 
@@ -196,7 +196,7 @@ function completeDiagram(d, su){
 		var site = cell.site;
 		site.vs = [];
 		if (su){
-	  		site.surroundingCells = [];
+	  		site.sur = [];
 	  	}
 		cell.halfedges.forEach(function (halfedge){
 	    	site.vs.push([halfedge.getStartpoint().x, halfedge.getStartpoint().y]);

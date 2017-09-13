@@ -28,13 +28,8 @@ function Entity(x, y, s, t, l){
 	this.my = 0;
     this.flipped = false;
     this.t = t;
-    if (t === "i"){
-    	this.w = s;
-    	this.h = s;
-    } else {
-    	this.w = s * 4;
-    	this.h = s * 4;
-    }
+	this.w = s * 4;
+	this.h = s * 4;
     let d = BS[t];
     this.sight = d[0] * (1+l/10);
     this.spda = d[1] * (1+l/10);
@@ -47,15 +42,15 @@ Entity.prototype = {
 		let target = this._getTarget();
 		if (!target){
 			this.dy -= rand.range(50, 120);
-			setTimeout(this.act.bind(this), rand.range(1000, 4000));
+			this.dx = rand.range(-50, 50);
 		} else {
 			let dx = target.x - this.x;
 			let dy = target.y - this.y;
 			this.dx = Math.sign(dx) * rand.range(this.spda-20, this.spda+20);
 			this.dy = Math.sign(dy) * rand.range(this.spdb-20, this.spdb+20);
 			this.flipped = dx < 0;
-			setTimeout(this.act.bind(this), rand.range(100, 500));
 		}
+		setTimeout(this.act.bind(this), rand.range(100, 500));
 	},
 	_getTarget: function(){
 		if (!this.world.player || geo.d(this.world.player.x, this.world.player.y, this.x, this.y) > this.sight)
@@ -63,11 +58,8 @@ Entity.prototype = {
 		else
 			return this.world.player;
 	},
-	takeDamage: function(d){
-		if (d === undefined){
-			d = 1;
-		}
-		this.life -= d;
+	takeDamage: function(){
+		this.life--;
 		if (this.life <= 0){
 			this._die();
 		}
