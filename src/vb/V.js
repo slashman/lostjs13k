@@ -1522,7 +1522,7 @@ _closeCells: function(bbox) {
                         // fall through
 
                     default:
-                        throw "Voronoi.closeCells() > this makes no sense!";
+                        
                     }
                 }
             iLeft++;
