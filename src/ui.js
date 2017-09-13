@@ -10,15 +10,16 @@ var canvas = document.querySelector('#game');
 var ctx = canvas.getContext('2d');
 
 var SZ = 3000;
-
+/*
 var camera = {
   x: 20,
-  y: 20,
+  y: 20/*,
   zoom: 1
 };
+*/
 
-let w = false; // World
-let player = false;
+let w; // World
+let player;
 
 var SPIDER = [
 	[1.8,1.7,1.25,1,1.75,0],
@@ -101,7 +102,7 @@ var currentText = false;
 var ita = false;
 
 module.exports = {
-	camera: camera,
+	//camera: camera,
 	init: function(w_){
 		w = w_;
 		player = w.player;
@@ -261,17 +262,17 @@ var OC = [
 ];
 
 function tx(x){
-  return (x - camera.x) * camera.zoom + canvas.width / 2 ;
+  return x - player.x /* * camera.zoom */+ canvas.width / 2 ;
 }
 
 function ty(y){
-  return (y - camera.y) * camera.zoom + canvas.height / 2;
+  return y - player.y /* * camera.zoom */ + canvas.height / 2;
 }
-
+/*
 function ts(w){
   return w * camera.zoom;
 }
-
+*/
 function moveTo(c, x, y){
   c.moveTo(tx(x), ty(y));
 }
@@ -281,7 +282,7 @@ function lineTo(c, x, y){
 }
 
 function fillRect(c, x, y, w, h){
-  c.fillRect(tx(x), ty(y), ts(w), ts(h));  
+  c.fillRect(tx(x), ty(y), w, h);  
 }
 
 // TODO: Remove this? Only used by big boss
@@ -299,7 +300,7 @@ function fillArc(c, x, y, r, a, b){
   a = a || 0;
   b = b || 2*Math.PI;
   c.beginPath();
-  c.arc(tx(x), ty(y), ts(r), a, b);
+  c.arc(tx(x), ty(y), r, a, b);
   c.fill();
 }
 
@@ -307,7 +308,7 @@ function strokeArc(c, x, y, r, a, b){
   a = a || 0;
   b = b || 2*Math.PI;
   c.beginPath();
-  c.arc(tx(x), ty(y), ts(r), a, b);
+  c.arc(tx(x), ty(y), r, a, b);
   c.stroke();
 }
 

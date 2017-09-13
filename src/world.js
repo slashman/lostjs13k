@@ -78,8 +78,8 @@ function update(elapsed){
   checkLoadFragment(this);
   player.mx = Math.floor(player.x / SZ);
   player.my = Math.floor(player.y / SZ);
-  ui.camera.x = player.x;
-  ui.camera.y = player.y;
+  /*ui.camera.x = player.x;
+  ui.camera.y = player.y;*/
 }
 
 function createAndDeleteSectorAt(w, cx, cy, dx, dy) {
