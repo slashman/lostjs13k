@@ -82,7 +82,7 @@ var SECTOR_INFO = [
 	[ "FdrcF3", "Fdl",  "Cdr", "ClcE1",  "CdCr",   "GlBcOr", "ClPcA" ],
 	[ "Fur",    "Fuld", "Cur", "Odlr",   "OudlR",  "Td" ],
 	[ "",       "PuJr", "Rlr", "OudKlHr","OulrI",  "QudQl" ],
-	[ "CcMr*",  "SlcLr","ClNr","Dul",    "VrcG4",  "Vul" ]
+	[ "OcMr*",  "SlcLr","ClNr","Dul",    "VrcG4",  "Vul" ]
 ];
 
 var LV = [
@@ -92,7 +92,7 @@ var LV = [
 	"666055"
 ]
 
-var O = "The Orb of";
+var O = "The Orb of ";
 
 var CLUES = {
 	// Intro
