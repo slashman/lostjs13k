@@ -6,7 +6,7 @@
 var geo = require('./geo');
 var rand = require('./rng')();
 
-var canvas = document.querySelector('#game');
+var canvas = document.querySelector('canvas');
 var ctx = canvas.getContext('2d');
 
 var SZ = 3000;
