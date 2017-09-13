@@ -19,9 +19,8 @@ s = s.map(a=>jsfxr(a)).map(j=>[...Array(BS).keys()].map(()=>new Audio(j)));
 let playing = {};
 let curr = [0,0,0/*,0*/];
 module.exports = {
-	enabled: true,
 	play: function(i){
-		if (!this.enabled || playing[i]){
+		if (playing[i]){
 			return;
 		}
 		playing[i] = true;
