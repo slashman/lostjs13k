@@ -131,7 +131,7 @@ module.exports = {
 			if (sector.bg){
 				ctx.fillStyle=sector.bg;
 				ctx.strokeStyle=sector.bg;
-				fillRect(ctx, sector.x, sector.y, SZ, SZ);
+				fillRect(sector.x, sector.y, SZ, SZ);
 			}
 
 			sector.bgStones.forEach(function(s){
@@ -140,9 +140,9 @@ module.exports = {
 				ctx.fillStyle = s.color;
 				ctx.strokeStyle = s.color;
 				ctx.beginPath();
-				moveTo(ctx, s.vs[0][0], s.vs[0][1]);
+				moveTo(s.vs[0][0], s.vs[0][1]);
 				for (var i = 1; i < s.vs.length; i++){
-					lineTo(ctx, s.vs[i][0], s.vs[i][1]);
+					lineTo(s.vs[i][0], s.vs[i][1]);
 				}
 				ctx.closePath();
 				ctx.fill();
@@ -150,27 +150,27 @@ module.exports = {
 			});
 			if (sector.orb){
 				ctx.fillStyle="rgba("+OC[sector.orb.type-1]+",0.5)";
-				fillArc(ctx, sector.orb.x+10, sector.orb.y+10, 40);
+				fillArc(sector.orb.x+10, sector.orb.y+10, 40);
 				ctx.fillStyle="rgb("+OC[sector.orb.type-1]+")";
-				fillArc(ctx, sector.orb.x+10, sector.orb.y+10, 5);
+				fillArc(sector.orb.x+10, sector.orb.y+10, 5);
 			}
 			if (sector.gate){
 				ctx.fillStyle="#000";
-				fillArc(ctx, sector.gate.x, sector.gate.y, 50);
-				fillRect(ctx, sector.gate.x - 70, sector.gate.y-15, 140, 30);
-				fillRect(ctx, sector.gate.x - 15, sector.gate.y-70, 30, 140);
+				fillArc(sector.gate.x, sector.gate.y, 50);
+				fillRect(sector.gate.x - 70, sector.gate.y-15, 140, 30);
+				fillRect(sector.gate.x - 15, sector.gate.y-70, 30, 140);
 			}
 		}
 		ctx.strokeStyle = '#ccc';
 		w.bubbles.forEach(function (b){
-			strokeArc(ctx, b.x, b.y, 2);
+			strokeArc(b.x, b.y, 2);
 		});
 		ctx.strokeStyle = '#fcc';
 		w.booms.forEach(function (b){
-			strokeArc(ctx, b.x, b.y, b.s+rand.range(0,5));
+			strokeArc(b.x, b.y, b.s+rand.range(0,5));
 		});
-		drawPlayer(ctx);
-		w.entities.forEach(e => drawEntity(ctx, e));
+		drawPlayer();
+		w.entities.forEach(e => drawEntity(e));
 		for (sector in w.sectors){
 			sector = w.sectors[sector];
 			sector.stones.forEach(function(s){
@@ -179,9 +179,9 @@ module.exports = {
 				ctx.fillStyle = '#000';
 				ctx.strokeStyle = '#000';
 				ctx.beginPath();
-				moveTo(ctx, s.vs[0][0], s.vs[0][1]);
+				moveTo(s.vs[0][0], s.vs[0][1]);
 				for (var i = 1; i < s.vs.length; i++){
-					lineTo(ctx, s.vs[i][0], s.vs[i][1]);
+					lineTo(s.vs[i][0], s.vs[i][1]);
 				}
 				ctx.closePath();
 				ctx.fill();
@@ -244,7 +244,7 @@ module.exports = {
 
 // Winning messages
 var WM = [
-"You make the journey back to the Gate of Atlantis,", 
+"You make the journey back to the Gate of Atlantis.", 
 "A tremendous whirlpool covers the cavern.",
 "You wake up in the middle of the Ocean,",
 "The SOS beacon is activated, you'll be rescued soon.",
@@ -272,16 +272,16 @@ function ts(w){
   return w * camera.zoom;
 }
 */
-function moveTo(c, x, y){
-  c.moveTo(tx(x), ty(y));
+function moveTo(x, y){
+  ctx.moveTo(tx(x), ty(y));
 }
 
-function lineTo(c, x, y){
-  c.lineTo(tx(x), ty(y));
+function lineTo(x, y){
+  ctx.lineTo(tx(x), ty(y));
 }
 
-function fillRect(c, x, y, w, h){
-  c.fillRect(tx(x), ty(y), w, h);  
+function fillRect(x, y, w, h){
+  ctx.fillRect(tx(x), ty(y), w, h);  
 }
 
 // TODO: Remove this? Only used by big boss
@@ -295,26 +295,26 @@ function fillRect(c, x, y, w, h){
   c.restore();
 }*/
 
-function fillArc(c, x, y, r, a, b){
+function fillArc(x, y, r, a, b){
   a = a || 0;
   b = b || 2*Math.PI;
-  c.beginPath();
-  c.arc(tx(x), ty(y), r, a, b);
-  c.fill();
+  ctx.beginPath();
+  ctx.arc(tx(x), ty(y), r, a, b);
+  ctx.fill();
 }
 
-function strokeArc(c, x, y, r, a, b){
+function strokeArc(x, y, r, a, b){
   a = a || 0;
   b = b || 2*Math.PI;
-  c.beginPath();
-  c.arc(tx(x), ty(y), r, a, b);
-  c.stroke();
+  ctx.beginPath();
+  ctx.arc(tx(x), ty(y), r, a, b);
+  ctx.stroke();
 }
 
 // Draw circles
-function dcs(t, e, cs) {
+function dcs(e, cs) {
 	cs.forEach(c=>{
-		fillArc(t, e.x+c[0]*e.s, 
+		fillArc(e.x+c[0]*e.s, 
 			e.y+c[1]*e.s, 
 			e.s*c[2],
 			Math.PI * (c[3] || 0),
@@ -324,52 +324,52 @@ function dcs(t, e, cs) {
 };
 
 // Draw lines
-function dls(t, e, ls){
-	t.beginPath();
+function dls(e, ls){
+	ctx.beginPath();
 	ls.forEach(l=>{
-		moveTo(t, e.x+e.s*l[0], e.y+e.s*l[1]);
+		moveTo(e.x+e.s*l[0], e.y+e.s*l[1]);
 		for (var i = 2; i < l.length; i+=2){
-			lineTo(t, e.x+e.s*l[i], e.y+e.s*l[i+1]);
+			lineTo(e.x+e.s*l[i], e.y+e.s*l[i+1]);
 		}
-		t.stroke();	
+		ctx.stroke();	
 	})
 };
 
 // Draw shapes
-function dsh(t, e, sh){
+function dsh(e, sh){
 	sh.forEach(p=>{
-		t.beginPath();
-		moveTo(t, e.x+e.s*p[0], e.y+e.s*p[1]);
+		ctx.beginPath();
+		moveTo(e.x+e.s*p[0], e.y+e.s*p[1]);
 		for (var i = 2; i < p.length; i+=2){
-			lineTo(t, e.x+e.s*p[i], e.y+e.s*p[i+1]);
+			lineTo(e.x+e.s*p[i], e.y+e.s*p[i+1]);
 		}	
-		t.closePath();
-		t.fill();
+		ctx.closePath();
+		ctx.fill();
 	})
 };
 
-function drawPlayer(ctx){
+function drawPlayer(){
 	if (player.lt){
 		ctx.fillStyle = 'rgba(255,255,255,0.5)';
 		ctx.beginPath();
 		if (player.flipped){
-			moveTo(ctx, player.x, player.y - 3);
-			lineTo(ctx, player.x - 500, player.y - 200);
-			lineTo(ctx, player.x - 500, player.y + 200);
+			moveTo(player.x, player.y - 3);
+			lineTo(player.x - 500, player.y - 200);
+			lineTo(player.x - 500, player.y + 200);
 		} else {
-			moveTo(ctx, player.x + 15, player.y - 3);
-			lineTo(ctx, player.x + 500, player.y - 200);
-			lineTo(ctx, player.x + 500, player.y + 200);
+			moveTo(player.x + 15, player.y - 3);
+			lineTo(player.x + 500, player.y - 200);
+			lineTo(player.x + 500, player.y + 200);
 		}
 		ctx.closePath();
 		ctx.fill();
 	}
 	ctx.fillStyle=player.takingDamage ? '#444' : '#000';
-	fillArc(ctx, player.x+player.w/2, player.y+player.w/2, player.w);
+	fillArc(player.x+player.w/2, player.y+player.w/2, player.w);
 	if (player.flipped){
-		fillRect(ctx, player.x - 8, player.y-7, 14, 16);
+		fillRect(player.x - 8, player.y-7, 14, 16);
 	} else {
-		fillRect(ctx, player.x + 8, player.y-7, 14, 16);
+		fillRect(player.x + 8, player.y-7, 14, 16);
 	}
 	// Hitbox
 	/*if (DEBUG){
@@ -378,13 +378,13 @@ function drawPlayer(ctx){
 	}*/
 };
 
-function drawEntity(ctx, e){
+function drawEntity(e){
 	if (geo.d(e.x, e.y, player.x, player.y) > 1000){
       return;
     }
 	ctx.fillStyle = e.takingDamage ? '#444' : '#000';
     ctx.strokeStyle = ctx.fillStyle;
-    E[e.t](ctx, e);
+    E[e.t](e);
     /*if (DEBUG){
 		ctx.strokeStyle="#FF0000";
 		strokeRect(ctx, e.x, e.y, e.w, e.h);
@@ -393,50 +393,47 @@ function drawEntity(ctx, e){
 
 var E = {
 	// Big Nautilus
-	i: (ctx, e) => {
-		dcs(ctx,e, e.flipped?BOf:BOn);
+	i: e => {
+		dcs(e, e.flipped?BOf:BOn);
 		ctx.fillStyle="#00F";
-		fillArc(ctx, e.x+(e.flipped?1:3)*e.s, e.y+3*e.s, e.s/2);
+		fillArc(e.x+(e.flipped?1:3)*e.s, e.y+3*e.s, e.s/2);
 	},
 	// Four blobs
-	a: (ctx, e) => dcs(ctx, e, FB),
+	a: e => dcs(e, FB),
 	// Glider
-	b: (ctx, e) => dcs(ctx,e, e.flipped?GLf:GLn),
+	b: e => dcs(e, e.flipped?GLf:GLn),
 	// Nautilus
-	c: (ctx, e) => dcs(ctx,e, e.flipped?NAf:NAn),
+	c: e => dcs(e, e.flipped?NAf:NAn),
 	// Big Fish
-	d: (ctx, e) => dcs(ctx,e, e.flipped?BFf:BFn),
+	d: e => dcs(e, e.flipped?BFf:BFn),
 	// Spider
-	e: (ctx, e) => {
-		fillRect(ctx, e.x + 1.8*e.s, e.y+e.s, e.s*0.4, 2*e.s);
-		dls(ctx, e, SPIDER);
+	e: e => {
+		fillRect(e.x + 1.8*e.s, e.y+e.s, e.s*0.4, 2*e.s);
+		dls(e, SPIDER);
 	},
 	// Jelly 1
-	f: (ctx, e) => {
-		dcs(ctx, e, JELLY1);
-		dls(ctx, e, JELLY2);
+	f: e => {
+		dcs(e, JELLY1);
+		dls(e, JELLY2);
 	},
 	// Jelly 2
-	g: (ctx, e) => {
-		dcs(ctx, e, JELLY3);
-		dls(ctx, e, JELLY4);
+	g: e => {
+		dcs(e, JELLY3);
+		dls(e, JELLY4);
 	},
-	h: (ctx, e) => {
+	h: e => {
 		// Deep fish
 		ctx.fillStyle = 'rgba(255,255,255,0.5)';
-		dcs(ctx, e, FISH2);
+		dcs(e, FISH2);
 		ctx.fillStyle = '#000';
-		dcs(ctx, e, FISH);
-		dsh(ctx, e, JAW1);
-		strokeArc(ctx, e.x+e.s*3.5, e.y, e.s*1.5, 1*Math.PI, 1.75*Math.PI);
-		dcs(ctx, e, FISH3);
+		dcs(e, FISH);
+		dsh(e, JAW1);
+		strokeArc(e.x+e.s*3.5, e.y, e.s*1.5, 1*Math.PI, 1.75*Math.PI);
+		dcs(e, FISH3);
 		ctx.fillStyle = '#F00';
-		dcs(ctx, e, FISH4);
+		dcs(e, FISH4);
 	},
-	j: (ctx, e) =>{
-		// Ball
-		dcs(ctx, e, BA);
-	}
+	j: e =>dcs(e, BA)
 }
 
 function showTexts() {
