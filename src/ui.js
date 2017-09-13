@@ -6,9 +6,8 @@
 var geo = require('./geo');
 var rand = require('./rng')();
 
-var canvas = document.querySelector('canvas');
-var ctx = canvas.getContext('2d');
-
+var ctx = document.querySelector('canvas').getContext('2d');
+ctx.textAlign="center"; 
 var SZ = 3000;
 /*
 var camera = {
@@ -111,16 +110,15 @@ module.exports = {
 	draw: function (){
 		if (player.dead){
 			ctx.fillStyle = "#000";
-			ctx.fillRect(0, 0, canvas.width, canvas.height);
+			ctx.fillRect(0, 0, 800, 600);
 			ctx.font = "italic 28px serif";
 			ctx.fillStyle = "white";
-			ctx.textAlign="center"; 
-			ctx.fillText("Deep in the sea. You are forever lost.", 400,550);
+			ctx.fillText("You are forever lost.", 400,550);
 			return;
 		}
 		if (player.won){
 			ctx.fillStyle = "#FFF";
-			ctx.fillRect(0, 0, canvas.width, canvas.height);
+			ctx.fillRect(0, 0, 800, 600);
 			ctx.fillStyle = "#000";
 			showTexts();
 			return;
@@ -204,7 +202,6 @@ module.exports = {
 		ctx.fillStyle = "white";
 		if (this.t){
 			ctx.font = "italic 36px serif";
-			ctx.textAlign="center"; 
 			ctx.fillText("Lost in Asterion", 400,100);
 			ctx.font = "italic 24px serif";
 			ctx.fillText("A js13k game by Santiago Zapata", 400,150);
@@ -235,9 +232,6 @@ module.exports = {
 		TEXT.push(t);
 	},
   	won: function(){
-  		currentText = false;
-  		TEXT.length = 0;
-  		// TODO: Fade to White
   		WM.forEach(m=>TEXT.push(m));
   	}
 };
@@ -245,10 +239,9 @@ module.exports = {
 // Winning messages
 var WM = [
 "You make the journey back to the Gate of Atlantis.", 
-"A tremendous whirlpool covers the cavern.",
-"You wake up in the middle of the Ocean,",
+"You wake up in the middle of the Ocean.",
 "The SOS beacon is activated, you'll be rescued soon.",
-"Noone will believe you,",
+"Noone will believe you...",
 "but you'll never forget you were almost Lost.",
 ];
 
@@ -261,11 +254,11 @@ var OC = [
 ];
 
 function tx(x){
-  return x - player.x /* * camera.zoom */+ canvas.width / 2 ;
+  return x - player.x /* * camera.zoom */+ 400;
 }
 
 function ty(y){
-  return y - player.y /* * camera.zoom */ + canvas.height / 2;
+  return y - player.y /* * camera.zoom */ + 300;
 }
 /*
 function ts(w){
@@ -442,11 +435,7 @@ function showTexts() {
 			ctx.font = "italic 28px serif";
 		else
 			ctx.font = "24px sans-serif";
-		ctx.textAlign="center"; 
-		if (player.won)
-			ctx.fillText(currentText, 400,250);
-		else
-			ctx.fillText(currentText, 400,550);
+		ctx.fillText(currentText, 400, 550);
 	} else if (TEXT.length > 0){
 		let t = TEXT.shift();
 		ita = t.charAt(0) !== "*";
