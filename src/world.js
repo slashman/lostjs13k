@@ -135,7 +135,7 @@ function checkLoadFragment(w){
 function generateSector(dx, dy){
   var s = gen.g(player.mx+dx, player.my+dy, player)
   sectors[(player.mx+dx)+":"+(player.my+dy)] = s;
-  if (s.bo && !player.bo){
+  if (s.bo){
     player.bo = true;
     let e = new Entity((player.mx+dx+0.5) * SZ, (player.my+dy+0.5) * SZ, 40, 'i', 0);
     e.world = world;
