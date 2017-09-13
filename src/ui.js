@@ -125,7 +125,7 @@ module.exports = {
 			showTexts();
 			return;
 		}
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		// ctx.clearRect(0, 0, canvas.width, canvas.height);
 		for (var sector in w.sectors){
 			sector = w.sectors[sector];
 			if (sector.bg){
@@ -245,20 +245,19 @@ module.exports = {
 // Winning messages
 var WM = [
 "You make the journey back to the Gate of Atlantis,", 
-"A tremendous whirlpool covers the cavern, ",
-"hurling your ship all around. You pass out.",
+"A tremendous whirlpool covers the cavern.",
 "You wake up in the middle of the Ocean,",
 "The SOS beacon is activated, you'll be rescued soon.",
-"Noone will believe your tale of an underwater lost empire...",
-"but you'll never forget the time when you were almost Lost.",
+"Noone will believe you,",
+"but you'll never forget you were almost Lost.",
 ];
 
 // ORB_COLORS
 var OC = [
-  "255,255,0",
-  "255,0,0",
-  "0,255,0",
-  "0,0,255",
+  "99,99,0",
+  "99,0,0",
+  "0,99,0",
+  "0,0,99",
 ];
 
 function tx(x){
