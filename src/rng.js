@@ -63,8 +63,8 @@ module.exports = function(seed) {
      * @return {mixed}
      * @api public
      */
-    pick: function(source) {
-      return source[rng.range(0, source.length)];
+    pick: function(s) {
+      return s[rng.range(0, s.length)];
     },
     pickS: function(s) {
       return s.charAt(rng.range(0, s.length));
