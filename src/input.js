@@ -34,7 +34,7 @@ init();
 
 let player = false;
 let world = false;
-let active = false;
+//let active = false;
 
 /*key.typed(90, function(){
   if (ui.camera.zoom >= 1)
@@ -60,7 +60,7 @@ typed(13, ()=>{
   if (ui.t){
     ui.t = false;
     setTimeout(()=>player.lt = true, 10000);
-    setTimeout(()=>active = true, 15000);
+    //setTimeout(()=>active = true, 15000);
   } 
 });
 
@@ -117,7 +117,7 @@ module.exports = {
     player = w.player;
   },
   keyboard: function (){
-    if (!active) return;
+    if (ui.t) return;
     if (isDown(38)){ // Rise
       sound.play(0);
       player.dy -= 10;
@@ -155,7 +155,7 @@ module.exports = {
 };
 
 function beep(){
-  if (active) sound.play(1);
+  sound.play(1);
   setTimeout(beep, 10000);
 }
 beep();
