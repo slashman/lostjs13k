@@ -92,7 +92,7 @@ var LV = [
 	"666055"
 ]
 
-var O = "The Orb of";
+var O = "The Orb of ";
 
 var CLUES = {
 	// Intro
