@@ -137,7 +137,7 @@ function generateSector(dx, dy){
   sectors[(player.mx+dx)+":"+(player.my+dy)] = s;
   if (s.bo && !player.bo){
     player.bo = true;
-    let e = new Entity((player.mx+dx+0.5) * SZ, (player.my+dy+0.5) * SZ, 320, 'i', 0);
+    let e = new Entity((player.mx+dx+0.5) * SZ, (player.my+dy+0.5) * SZ, 40, 'i', 0);
     e.world = world;
     e.bo = true;
     entities.push(e);
@@ -278,7 +278,7 @@ function updateEntity(e, elapsed){
       booms.forEach(function (b, k){
         if (geo.d(e.x, e.y, b.x, b.y) < e.w){
           e.takeDamage();
-          e.dx = b.dx * 2;
+          if (e.t !== 'i') e.dx = b.dx * 2;
           sound.play(2);
           booms.splice(k, 1);
         }
