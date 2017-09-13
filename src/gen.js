@@ -4,7 +4,51 @@
 
 var geo = require('./geo');
 var rng = require('./rng');
-var ca = require('./ca');
+
+// Injected CA module :/
+function runCA(rules, times, cells){
+	for (let i = 0; i < times; i++){
+		rules.forEach(rule => applyRule(rule, cells));
+	}
+}
+
+function applyRule(rule, cells){
+	cells.forEach((cell)=>{
+		if (rule.chance !== undefined && !rand.chance(rule.chance)){
+			cell.nextType = cell.type;
+			return;
+		}
+		if (cell.type != rule.type){
+			cell.nextType = cell.type;
+			return;
+		}
+		var surroundingCount = getSurroundingCellsCount(cell, rule.sType);
+		if (rule.op === '>'){
+			if (surroundingCount > rule.q){
+				cell.nextType = rule.nType;
+				return;
+			}
+		} else if (rule.op === '<'){
+			if (surroundingCount < rule.q){
+				cell.nextType = rule.nType;
+				return;	
+			}
+		}
+		cell.nextType = cell.type;
+	});
+	cells.forEach(cell => cell.type = cell.nextType);
+}
+
+function getSurroundingCellsCount(cell, type){
+	return cell.surroundingCells.reduce((sum, cell) => {
+		if (cell.type === type){
+			return sum + 1;
+		} else {
+			return sum;
+		}
+	}, 0);
+}
+
 var V = require('./vb/V')
 
 var rand = rng();
@@ -231,7 +275,7 @@ module.exports = {
 				}
 			}
 		});
-		ca.run(metadata.rules, metadata.ca+1, stones, rand);
+		runCA(metadata.rules, metadata.ca+1, stones);
 		stones = stones.filter(s => s.type === 1 || s.type === 4);
 		var bgStones = [];
 		if (metadata.cv){
@@ -249,7 +293,6 @@ module.exports = {
 			    site.type = rand.range(0,colors.length);
 			    bgStones.push(cell.site);
 			});
-			//ca.run(rules, 1, bgStones, rand);
 			bgStones.forEach(stone => stone.color = colors[stone.type]);
 		}
 		if (metadata.s != undefined){
