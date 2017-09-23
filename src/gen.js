@@ -123,8 +123,8 @@ var CLUES = {
 	R: "A orb was hidden on a cave to the west",
 	
 	// Artifacts
-	D: O+"Verra Kera",
-	E: O+"Gabrielle",
+	D: O+"Verra Kera shoots waves",
+	E: O+"Gabrielle repairs your ship",
 	F: O+"Cosiaca",
 	G: O+"Athena",
 		
