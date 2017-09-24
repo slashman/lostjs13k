@@ -66,7 +66,7 @@ function update(elapsed){
   });
   updateEntity(player, elapsed);
   entities.forEach((e, k)=>{
-    if (e.dead || geo.d(e.x, e.y, player.x, player.y) > 3000){
+    if (e.dead || (!e.bo && geo.d(e.x, e.y, player.x, player.y) > 3000)){
       entities.splice(k, 1);
       // This probably causes one entity to miss his turn.
       return;
