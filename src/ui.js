@@ -151,7 +151,7 @@ module.exports = {
 		});
 		w.booms.forEach(function (b){
 			ctx.strokeStyle = '#fcc';
-			strokeArc(ctx, b.x, b.y, 5+rand.range(0,5), 0, 2*Math.PI, false);
+			strokeArc(ctx, b.x, b.y, b.s+rand.range(0,5), 0, 2*Math.PI, false);
 		});
 		this.drawPlayer(ctx);
 		w.entities.forEach(e => this.drawEntity(ctx, e));
@@ -254,10 +254,10 @@ module.exports = {
 		fillArc(ctx, e.x+2*e.s, e.y+2*e.s, 2*e.s, Math.PI,2*Math.PI, false);
 		if (e.flipped){
 			fillArc(ctx, e.x+3*e.s, e.y+2*e.s, e.s, 0, 2*Math.PI, false);
-			fillCircle(ctx, e.x+3*e.s, e.y+2*e.s, 3*e.s, Math.PI/2, Math.PI, false);
+			fillCircle(ctx, e.x+3*e.s, e.y+2*e.s, 3*e.s, Math.PI/2, Math.PI*1.5, false);
 		} else {
 			fillArc(ctx, e.x+e.s, e.y+2*e.s, e.s, 0, 2*Math.PI, false);
-			fillCircle(ctx, e.x+e.s, e.y+2*e.s, 3*e.s, 0, Math.PI/2, false);
+			fillCircle(ctx, e.x+e.s, e.y+2*e.s, 3*e.s, -0.5*Math.PI, Math.PI/2, false);
 		}
 		ctx.fillStyle="#00F"; // TODO: Based on nautilus type
 		if (e.flipped){

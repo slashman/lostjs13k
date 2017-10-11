@@ -6,6 +6,7 @@ const gen = require('./gen');
 const ui = require('./ui');
 const rand = require('./rng')();
 const Entity = require('./Entity.class');
+const sound = require('./sound');
 
 const SECTOR_SIZE = 3000;
 
@@ -66,7 +67,7 @@ function update(elapsed){
   });
   this.updateEntity(player, elapsed);
   entities.forEach((e, k)=>{
-    if (e.dead || geo.mdist(e.x, e.y, player.x, player.y) > 3000){
+    if (e.dead || (!e.bo && geo.mdist(e.x, e.y, player.x, player.y) > 3000)){
       entities.splice(k, 1);
       // This probably causes one entity to miss his turn.
       return;
@@ -134,9 +135,9 @@ function checkLoadFragment(w){
 function generateSector(w, dx, dy){
   var s = gen.generateSegment(player.mx+dx, player.my+dy, player)
   sectors[(player.mx+dx)+":"+(player.my+dy)] = s;
-  if (s.bo && !player.bo){
+  if (s.bo){
     player.bo = true;
-    let e = new Entity((player.mx+dx+0.5) * SECTOR_SIZE, (player.my+dy+0.5) * SECTOR_SIZE, 80, 'i', 0);
+    let e = new Entity((player.mx+dx+0.5) * SECTOR_SIZE, (player.my+dy+0.5) * SECTOR_SIZE, 40, 'i', 0);
     e.world = w;
     e.bo = true;
     entities.push(e);
@@ -197,11 +198,12 @@ module.exports = {
       return;
     }
     this.booms.push({
-      x: rand.range(player.x-5, player.x+5),
-      y: rand.range(player.y-5, player.y+5),
+      x: player.x+8,
+      y: rand.range(player.y+3, player.y+13),
       dx: rand.range(250, 280) * dx,
       dy: rand.range(-10, 10),
-      life:  rand.range(80, 100),
+      s: player.orbs[2] ? 5: 1,
+      life: player.orbs[2] ? rand.range(80, 100) : 8
     });
     setTimeout(()=> this.sonicBoom(dx, q-1), 100);
   },
@@ -268,6 +270,7 @@ module.exports = {
       if (!player.invul && geo.mdist(e.x, e.y, player.x, player.y) < e.w){
         player.takingDamage = true;
         setTimeout(()=>player.takingDamage = false, 50);
+        sound.play(2);
         player.hull--; // TODO: Use enemy attack
         player.dx = e.dx * 2;
         player.dy = e.dy * 2;
@@ -280,6 +283,10 @@ module.exports = {
       booms.forEach(function (b, k){
         if (geo.mdist(e.x, e.y, b.x, b.y) < e.w){
           e.takeDamage();
+          if (e.t !== 'i'){
+            e.dx = b.dx * 2;
+          }
+          sound.play(2);
           booms.splice(k, 1);
         }
       });
